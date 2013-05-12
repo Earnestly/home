@@ -1,0 +1,60 @@
+# ~/.config/zsh/.zshrc
+
+# modules
+autoload -U compinit
+compinit
+zmodload zsh/complist
+
+# shell options
+setopt autocd \
+	dotglob \
+	extendedglob \
+	completealiases \
+	histappend \
+	sharehistory \
+	histignorespace \
+	histignorealldups \
+	histsavenodups \
+	histverify \
+	histreduceblanks
+
+HISTFILE=~/.config/zsh/.zsh_history
+HISTSIZE=10000
+SAVEHIST=$HISTSIZE
+
+# style
+PROMPT='%m<+>%n %# %F{cyan}%~%f '
+
+zstyle ':completion:*' menu select
+zstyle ':completion:*' use-cache on
+
+# aliases
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias rr='rm -rv'
+alias rm='rm -vI'
+alias cp='cp -vi'
+alias mv='mv -vi'
+alias ln='ln -vi'
+alias mkdir='mkdir -vp'
+
+alias chmod='chmod -c --preserve-root'
+alias chown='chown -c --preserve-root'
+alias chgrp='chgrp -c --preserve-root'
+
+alias ls='ls --color=auto --group-directories-first -hXF'
+alias la='ls --color=auto --group-directories-first -AhXF'
+alias ll='ls --color=auto --group-directories-first -lhXF'
+
+alias dmesg='dmesg -eL'
+alias weechat-curses='dtach -A $XDG_RUNTIME_DIR/weechat weechat-curses'
+
+alias ix="curl -F 'f:1=<-' ix.io"
+
+# xdg_config_home
+alias ncmpcpp='ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf'
+alias gliv='gliv -g$HOME/.config/gliv/glivrc'
+alias aria2c='aria2c --dht-file-path ~/.config/aria2/dht.dat'
+alias mypaint='mypaint -c ~/.config/mypaint'
+
+bindkey -e

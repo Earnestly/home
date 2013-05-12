@@ -1,0 +1,7 @@
+set nocompatible
+
+set cc=80
+set number
+
+syntax on
+filetype indent plugin on

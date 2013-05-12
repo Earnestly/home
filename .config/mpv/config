@@ -1,0 +1,15 @@
+# ~/.mpv
+
+# style
+title="mpv: ${filename}"
+
+# video
+#vo=opengl:lscale=lanczos2:dither-depth=auto:pbo:fbo-format=rgb16
+vo=opengl-hq 
+
+# audio
+ao=pulse
+
+# lang
+slang=en,eng
+alang=en,eng
