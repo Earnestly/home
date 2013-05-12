@@ -17,7 +17,14 @@ au fullscreen on set go-=s
 au fullscreen off set go+=s
 
 " Open the current URL as an argument to quvi
-nmap <S-q> -s -js commands.execute("!quvi '" + content.location.href + "' &> /dev/null &")
+nmap <S-q> -s -js CommandExMode().open("!quvi '" + content.location.href + "' &> /dev/null &")
+
+" Custom hint modes
+" Thanks to holomorph and John-Galt
+js <<EOF
+hints.addMode("l", "Launch video from hint", function (elem, loc) 
+              CommandExMode().open("!quvi '" + loc + "' &>/dev/null &"));
+EOF
 
 " Toggle bookmark toolbar
 nmap s -e :toolbartoggle Bookmarks Toolbar
