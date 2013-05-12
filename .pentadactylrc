@@ -21,7 +21,6 @@ nmap <S-q> -s -js commands.execute("!quvi '" + content.location.href + "' &> /de
               
 " Custom hint modes
 " Thanks to holomorph and John-Galt
-
 js <<EOF
 hints.addMode("l", "Launch video from hint", function (elem, loc) 
               commands.execute("!quvi '" + loc + "' &> /dev/null &"));
