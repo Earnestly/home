@@ -1,22 +1,22 @@
 # ~/.config/zsh/.zshrc
 
 # modules
+zmodload zsh/complist
 autoload -U compinit
 compinit
-zmodload zsh/complist
 
 # shell options
 setopt autocd \
-	dotglob \
-	extendedglob \
-	completealiases \
-	histappend \
-	sharehistory \
-	histignorespace \
-	histignorealldups \
-	histsavenodups \
-	histverify \
-	histreduceblanks
+       dotglob \
+       extendedglob \
+       completealiases \
+       histappend \
+       sharehistory \
+       histignorespace \
+       histignorealldups \
+       histsavenodups \
+       histverify \
+       histreduceblanks
 
 HISTFILE=~/.config/zsh/.zsh_history
 HISTSIZE=10000
