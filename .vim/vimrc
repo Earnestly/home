@@ -1,5 +1,7 @@
 set nocompatible
 
+execute pathogen#infect()
+
 set cc=80
 set number
 
