@@ -20,7 +20,7 @@ au fullscreen off set go+=s
 nmap <S-q> -s -js commands.execute('!quvi "' + content.location.href.replace(/([$`"\\])/g, "\\$1") + '" &> /dev/null &');
               
 " Custom hint modes
-" Thanks to holomorph and John-Galt
+" Thanks to holomorph, John-Galt and grawity
 js <<EOF
 hints.addMode("q", "Launch video from hint", function (elem, loc) 
               commands.execute('!quvi "' + loc.replace(/([$`"\\])/g, "\\$1") 
