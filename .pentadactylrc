@@ -44,5 +44,5 @@ hi Hint -a    border:             1px #c38a22 solid;
 hi Hint -a    -moz-border-radius: 3px;
 hi Hint -a    -moz-box-shadow:    0 3px 7px 0px rgba(0, 0, 0, 0.3);
 hi HintElem   background-color:   inherit !important;
-hi HintActive background-color:   nherit !important;
+hi HintActive background-color:   inherit !important;
 hi HintImage  opacity:            0.5 !important;
