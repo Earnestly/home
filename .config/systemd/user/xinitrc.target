@@ -1,0 +1,8 @@
+# ~/.config/systemd/user/xinitrc.target
+
+[Unit]
+Description=Xinitrc target
+Wants=wm.target
+
+[Install]
+Alias=default.target
