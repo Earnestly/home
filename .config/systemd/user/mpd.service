@@ -1,0 +1,13 @@
+# ~/.config/systemd/user/mpd.service
+
+[Unit]
+Description=Media Player Daemon
+Wants=pulseaudio.service
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/mpd %h/.config/mpd/mpd.conf
+ExecStop=/usr/bin/mpd %h/.config/mpd/mpd.conf --kill
+
+[Install]
+WantedBy=xinitrc.target

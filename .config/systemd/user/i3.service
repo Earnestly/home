@@ -1,0 +1,16 @@
+# ~/.config/systemd/user/i3.service
+
+[Unit]
+Description=i3 Window Manager
+
+Before=xinitrc.target
+After=xorg.target
+Requires=xorg.target
+
+[Service]
+ExecStart=/usr/bin/i3
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=wm.target

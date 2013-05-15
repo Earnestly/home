@@ -18,6 +18,7 @@ export TERMINAL=termite
 
 export WINEARCH=win32
 export WINEDEBUG=-all
+export WINEPREFIX=~/.wine/default
 export WINEDLLOVERRIDES=winemenubuilder.exe=d
 
 export GREP_OPTIONS=--color=auto
