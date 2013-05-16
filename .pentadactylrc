@@ -49,5 +49,6 @@ hi HintActive background-color:   inherit !important;
 hi HintImage  opacity:            0.5 !important;
 
 " Temp hacks to fix scrolling
+" https://code.google.com/p/dactyl/issues/detail?id=525
 command -javascript fixscroll buffer.focusElement(buffer.doc.documentElement)
 nmap <S-j> -ex :fixscroll
