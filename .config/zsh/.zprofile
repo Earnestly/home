@@ -9,10 +9,9 @@ export XDG_CACHE_HOME=~/.cache
 export XDG_CONFIG_HOME=~/.config
 export XDG_DATA_HOME=~/.local/share
 
-# Force $XDG_CONFIG_HOME where possible
-export GTK2_RC_FILES="$XDG_CONFIG_HOME"/.config/gtk-2.0/settings.ini
-export MPV_HOME="$XDG_CONFIG_HOME"/.config/mpv
-export QUVI_HOME="$XDG_CONFIG_HOME"/.config/quvi
+export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/settings.ini
+export MPV_HOME="$XDG_CONFIG_HOME"/mpv
+export QUVI_HOME="$XDG_CONFIG_HOME"/quvi
 
 export EDITOR=vim
 export VISUAL=vim
