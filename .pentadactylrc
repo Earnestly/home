@@ -47,8 +47,3 @@ hi Hint -a    -moz-box-shadow:    0 3px 7px 0px rgba(0, 0, 0, 0.3);
 hi HintElem   background-color:   inherit !important;
 hi HintActive background-color:   inherit !important;
 hi HintImage  opacity:            0.5 !important;
-
-" Temp hacks to fix scrolling
-" https://code.google.com/p/dactyl/issues/detail?id=525
-command -javascript fixscroll buffer.focusElement(buffer.doc.documentElement)
-nmap <S-j> -ex :fixscroll
