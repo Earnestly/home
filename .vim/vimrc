@@ -5,11 +5,16 @@ execute pathogen#infect()
 set cc=80
 set number
 
+" 4 spaced expanded tabs
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
 set expandtab
 
+" use the X server's secondary buffer
+set clipboard=unnamed
+
+" fancy arrows are not welcome
 let g:no_rust_conceal = 1
 
 syntax on
