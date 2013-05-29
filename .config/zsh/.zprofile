@@ -31,3 +31,6 @@ export GREP_OPTIONS=--color=auto
 export LESS=-R
 
 export SDL_AUDIODRIVER=pulse
+
+# Temp hack to workaround bug in termite with xim
+export GTK_IM_MODULE=uim
