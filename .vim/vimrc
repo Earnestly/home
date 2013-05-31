@@ -4,6 +4,7 @@ execute pathogen#infect()
 
 set cc=80
 set number
+set hidden
 
 " 4 spaced expanded tabs
 set tabstop=4
