@@ -28,6 +28,16 @@ PROMPT='%m<+>%n %# %F{cyan}%~%f '
 zstyle ':completion:*' menu select
 zstyle ':completion:*' use-cache on
 
+# functions
+precmd() {
+    print -Pn '\e];%n %~\a'
+}
+
+preexec() { 
+    local cmd=${1[(wr)^(*=*|sudo|ssh|-*)]}
+    print -Pn "\e];$cmd:q\a"
+} 
+
 # aliases
 alias ...='cd ../..'
 alias ....='cd ../../..'
@@ -51,7 +61,7 @@ alias weechat-curses='dtach -A $XDG_RUNTIME_DIR/weechat weechat-curses -d ~/.con
 
 alias ix="curl -F 'f:1=<-' ix.io"
 
-# xdg_config_home
+# force XDG_CONFIG_HOME where possible
 alias ncmpcpp='ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf'
 alias gliv='gliv -g$HOME/.config/gliv/glivrc'
 alias aria2c='aria2c --dht-file-path ~/.config/aria2/dht.dat'
