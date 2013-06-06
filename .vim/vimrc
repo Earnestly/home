@@ -20,3 +20,6 @@ let g:no_rust_conceal = 1
 
 syntax on
 filetype indent plugin on
+
+" move viminfo out of ~
+set viminfo+=n~/.vim/viminfo
