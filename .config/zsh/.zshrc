@@ -2,7 +2,7 @@
 
 # modules
 zmodload zsh/complist
-autoload -U compinit
+autoload -Uz compinit
 compinit
 
 # shell options
@@ -27,6 +27,7 @@ PROMPT='%m<+>%n %# %F{cyan}%~%f '
 
 zstyle ':completion:*' menu select
 zstyle ':completion:*' use-cache on
+zstyle ':completion:*' rehash yes
 
 # functions
 precmd() {
