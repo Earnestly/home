@@ -5,12 +5,18 @@ execute pathogen#infect()
 set cc=80
 set number
 set hidden
+set showcmd
+set smartcase
+set backspace=2
 
 " 4 spaced expanded tabs
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
 set expandtab
+
+" Speed up ESC
+set ttimeoutlen=50
 
 " use the X server's secondary buffer
 set clipboard=unnamed
