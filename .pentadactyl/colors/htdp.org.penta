@@ -11,14 +11,14 @@ html {
 }
 
 body {
-    color: #444;
-    background-color: #FFFFD3;
+    color: #444 !important;
+    background-color: #FFFFDA !important;
     font-family: "PT Serif", sans-serif;
     text-align: justify;
 }
 
 a {
-    text-decoration: none;
+    text-decoration: none !important;
 }
 
 h1,h2,h3,h4,h5,h6 {
