@@ -1,0 +1,117 @@
+style -append htdp.org <<EOF
+
+@import url(http://fonts.googleapis.com/css?family=PT+Serif);
+@import url(http://fonts.googleapis.com/css?family=PT+Serif+Caption);
+
+html {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 60%;
+}
+
+body {
+    color: #444;
+    background-color: #FFF;
+    font-family: "PT Serif", sans-serif;
+    text-align: justify;
+}
+
+a {
+    text-decoration: none;
+}
+
+
+h1,h2,h3,h4,h5,h6 {
+    margin-top: .5em;
+    font-family: "PT Serif Caption", sans-serif;
+}
+
+.partheading {
+    font-size: 100%;
+}
+
+.chapterheading {
+    font-size: 100%;
+}
+
+pre {
+    margin-left: 2em;
+}
+
+ol {
+    list-style-type: decimal;
+}
+
+ol ol {
+    list-style-type: lower-alpha;
+}
+
+ol ol ol {
+    list-style-type: lower-roman;
+}
+
+ol ol ol ol {
+    list-style-type: upper-alpha;
+}
+
+.scheme {
+    color: brown;
+}
+
+.scheme .keyword {
+    color: #990000;
+    font-weight: bold;
+}
+
+.scheme .builtin {
+    color: #990000;
+}
+
+.scheme .variable {
+    color: navy;
+}
+
+.scheme .global {
+    color: purple;
+}
+
+.scheme .selfeval {
+    color: green;
+}
+
+.scheme .comment {
+    color:  teal;
+}
+
+.schemeresponse {
+    color: green;
+}
+
+.navigation {
+    color: red;
+    text-align: right;
+    font-style: italic;
+}
+
+.disable {
+    /* color: #e5e5e5; */
+    color: gray;
+}
+
+.smallcaps {
+    font-size: 75%;
+}
+
+.smallprint {
+    color: gray;
+    font-size: 75%;
+    text-align: right;
+}
+
+.smallprint hr {
+    text-align: left;
+    width: 40%;
+}
+
+EOF

@@ -3,6 +3,7 @@
 loadplugins '\.(js|penta)$'
 group user
 
+" UI
 set guioptions=Csn
 set hlfind
 
@@ -15,6 +16,13 @@ nmap -b l 5l
 " Hide the status bar when using fullscreen
 au fullscreen on set go-=s
 au fullscreen off set go+=s
+
+" Set default about:config
+set! keyword.URL="https://duckduckgo.com/html/?q=!"
+set! browser.tabs.onTop=false
+set! noscript.keys.tempAllowPage="alt z"
+set! noscript.notify=false
+set! plugins.click_to_play=true
 
 " Open the current URL as an argument to quvi
 nmap <S-q> -s -js <<EOF
@@ -33,20 +41,7 @@ EOF
 " Toggle bookmark toolbar
 nmap s -e :toolbartoggle Bookmarks Toolbar
 
-" Vimium styled hints
-set hintkeys=fdsartgbvecwxqyiopmnhzuljk
+colorscheme vimium_hints
 
-hi Hint       text-transform:     uppercase;
-hi Hint -a    font-family:        "Arial", "Sans";
-hi Hint -a    font-weight:        bold;
-hi Hint -a    font-size:          11px;
-hi Hint -a    text-shadow:        0 1px 0 rgba(255, 255, 255, 0.6);
-hi Hint -a    color:              #302505;
-hi Hint -a    padding:             1px 3px 0px 3px;
-hi Hint -a    background:         -moz-linear-gradient(top, #fff785, #ffc524);
-hi Hint -a    border:             1px #c38a22 solid;
-hi Hint -a    -moz-border-radius: 3px;
-hi Hint -a    -moz-box-shadow:    0 3px 7px 0px rgba(0, 0, 0, 0.3);
-hi HintElem   background-color:   inherit !important;
-hi HintActive background-color:   inherit !important;
-hi HintImage  opacity:            0.5 !important;
+" Custom website CSS
+colorscheme htdp.org
