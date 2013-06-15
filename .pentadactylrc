@@ -41,7 +41,8 @@ EOF
 " Toggle bookmark toolbar
 nmap s -e :toolbartoggle Bookmarks Toolbar
 
+" Style
 colorscheme vimium_hints
 
-" Custom website CSS
+" Custom CSS
 colorscheme htdp.org
