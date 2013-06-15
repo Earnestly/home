@@ -17,9 +17,12 @@ au fullscreen on set go-=s
 au fullscreen off set go+=s
 
 " Open the current URL as an argument to quvi
-nmap <S-q> -s -js commands.execute('!quvi "' + content.location.href.replace(/([$`"\\])/g, "\\$1") + '" &> /dev/null &');
+nmap <S-q> -s -js <<EOF
+commands.execute('!quvi "' + content.location.href.replace(/([$`"\\])/g, "\\$1")
+                           + '" &> /dev/null &');
+EOF
               
-" Custom hint modes
+" Custom hints
 " Thanks to holomorph, John-Galt and grawity
 js <<EOF
 hints.addMode("q", "Launch video from hint", function (elem, loc) 
