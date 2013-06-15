@@ -63,6 +63,7 @@ alias weechat-curses='dtach -A $XDG_RUNTIME_DIR/weechat weechat-curses -d ~/.con
 alias ix="curl -F 'f:1=<-' ix.io"
 
 # force XDG_CONFIG_HOME where possible
+alias irssi='irssi --home=~/.config/irssi'
 alias ncmpcpp='ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf'
 alias gliv='gliv -g$HOME/.config/gliv/glivrc'
 alias aria2c='aria2c --dht-file-path ~/.config/aria2/dht.dat'
