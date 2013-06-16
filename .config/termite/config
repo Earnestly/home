@@ -35,12 +35,12 @@ browser = firefox
 [colors]
 foreground = #dcdccc
 foreground_bold = #ffffff
-foreground_dim = #888888
+#foreground_dim = #888888
 background = #3f3f3f
-cursor = #dcdccc
+#cursor = #dcdccc
 
 # if unset, will reverse foreground and background
-#highlight = #2f2f2f
+highlight = #2f2f2f
 
 # colors from color0 to color254 can be set
 color0 = #3f3f3f

@@ -5,6 +5,7 @@ group user
 
 " UI
 set guioptions=Csn
+set showtabline=multitab
 set hlfind
 
 " Speed up scrolling
@@ -41,8 +42,11 @@ EOF
 " Toggle bookmark toolbar
 nmap s -e :toolbartoggle Bookmarks Toolbar
 
+" Easily show downloads
+nmap <S-d> -e :downloads
+
 " Style
 colorscheme vimium_hints
 
-" Custom CSS
+" Custom per-site CSS
 colorscheme htdp.org

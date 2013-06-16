@@ -1,3 +1,5 @@
+" ~/.vimrc
+
 execute pathogen#infect()
 
 set cc=80
@@ -6,6 +8,8 @@ set hidden
 set showcmd
 set backspace=2
 set nocompatible
+
+colorscheme zenburn
 
 set incsearch
 set ignorecase
@@ -23,16 +27,17 @@ set expandtab
 " Speed up ESC
 set ttimeoutlen=50
 
-" use the X server's secondary buffer
+" Use the X server's secondary buffer
 set clipboard=unnamed
 
 syntax on
 filetype indent plugin on
 
-" move viminfo out of ~
+" Move viminfo out of ~
 set viminfo+=n~/.vim/viminfo
 
-" fancy arrows are not welcome
+" Fancy arrows are not welcome
 let g:no_rust_conceal = 1
 
+" Use clang when checking C syntax
 let g:syntastic_c_compiler = 'clang'
