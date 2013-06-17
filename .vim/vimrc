@@ -9,7 +9,9 @@ set showcmd
 set backspace=2
 set nocompatible
 
-colorscheme zenburn
+if &t_Co > 255
+    colorscheme zenburn
+endif
 
 set incsearch
 set ignorecase
