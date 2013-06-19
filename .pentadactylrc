@@ -14,11 +14,20 @@ nmap -b j 5j
 nmap -b k 5k
 nmap -b l 5l
 
+" Toggle bookmark toolbar
+nmap s -e :toolbartoggle Bookmarks Toolbar
+
+" Easily show downloads
+nmap <S-d> -e :downloads
+
+" Use vim instead of gvim for now
+set editor='termite -e "vim +<line> <file>"'
+
 " Hide the status bar when using fullscreen
 au fullscreen on set go-=s
 au fullscreen off set go+=s
 
-" Set default about:config
+" Change some default about:configs
 set! keyword.URL="https://duckduckgo.com/html/?q=!"
 set! browser.tabs.onTop=false
 set! noscript.keys.tempAllowPage="alt z"
@@ -30,20 +39,13 @@ nmap <S-q> -s -js <<EOF
 commands.execute('!quvi "' + content.location.href.replace(/([$`"\\])/g, "\\$1")
                            + '" &> /dev/null &');
 EOF
-              
-" Custom hints
-" Thanks to holomorph, John-Galt and grawity
+
+" Custom hints, thanks to holomorph, John-Galt and grawity
 js <<EOF
-hints.addMode("q", "Launch video from hint", function (elem, loc) 
+hints.addMode("q", "Launch video from hint", function(elem, loc) 
               commands.execute('!quvi "' + loc.replace(/([$`"\\])/g, "\\$1") 
               + '" &> /dev/null &'));
 EOF
-
-" Toggle bookmark toolbar
-nmap s -e :toolbartoggle Bookmarks Toolbar
-
-" Easily show downloads
-nmap <S-d> -e :downloads
 
 " Style
 colorscheme vimium_hints
