@@ -23,7 +23,7 @@ HISTSIZE=10000
 SAVEHIST=$HISTSIZE
 
 # style
-PROMPT='%m<+>%n %# %F{cyan}%~%f '
+PROMPT='%m • %n %# %F{cyan}%~%f '
 
 zstyle ':completion:*' menu select
 zstyle ':completion:*' use-cache on
