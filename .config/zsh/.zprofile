@@ -1,6 +1,6 @@
 # ~/.config/zsh/.zprofile
 
-export PATH="$HOME"/bin:"$PATH"
+export PATH="$HOME"/.local/bin:"$PATH"
 
 export XDG_CONFIG_DIRS=/etc/xdg
 export XDG_DATA_DIRS=/usr/local/share/:/usr/share/
