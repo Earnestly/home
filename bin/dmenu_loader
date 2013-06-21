@@ -1,0 +1,50 @@
+#!/bin/bash
+# ~/bin/dmenu_loader
+
+# dmenu_loader file
+
+# A simple script which loads a key value pair into an associative array where
+# the key is displayed by dmenu and the value is acted upon given the
+# corresponding key
+
+# Configuration example:
+# '#' Comments
+# Title=<optional: title for dmenu>
+# Command=<required: program used to act on result from dmenu>
+# Key Display=Value Executed
+
+conf="$1"
+title="${title:-Title}"
+opts=(-i -l 20)
+
+declare -A index
+index=()
+
+# Source configuration file
+if [[ -n "$conf" ]]; then
+    while IFS='=' read key value; do
+        case $key in 
+            '') ;; # ignore blank lines
+            '#'*) ;;
+            'Title') title="$value" ;;
+            'Command') cmd="$value" ;;
+            *) index+=(["$key"]="$value") ;;
+        esac
+    done < "$conf"
+else
+    printf >&2 "No configuration specified."
+    exit 1
+fi
+
+# Print the keys for dmenu consumption
+selection=$(
+    printf "%s\n" "${!index[@]}" | sort | dmenu -p "$title" "${opts[@]}"
+)
+
+# Pass the value from the array based on key selection
+if hash "$cmd"; then
+    command "$cmd" "${index[$selection]}"
+else
+    printf >&2 "No Command specified."
+    exit 1
+fi
