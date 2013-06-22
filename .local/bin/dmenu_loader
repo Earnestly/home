@@ -32,7 +32,7 @@ if [[ -n "$conf" ]]; then
         esac
     done < "$conf"
 else
-    printf >&2 "No configuration specified."
+    printf >&2 "%s\n" "No configuration specified."
     exit 1
 fi
 
@@ -45,6 +45,6 @@ selection=$(
 if hash "$cmd"; then
     command "$cmd" "${index[$selection]}"
 else
-    printf >&2 "No Command specified."
+    printf >&2 "%s\n" "No Command specified."
     exit 1
 fi
