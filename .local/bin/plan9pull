@@ -4,17 +4,17 @@
 # Simple script for merging changes into my plan9 mirror
 
 url="http://plan9.bell-labs.com/sources/extra/plan9.tar.bz2"
-src="$HOME/dev/src"
+src="$HOME"/.local/src
 
 cd "$src"
 curl "$url" | bsdtar xf -
 
 cd "$src/plan9"
 if git diff --quiet; then
+    printf "%s\n" "Nothing to commit."
+else
     git add --all # Track any newly added files
     git commit -m "Snapshot from $(date +%Y-%m-%d)" \
         --author="plan9 developers <none@plan9.bell-labs.com>"
     git push -u origin master
-else
-    printf "$s\n" "Nothing to commit."
 fi
