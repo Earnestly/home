@@ -2,9 +2,6 @@
 
 export PATH="$HOME"/.local/bin:"$PATH"
 
-export XDG_CONFIG_DIRS=/etc/xdg
-export XDG_DATA_DIRS=/usr/local/share/:/usr/share/
-
 export XDG_CACHE_HOME=~/.cache
 export XDG_CONFIG_HOME=~/.config
 export XDG_DATA_HOME=~/.local/share
@@ -20,13 +17,15 @@ export VISUAL=vim
 export PAGER=less
 export LESSHISTFILE=-
 
-export BROWSER=firefox
+export BROWSER=aurora
 export TERMINAL=termite
+
+# Disable Mono and Gecko installation prompts and prevent .desktop creation
+export WINEDLLOVERRIDES=mscoree,mshtml=,winemenubuilder.exe=d
 
 export WINEARCH=win32
 export WINEDEBUG=-all
 export WINEPREFIX="$HOME"/.wine/default
-export WINEDLLOVERRIDES=winemenubuilder.exe=d
 
 export GREP_OPTIONS=--color=auto
 export LESS=-R
