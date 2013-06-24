@@ -1,0 +1,15 @@
+# ~/.config/newsbeuter/config
+auto-reload yes 
+confirm-exit yes
+mark-as-read-on-hover yes
+notify-beep yes
+browser "aurora %u &> /dev/null &"
+
+# key binds
+bind-key j down
+bind-key k up
+
+# macros
+macro q set browser "quvi %u &> /dev/null &" ; open-in-browser ; set browser "aurora %u &> /dev/null &"
+
+# colors
