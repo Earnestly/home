@@ -5,7 +5,6 @@ group user
 
 " UI
 set guioptions=Csn
-set showtabline=multitab
 set hlfind
 
 " Speed up scrolling
