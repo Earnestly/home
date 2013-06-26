@@ -27,6 +27,7 @@ au fullscreen on set go-=s
 au fullscreen off set go+=s
 
 " Change some default about:configs
+set! extension.checkCompatibility=false
 set! browser.tabs.onTop=false
 set! noscript.keys.tempAllowPage="alt z"
 set! noscript.notify=false
