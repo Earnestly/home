@@ -8,6 +8,7 @@ include "%S/en_US.UTF-8/Compose"
 <Multi_key> <m> <l> : "λ"
 <Multi_key> <m> <p> : "π"
 <Multi_key> <m> <d> : "Δ"
+<Multi_key> <m> <e> : "ϵ"
 
 
 # fun
