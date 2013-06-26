@@ -27,7 +27,6 @@ au fullscreen on set go-=s
 au fullscreen off set go+=s
 
 " Change some default about:configs
-set! keyword.URL="https://duckduckgo.com/html/?q=!"
 set! browser.tabs.onTop=false
 set! noscript.keys.tempAllowPage="alt z"
 set! noscript.notify=false
