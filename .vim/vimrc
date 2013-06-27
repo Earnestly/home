@@ -9,6 +9,9 @@ set showcmd
 set backspace=2
 set nocompatible
 
+syntax on
+filetype indent plugin on
+
 if &t_Co > 255
     colorscheme zenburn
 endif
@@ -26,14 +29,11 @@ set shiftwidth=4
 set softtabstop=4
 set expandtab
 
-" Speed up ESC
+" Speed up ESC in msec
 set ttimeoutlen=50
 
 " Use the X server's secondary buffer
 set clipboard=unnamed
-
-syntax on
-filetype indent plugin on
 
 " Move viminfo out of ~
 set viminfo+=n~/.vim/viminfo

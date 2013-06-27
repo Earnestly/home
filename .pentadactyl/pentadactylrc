@@ -3,7 +3,7 @@
 loadplugins '\.(js|penta)$'
 group user
 
-" UI
+" ui
 set guioptions=Csn
 set hlfind
 
