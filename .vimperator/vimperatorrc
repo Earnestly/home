@@ -12,11 +12,14 @@ noremap j 5j
 noremap k 5k
 noremap l 5l
 
+" Don't put me into insert mode automatically
+set focuscontent=true
+
 " Toggle bookmark toolbar
 nmap s :set toolbars=invbookmarks<CR>
 
 " Easily show downloads
-"nmap <S-d> -e :downloads
+nmap <S-d> :tab downloads<CR>
 
 " Use vim instead of gvim for now
 "set editor='termite -e "vim +<line> <file>"'
