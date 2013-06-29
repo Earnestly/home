@@ -22,15 +22,15 @@ index=()
 
 # Source configuration file
 if [[ -n "$conf" ]]; then
-        while IFS='=' read key value; do
-                case $key in
-                        '') ;; # ignore blank lines
-                        '#'*) ;;
-                        'Title') title="$value" ;;
-                        'Command') cmd="$value" ;;
-                        *) index+=(["$key"]="$value") ;;
-                esac
-        done < "$conf"
+    while IFS='=' read key value; do
+        case $key in
+            '') ;; # ignore blank lines
+            '#'*) ;;
+            'Title') title="$value" ;;
+            'Command') cmd="$value" ;;
+            *) index+=(["$key"]="$value") ;;
+        esac
+    done < "$conf"
 else
         printf >&2 "%s\n" "No configuration specified."
         exit 1
@@ -43,8 +43,8 @@ printf "%s\n" "${!index[@]}" | sort | dmenu -p "$title" "${opts[@]}"
 
 # Pass the value from the array based on key selection
 if hash "$cmd"; then
-        command "$cmd" "${index[$selection]}"
+    command "$cmd" "${index[$selection]}"
 else
-        printf >&2 "%s\n" "No Command specified."
-        exit 1
+    printf >&2 "%s\n" "No Command specified."
+    exit 1
 fi

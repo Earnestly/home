@@ -4,7 +4,7 @@
 title="mpv: ${filename}"
 
 # video
-vo=opengl-hq 
+vo=opengl
 
 # audio
 ao=pulse
@@ -14,7 +14,7 @@ slang=en,eng
 alang=en,eng
 
 # profiles
-[livestreams]
-profile-desc="Prevent A/V desync"
+[live]
+profile-desc="Prevent A/V desync during live streams"
 autosync=4
 mc=0
