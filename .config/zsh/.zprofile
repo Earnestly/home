@@ -21,7 +21,8 @@ export BROWSER=aurora
 export TERMINAL=termite
 
 # Disable Mono and Gecko installation prompts and prevent .desktop creation
-export WINEDLLOVERRIDES=mscoree,mshtml=,winemenubuilder.exe=d
+# mscoree,mshtml=, <- For some reason this doesn't work when combined
+export WINEDLLOVERRIDES=winemenubuilder.exe=d
 
 export WINEARCH=win32
 export WINEDEBUG=-all
