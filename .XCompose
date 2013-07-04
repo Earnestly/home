@@ -3,25 +3,27 @@
 include "%S/en_US.UTF-8/Compose"
 
 # prefix 'm' = mathematical symbols
-
 <Multi_key> <m> <n> : "𝒏"
 <Multi_key> <m> <l> : "λ"
 <Multi_key> <m> <p> : "π"
 <Multi_key> <m> <d> : "Δ"
 <Multi_key> <m> <e> : "ϵ"
 
+# quotes
+<Multi_key> <bracketleft> <apostrophe> : "「"
+<Multi_key> <bracketright> <apostrophe> : "」"
 
-# fun
-<Multi_key> <T> <H> : "Ð" U00D0 # 'Th'e
-<Multi_key> <t> <h> : "ð" U00F0
+# fun with paleotypography
+<Multi_key> <T> <H> : "Ð" # 'Th'e
+<Multi_key> <t> <h> : "ð" 
 
-<Multi_key> <W> <W> : "Ƿ" U017F # 'W'hen
-<Multi_key> <w> <w> : "ƿ" U01BF
+<Multi_key> <W> <W> : "Ƿ" # 'W'hen
+<Multi_key> <w> <w> : "ƿ" 
 
-<Multi_key> <s> <s> : "ſ" U017F # 'S'ee
+<Multi_key> <s> <s> : "ſ" # 'S'ee
 
-<Multi_key> <Y> <Y> : "Ȝ" U021C # 'Y'ell
-<Multi_key> <y> <y> : "ȝ" U021D
+<Multi_key> <Y> <Y> : "Ȝ" # 'Y'ell
+<Multi_key> <y> <y> : "ȝ" 
 
 <Multi_key> <N> <G> : "Ŋ" # Ni'gh't
-<Multi_key> <n> <g> : "ŋ" U014B
+<Multi_key> <n> <g> : "ŋ" 
