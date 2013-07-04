@@ -2,9 +2,9 @@
 
 export PATH="$HOME"/.local/bin:"$PATH"
 
-export XDG_CACHE_HOME=~/.cache
-export XDG_CONFIG_HOME=~/.config
-export XDG_DATA_HOME=~/.local/share
+export XDG_CACHE_HOME="$HOME"/.cache
+export XDG_CONFIG_HOME="$HOME"/.config
+export XDG_DATA_HOME="$HOME"/.local/share
 
 export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/settings.ini
 export MPV_HOME="$XDG_CONFIG_HOME"/mpv
@@ -18,11 +18,11 @@ export VISUAL=vim
 export PAGER=less
 export LESSHISTFILE=-
 
-export BROWSER=aurora
+export BROWSER=firefox
 export TERMINAL=termite
 
 # Disable Mono and Gecko installation prompts and prevent .desktop creation
-# mscoree,mshtml=, <- For some reason this doesn't work when combined
+# mscoree,mshtml=
 export WINEDLLOVERRIDES=winemenubuilder.exe=d
 
 export WINEARCH=win32
