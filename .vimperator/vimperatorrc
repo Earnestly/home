@@ -46,6 +46,7 @@ EOF
 
 " Style
 colorscheme vimium_hints
+colorscheme userchrome
 
 " Custom per-site CSS
 colorscheme htdp.org
