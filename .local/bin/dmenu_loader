@@ -28,7 +28,7 @@ if [[ -n "$conf" ]]; then
             '#'*) ;;
             'Title') title="$value" ;;
             'Command') cmd="$value" ;;
-            *) index+=(["$key"]="$value") ;;
+            *) index["$key"]="$value" ;;
         esac
     done < "$conf"
 else
