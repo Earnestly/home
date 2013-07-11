@@ -39,6 +39,11 @@ preexec() {
     print -Pn "\e];$cmd:q\a"
 } 
 
+n() {
+    $EDITOR "${@[@]/#/"$HOME/docs/notes/"}"
+}
+compdef "_files -W $HOME/docs/notes -/" n
+
 # aliases
 alias ...='cd ../..'
 alias ....='cd ../../..'
