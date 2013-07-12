@@ -1,0 +1,72 @@
+" ~/.vimperatorrc
+
+" Keep ~ clean
+set runtimepath=~/.config/vimperator
+
+" ui
+set gui=none,tabs
+set noscrollbars
+set tabnumbers
+set hlsearch
+
+" Speed up scrolling
+noremap h 5h
+noremap j 5j
+noremap k 5k
+noremap l 5l
+
+" Don't put me into insert mode automatically
+set focuscontent=true
+
+" Toggle bookmark toolbar
+nmap s :set toolbars=invbookmarks<CR>
+
+" Easily show downloads
+nmap <S-d> :tab downloads<CR>
+
+" Use vim instead of gvim for now
+"set editor='termite -e "vim +<line> <file>"'
+
+" Hide the status bar when using fullscreen
+au Fullscreen .* :js toggleStatusbar()
+
+" Change some default about:configs
+set! extension.checkCompatibility=false
+set! browser.tabs.onTop=false
+set! noscript.keys.tempAllowPage="alt z"
+set! noscript.notify=false
+set! plugins.click_to_play=true
+
+" Open current url as an argument to quvi
+nmap <S-q> :js openWithQuvi()<CR>
+
+" Custom url hints
+js <<EOF
+hints.addMode("q", "Launch video from hint", function(elem, loc)
+              io.system('quvi "' + loc.replace(/([$`"\\])/g, "\\$1")
+              + '" &> /dev/null &'));
+EOF
+
+" Style
+colorscheme vimium_hints
+colorscheme userchrome
+
+" Custom per-site CSS
+colorscheme htdp.org
+colorscheme azillionmonkeys.com
+
+" Functions
+:js <<EOF
+function toggleStatusbar() {
+    var bb = document.getElementById('liberator-bottombar');
+    if (!bb)
+        return;
+    bb.style.height = (bb.style.height == '') ? '0px' : '';
+    bb.style.overflow = (bb.style.height == '') ? '' : 'hidden';
+}
+
+function openWithQuvi() {
+    io.system('quvi "' + content.location.href.replace(/([$`"\\])/g, "\\$1") 
+                       + '" &> /dev/null &');
+}
+EOF
