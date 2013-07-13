@@ -64,11 +64,11 @@ alias ll='ls --color=auto --group-directories-first -lhXF'
 
 alias dmesg='dmesg -eL'
 alias weechat-curses='dtach -A $XDG_RUNTIME_DIR/weechat weechat-curses -d ~/.config/weechat'
+alias mutt='dtach -A $XDG_RUNTIME_DIR/mutt mutt -F ~/.config/mutt/muttrc'
 
 alias ix="curl -F 'f:1=<-' ix.io"
 
 # force XDG_CONFIG_HOME where possible
-alias mutt='mutt -F ~/.config/mutt/muttrc'
 alias ncmpcpp='ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf'
 alias gliv='gliv -g$HOME/.config/gliv/glivrc'
 alias aria2c='aria2c --dht-file-path ~/.config/aria2/dht.dat'
