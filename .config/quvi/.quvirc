@@ -1,4 +1,5 @@
 # ~/.config/quvi/.quvirc
 
 exec = "mpv --quiet --cache 4096 --title=%t %u"
+agent = ""
 format = fmt45_720p,fmt44_480p,fmt35_480p,fmt101_360p,fmt100_360p,fmt43_360p,fmt18_360p,fmt34_360p,fmt83_240p,fmt36_240p,fmt5_240p
