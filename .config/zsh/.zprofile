@@ -11,6 +11,7 @@ export MPV_HOME="$XDG_CONFIG_HOME"/mpv
 export QUVI_HOME="$XDG_CONFIG_HOME"/quvi
 export GNUPGHOME="$XDG_CONFIG_HOME"/gnupg
 export ELINKS_CONFDIR="$XDG_CONFIG_HOME"/elinks
+export XCOMPOSEFILE="$XDG_CONFIG_HOME"/XCompose
 
 export EDITOR=vim
 export VISUAL=vim

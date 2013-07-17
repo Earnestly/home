@@ -62,7 +62,7 @@ alias ls='ls --color=auto --group-directories-first -hXF'
 alias la='ls --color=auto --group-directories-first -AhXF'
 alias ll='ls --color=auto --group-directories-first -lhXF'
 
-alias dmesg='dmesg -eL'
+alias dmesg='dmesg -exL'
 alias weechat-curses='dtach -A $XDG_RUNTIME_DIR/weechat weechat-curses -d ~/.config/weechat'
 alias mutt='dtach -A $XDG_RUNTIME_DIR/mutt mutt -F ~/.config/mutt/muttrc'
 
