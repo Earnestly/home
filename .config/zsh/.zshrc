@@ -16,6 +16,7 @@ setopt autocd \
        histignorealldups \
        histsavenodups \
        histverify \
+       interactivecomments \
        histreduceblanks
 
 HISTFILE=~/.config/zsh/.zsh_history
