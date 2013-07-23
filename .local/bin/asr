@@ -1,0 +1,38 @@
+#!/bin/bash
+# asr <package>
+
+# Oh boy, here we go!
+pkgname="$1"
+
+# A bit of future-proofing
+urls=("git://projects.archlinux.org/svntogit/packages.git"
+      "git://projects.archlinux.org/svntogit/community.git")
+
+status="${#urls[@]}"
+for url in "${urls[@]}"; do
+    # Determine which repository the package exists in
+    if [[ -n "$(git ls-remote "$url" refs/heads/packages/"$pkgname")" ]]; then
+        # Break out if we succeed, this shouldn't be needed
+        git clone --no-checkout --branch packages/"$pkgname" \
+            --single-branch "$url" "$pkgname" && break
+    else
+        ((status--))
+    fi
+done
+
+# Fail if we've gone through the array elements without success
+if ((!status)); then
+    printf >&2 "%s\n" "Cannot locate the package: $pkgname."
+    exit 1
+fi
+
+
+# Deal with repo/ and trunk/ then clean up left overs
+if [[ -d "$pkgname" ]]; then
+    cd "$pkgname"
+    git checkout HEAD:trunk -- .
+else
+    # This should never happen
+    printf >&2 "%s\n" "Directory doesn't exist."
+    exit 1
+fi
