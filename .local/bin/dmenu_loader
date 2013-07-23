@@ -32,8 +32,8 @@ if [[ -n "$conf" ]]; then
         esac
     done < "$conf"
 else
-        printf >&2 "%s\n" "No configuration specified."
-        exit 1
+    printf >&2 "%s\n" "No configuration specified."
+    exit 1
 fi
 
 # Print the keys for dmenu consumption
