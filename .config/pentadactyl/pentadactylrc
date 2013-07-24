@@ -33,6 +33,7 @@ au fullscreen off set go+=s
 set! extension.checkCompatibility=false
 set! browser.tabs.onTop=false
 set! noscript.keys.tempAllowPage="alt z"
+set! noscript.keys.revokeTemp="alt x"
 set! noscript.notify=false
 set! plugins.click_to_play=true
 
@@ -54,3 +55,5 @@ colorscheme vimium_hints
 
 " Custom per-site CSS
 colorscheme htdp.org
+colorscheme azillionmonkeys.com
+colorscheme learnyouahaskell.com

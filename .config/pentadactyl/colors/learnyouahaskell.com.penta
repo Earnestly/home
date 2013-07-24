@@ -1,0 +1,37 @@
+style -append learnyouahaskell.com <<EOF
+@import url(http://fonts.googleapis.com/css?family=PT+Serif);
+@import url(http://fonts.googleapis.com/css?family=PT+Serif+Caption);
+
+body {
+    font-size: 1em !important;
+    font-family: "PT Serif", Serif !important;
+    color: #444 !important;
+    background-color: #FFFFDA !important;
+    text-align: justify !important;
+}
+
+.bgwrapper {
+    background-color: inherit !important
+}
+
+p {
+    font-family: inherit !important;
+    color: inherit !important;
+}
+
+.dp-highlighter {
+    background-color: #555 !important;
+}
+
+li {
+    font-family: monospace !important;
+    font-size: 1.1em !important;
+}
+
+h1,h2,h3 {
+    font-family: "PT Serif Caption" !important;
+    font-size: 1.5em !important;
+    color: inherit !important;
+}
+
+EOF

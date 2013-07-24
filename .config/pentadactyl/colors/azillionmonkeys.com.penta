@@ -1,0 +1,30 @@
+style -append azillionmonkeys.com <<EOF
+@import url(http://fonts.googleapis.com/css?family=PT+Serif);
+@import url(http://fonts.googleapis.com/css?family=PT+Serif+Caption);
+
+html {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 60%;
+    min-width: 700px;
+}
+
+h1,h2,h3,h4 {
+    font-family: "PT Serif Caption", sans-serif !important;
+}
+
+body {
+    color: #444 !important;
+    background-color: #FFFFDA !important;
+    text-align: justify !important;
+}
+
+p {
+    font-family: "PT Serif", sans-serif !important;
+}
+
+table {
+    font-family: "PT Serif", sans-serif !important;
+}
+EOF
