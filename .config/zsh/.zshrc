@@ -77,7 +77,6 @@ alias ix="curl -F 'f:1=<-' ix.io"
 
 # force XDG_CONFIG_HOME where possible
 alias ncmpcpp='ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf'
-alias gliv='gliv -g$HOME/.config/gliv/glivrc'
 alias aria2c='aria2c --dht-file-path ~/.config/aria2/dht.dat'
 alias mypaint='mypaint -c ~/.config/mypaint'
 
