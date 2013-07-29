@@ -2,7 +2,7 @@
 # asr <package>
 
 # Oh boy, here we go!
-pkgname="$1"
+pkgname="$_"
 
 # A bit of future-proofing
 urls=("git://projects.archlinux.org/svntogit/packages.git"
@@ -27,12 +27,15 @@ if ((!status)); then
 fi
 
 
-# Deal with repo/ and trunk/ then clean up left overs
+# Checkout trunk and clean up left overs
 if [[ -d "$pkgname" ]]; then
     cd "$pkgname"
     git checkout HEAD:trunk -- .
+    # Typically I don't want this
+    # TODO Handle this more gracefully
+    rm -r .git
 else
     # This should never happen
-    printf >&2 "%s\n" "Directory doesn't exist."
+    printf >&2 "%s\n" "Directory does not exist."
     exit 1
 fi
