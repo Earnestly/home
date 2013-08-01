@@ -14,6 +14,9 @@ include "%S/en_US.UTF-8/Compose"
 <Multi_key> <bracketleft> <apostrophe> : "「"
 <Multi_key> <bracketright> <apostrophe> : "」"
 
+# misc
+<Multi_key> <colon> <bar> <bar> : "ಠ_ಠ"
+
 # fun with paleotypography
 <Multi_key> <T> <H> : "Ð" # 'Th'e
 <Multi_key> <t> <h> : "ð" 
