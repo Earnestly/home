@@ -7,8 +7,8 @@ set number
 set hidden
 set showcmd
 set linebreak
-set backspace=2
 set nocompatible
+set backspace=indent,eol,start
 
 syntax on
 filetype indent plugin on
@@ -24,6 +24,7 @@ set incsearch
 set smartcase
 set ignorecase
 
+set cursorline
 set laststatus=2
 set statusline=%n.\ %f\ %M%=%y%w%r%h\ %{&fenc}\ (%l,%c)\ %p%%
 
