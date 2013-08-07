@@ -51,6 +51,11 @@ nrm() {
 }
 compdef "_files -W $HOME/docs/notes -/" nrm
 
+nmv() {
+    mv -v "${@[@]/#/"$HOME/docs/notes/"}"
+}
+compdef "_files -W $HOME/docs/notes -/" nmv
+
 # aliases
 alias ...='cd ../..'
 alias ....='cd ../../..'
@@ -70,7 +75,7 @@ alias la='ls --color=auto --group-directories-first -AhXF'
 alias ll='ls --color=auto --group-directories-first -lhXF'
 
 alias dmesg='dmesg -exL'
-alias weechat-curses='dtach -A $XDG_RUNTIME_DIR/weechat weechat-curses -d ~/.config/weechat'
+alias weechat='dtach -A $XDG_RUNTIME_DIR/weechat weechat -d ~/.config/weechat'
 alias mutt='dtach -A $XDG_RUNTIME_DIR/mutt mutt -F ~/.config/mutt/muttrc'
 
 alias ix="curl -F 'f:1=<-' ix.io"
