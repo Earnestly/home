@@ -9,10 +9,12 @@ include "%S/en_US.UTF-8/Compose"
 <Multi_key> <m> <d> : "Δ"
 <Multi_key> <m> <e> : "ϵ"
 <Multi_key> <m> <i> : "∞"
+<Multi_key> <m> <x> : "𝑿"
+<Multi_key> <m> <y> : "𝒀"
 
 # quotes
-<Multi_key> <bracketleft> <apostrophe> : "「"
-<Multi_key> <bracketright> <apostrophe> : "」"
+<Multi_key> <bracketleft> <apostrophe> : "｢"
+<Multi_key> <bracketright> <apostrophe> : "｣"
 
 # misc
 <Multi_key> <colon> <bar> <bar> : "ಠ_ಠ"
