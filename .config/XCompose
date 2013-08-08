@@ -18,6 +18,7 @@ include "%S/en_US.UTF-8/Compose"
 
 # misc
 <Multi_key> <colon> <bar> <bar> : "ಠ_ಠ"
+<Multi_key> <less> <3> "❤"
 
 # fun with paleotypography
 <Multi_key> <T> <H> : "Ð" # 'Th'e
