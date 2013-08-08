@@ -12,6 +12,8 @@ export QUVI_HOME="$XDG_CONFIG_HOME"/quvi
 export GNUPGHOME="$XDG_CONFIG_HOME"/gnupg
 export ELINKS_CONFDIR="$XDG_CONFIG_HOME"/elinks
 export XCOMPOSEFILE="$XDG_CONFIG_HOME"/XCompose
+export TIGRC_USER="$XDG_CONFIG_HOME"/tigrc
+export NOTMUCH_CONFIG="$XDG_CONFIG_HOME"/notmuchrc
 
 export EDITOR=vim
 export VISUAL=vim
