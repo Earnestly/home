@@ -21,6 +21,12 @@ set focuscontent=true
 " Toggle bookmark toolbar
 nmap s :set toolbars=invbookmarks<CR>
 
+" XXX Tab control
+nmap <A-h> :tabprev
+nmap <A-l> :tabnext
+nmap <A-S-h> :tabmove -1
+nmap <A-S-l> :tabmove +1
+
 " Easily show downloads
 nmap <S-d> :tab downloads<CR>
 

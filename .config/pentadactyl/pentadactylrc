@@ -16,6 +16,12 @@ nmap -b j 5j
 nmap -b k 5k
 nmap -b l 5l
 
+" Tab control
+nmap <A-h> -e :tabprev
+nmap <A-l> -e :tabnext
+nmap <A-S-h> -e :tabmove -1
+nmap <A-S-l> -e :tabmove +1
+
 " Toggle bookmark toolbar
 nmap s -e :toolbartoggle Bookmarks Toolbar
 
