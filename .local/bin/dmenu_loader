@@ -38,7 +38,7 @@ fi
 
 # Print the keys for dmenu consumption
 selection=$(
-printf "%s\n" "${!index[@]}" | sort | dmenu -p "$title" "${opts[@]}"
+    printf "%s\n" "${!index[@]}" | sort | dmenu -p "$title" "${opts[@]}"
 )
 
 # Pass the value from the array based on key selection
