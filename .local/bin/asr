@@ -2,7 +2,8 @@
 # asr <package>
 
 # Oh boy, here we go!
-pkgname="$1"
+keep_git="${1:-n}"
+pkgname="$2"
 
 # A bit of future-proofing
 urls=("git://projects.archlinux.org/svntogit/packages.git"
@@ -31,9 +32,11 @@ fi
 if [[ -d "$pkgname" ]]; then
     cd "$pkgname"
     git checkout HEAD:trunk -- .
-    # Typically I don't want this
-    # TODO Handle this more gracefully
-    rm -rf .git
+
+    # XXX Handle this more gracefully
+    if [[ "$keep_git" == n ]]; then
+        rm -rf .git
+    fi
 else
     # This should never happen
     printf >&2 "%s\n" "Directory does not exist."
