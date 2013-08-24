@@ -13,7 +13,7 @@ set backspace=indent,eol,start
 syntax on
 filetype indent plugin on
 
-if &t_Co > 255
+if &t_Co > 255 || has ('gui_running')
     colorscheme zenburn
 endif
 
