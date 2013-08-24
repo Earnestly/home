@@ -75,12 +75,12 @@ alias la='ls --color=auto --group-directories-first -AhXF'
 alias ll='ls --color=auto --group-directories-first -lhXF'
 
 alias dmesg='dmesg -exL'
-alias weechat='dtach -A $XDG_RUNTIME_DIR/weechat weechat -d ~/.config/weechat'
-alias mutt='dtach -A $XDG_RUNTIME_DIR/mutt mutt -F ~/.config/mutt/muttrc'
+alias weechat='dtach -A $XDG_RUNTIME_DIR/weechat /usr/bin/weechat -d ~/.config/weechat'
+alias mutt='dtach -A $XDG_RUNTIME_DIR/mutt /usr/bin/mutt -F ~/.config/mutt/muttrc'
 
 alias ix="curl -F 'f:1=<-' ix.io"
 
-# force XDG_CONFIG_HOME where possible
+# XXX force XDG_CONFIG_HOME where possible
 alias ncmpcpp='ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf'
 alias aria2c='aria2c --dht-file-path ~/.config/aria2/dht.dat'
 alias mypaint='mypaint -c ~/.config/mypaint'
