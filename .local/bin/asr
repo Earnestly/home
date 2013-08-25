@@ -2,8 +2,10 @@
 # asr <package>
 
 # Oh boy, here we go!
-keep_git="${1:-n}"
-pkgname="$2"
+pkgname="$1"
+
+# XXX I'm not happy with this
+keep_git="${2:=n}"
 
 # A bit of future-proofing
 urls=("git://projects.archlinux.org/svntogit/packages.git"
