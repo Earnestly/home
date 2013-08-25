@@ -2,6 +2,7 @@
 
 # modules
 zmodload zsh/complist
+autoload -Uz run-help   
 autoload -Uz compinit
 compinit
 
@@ -19,6 +20,7 @@ setopt autocd \
        interactivecomments \
        histreduceblanks
 
+HELPDIR=~/.config/zsh/help
 HISTFILE=~/.config/zsh/.zsh_history
 HISTSIZE=10000
 SAVEHIST=$HISTSIZE
@@ -84,5 +86,9 @@ alias ix="curl -F 'f:1=<-' ix.io"
 alias ncmpcpp='ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf'
 alias aria2c='aria2c --dht-file-path ~/.config/aria2/dht.dat'
 alias mypaint='mypaint -c ~/.config/mypaint'
+
+# bash-like help
+unalias run-help
+alias help='run-help'
 
 bindkey -e
