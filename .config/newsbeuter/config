@@ -6,10 +6,15 @@ notify-beep yes
 browser "firefox %u &> /dev/null &"
 
 # key binds
-bind-key j down
+bind-key h left
 bind-key k up
+bind-key j down
+bind-key l right
 
 # macros
 macro q set browser "quvi %u &> /dev/null &" ; open-in-browser ; set browser "firefox %u &> /dev/null &"
+
+# open 4th url in an article
+macro n open ; four ; quit
 
 # colors
