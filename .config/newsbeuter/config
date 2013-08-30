@@ -15,6 +15,6 @@ bind-key l right
 macro q set browser "quvi %u &> /dev/null &" ; open-in-browser ; set browser "firefox %u &> /dev/null &"
 
 # open 4th url in an article
-macro n open ; four ; quit
+macro i open ; four ; quit
 
 # colors
