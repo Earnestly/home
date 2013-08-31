@@ -91,4 +91,9 @@ alias mypaint='mypaint -c ~/.config/mypaint'
 unalias run-help
 alias help='run-help'
 
+# hashes
+for d in "$HOME"/devel/^temp*(/); do
+    hash -d "${d##*/}=$d"
+done
+
 bindkey -e
