@@ -1,7 +1,7 @@
 # ~/.config/i3status/config
 
 general {
-        colors = true
+        colors = false
         output_format = "i3bar"
         interval = 3
 }
