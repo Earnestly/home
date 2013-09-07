@@ -1,10 +1,7 @@
 style -append learnyouahaskell.com/* <<EOF
-@import url(http://fonts.googleapis.com/css?family=PT+Serif);
-@import url(http://fonts.googleapis.com/css?family=PT+Serif+Caption);
-
 body {
     font-size: 1em !important;
-    font-family: "PT Serif", Serif !important;
+    font-family: "TeX Gyre Schola" !important;
     color: #444 !important;
     background-color: #FFFFDA !important;
     text-align: justify !important;
@@ -23,14 +20,25 @@ p {
     background-color: #555 !important;
 }
 
-li {
-    font-family: monospace !important;
+.fixed {
+    font-family: "CMU Typewriter Text" !important;
     font-size: 1.1em !important;
 }
 
+.label {
+    font-family: "CMU Typewriter Text" !important;
+    font-size: 0.9em !important;
+}
+
+li {
+    font-family: "CMU Typewriter Text" !important;
+    font-size: 1.3em !important;
+}
+
 h1,h2,h3 {
-    font-family: "PT Serif Caption" !important;
-    font-size: 1.5em !important;
+    font-family: "TeX Gyre Schola" !important;
+    font-size: 2em !important;
+    text-align: left;
     color: inherit !important;
 }
 
