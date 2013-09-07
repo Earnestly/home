@@ -38,3 +38,5 @@ export LESS=-R
 export SDL_AUDIODRIVER=pulse
 
 export GTK_IM_MODULE=xim
+
+export GOPATH="$HOME"/devel/go
