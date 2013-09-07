@@ -97,3 +97,4 @@ for d in "$HOME"/devel/^temp*(/); do
 done
 
 bindkey -e
+bindkey '^W' vi-backward-kill-word
