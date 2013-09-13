@@ -81,6 +81,7 @@ alias weechat='dtach -A $XDG_RUNTIME_DIR/weechat /usr/bin/weechat -d ~/.config/w
 alias mutt='dtach -A $XDG_RUNTIME_DIR/mutt /usr/bin/mutt -F ~/.config/mutt/muttrc'
 
 alias ix="curl -F 'f:1=<-' ix.io"
+alias sprunge="curl -F 'sprunge=<-' sprunge.us"
 
 # XXX force XDG_CONFIG_HOME where possible
 alias ncmpcpp='ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf'
