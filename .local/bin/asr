@@ -4,7 +4,7 @@
 # Oh boy, here we go!
 pkgname="$1"
 
-# XXX I'm not happy with this
+# XXX ಠ_ಠ
 keep_git="${2:-n}"
 
 # A bit of future-proofing
