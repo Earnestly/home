@@ -16,6 +16,10 @@ include "%S/en_US.UTF-8/Compose"
 <Multi_key> <bracketleft> <apostrophe> : "｢"
 <Multi_key> <bracketright> <apostrophe> : "｣"
 
+# grammar
+<Multi_key> <semicolon> <apostrophe> : "’"
+<Multi_key> <colon> <apostrophe> : "‘"
+
 # misc
 <Multi_key> <colon> <bar> <bar> : "ಠ_ಠ"
 <Multi_key> <less> <3> : "❤"
