@@ -18,7 +18,7 @@ if &t_Co > 255 || has ('gui_running')
 endif
 
 set guioptions=acM
-set guifont=PT\ Mono\ 9
+set guifont=CMU\ Typewriter\ Text\ 11
 
 set incsearch
 set smartcase
