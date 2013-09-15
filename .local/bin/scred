@@ -1,0 +1,32 @@
+#!/bin/bash
+# scred -t <time> -d [display] -s [size] <outfile>
+
+while getopts "t:d:s:r:" argv; do
+   case "$argv" in
+        t)
+            rectime="$OPTARG" ;;
+        d)
+            display="$OPTARG" ;;
+        s)
+            recsize="$OPTARG" ;;
+        r)
+            recrate="$OPTARG" ;;
+        \?)
+            printf >&2 "%s\n" "Invalid Option: -$OPTARG" ;;
+    esac
+done
+shift $((OPTIND-1))
+
+ffopts=(
+    -y
+    -threads auto 
+    -v quiet
+    -f x11grab 
+    -r "${recrate:-5}"
+    -t "$rectime" 
+    -s "${recsize:-wxga}"
+    -i "${display:-:0.0}"
+)
+
+# the last argument is the output filename
+ffmpeg "${ffopts[@]}" "$@"
