@@ -17,18 +17,27 @@ conf="$1"
 title="${title:-Title}"
 opts=(-i -l 20)
 
+declare -a cmd # Some commands might have arguments
 declare -A index
 index=()
 
-# Source configuration file
-if [[ -n "$conf" ]]; then
+# Read in the configuration file
+if [[ -f "$conf" ]]; then
     while IFS='=' read key value; do
         case $key in
-            '') ;; # ignore blank lines
-            '#'*) ;;
-            'Title') title="$value" ;;
-            'Command') cmd="$value" ;;
-            *) index["$key"]="$value" ;;
+            '') 
+                ;; # ignore blank lines
+            '#'*) 
+                ;;
+            'Title') 
+                title="$value"
+                ;;
+            'Command') 
+                cmd=($value)
+                ;;
+            *) 
+                index["$key"]="$value" 
+                ;;
         esac
     done < "$conf"
 else
@@ -41,9 +50,10 @@ selection=$(
     printf "%s\n" "${!index[@]}" | sort | dmenu -p "$title" "${opts[@]}"
 )
 
-# Pass the value from the array based on key selection
-if hash "$cmd"; then
-    command "$cmd" "${index[$selection]}"
+# Pass the value from the array based on key selection and check if the first
+# word (XXX usually the command) is a valid
+if hash "${cmd% *}"; then
+    command "${cmd[@]}" "${index[$selection]}"
 else
     printf >&2 "%s\n" "No Command specified."
     exit 1
