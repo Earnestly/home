@@ -14,8 +14,8 @@ urls=("git://projects.archlinux.org/svntogit/packages.git"
 status="${#urls[@]}"
 for url in "${urls[@]}"; do
     # Determine which repository the package exists in
-    if [[ -n "$(git ls-remote "$url" refs/heads/packages/"$pkgname")" ]]; then
-        # Break out if we succeed, this shouldn't be needed
+    if git ls-remote --exit-code "$url" refs/heads/packages/"$pkgname"; then
+        # Break out if we succeed to avoid duplicate packages being found.
         git clone --no-checkout --branch packages/"$pkgname" \
             --single-branch "$url" "$pkgname" && break
     else
