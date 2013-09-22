@@ -14,6 +14,7 @@ export ELINKS_CONFDIR="$XDG_CONFIG_HOME"/elinks
 export XCOMPOSEFILE="$XDG_CONFIG_HOME"/XCompose
 export TIGRC_USER="$XDG_CONFIG_HOME"/tigrc
 export NOTMUCH_CONFIG="$XDG_CONFIG_HOME"/notmuchrc
+export SLRNHOME="$XDG_CONFIG_HOME"/slrn
 
 export EDITOR=vim
 export VISUAL=vim
