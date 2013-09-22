@@ -1,0 +1,63 @@
+style -append haskell.org <<EOF
+#content h1, #content h2, #content h3, #content h4 {
+    font-family: "TeX Gyre Schola" !important;
+    font-weight: bold !important;
+}
+
+body {
+    font-family: "TeX Gyre Bonum" !important;
+    text-align: justify !important;
+    background: #EEEEDC !important;
+    color: #4D4448 !important;
+}
+
+p {
+    margin 0em !important;
+}
+
+pre {
+    font-family: "CMU Typewriter Text" !important;
+    font-size: 1.1em !important;
+    padding: 1.0em !important;
+    margin-left: 0em !important;
+}
+
+#content {
+    font-family: inherit !important;
+    text-align: justify !important;
+    background: inherit !important;
+    color: inherit !important;
+}
+
+/* Syntax highlighting for haskell code */
+.source-haskell {
+    font-family: "CMU Typewriter Text" !important;
+    font-size: 1.05em !important;
+    background: none repeat scroll 0% 0% rgb(240, 240, 240) !important;
+    border: 1px solid rgb(221, 221, 221) !important;
+}
+
+/* import, do, where, etc. */
+.source-haskell .kw1 {
+}
+
+/* Types */
+.source-haskell .kw4 {
+}
+
+/* strings */
+.source-haskell .st0 {
+}
+
+/* ->, ::, ., etc. */
+.source-haskell .sy0 {
+}
+
+/* parentheses */
+.source-haskell .br0 {
+}
+
+/* numbers */
+.source-haskell .nu0 {
+}
+EOF
