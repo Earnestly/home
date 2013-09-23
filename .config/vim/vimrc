@@ -1,0 +1,58 @@
+" ~/.vimrc
+
+" Set directories
+set undodir=$XDG_CONFIG_HOME/vim/undo
+set directory=$XDG_CONFIG_HOME/vim/swap
+let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc"
+set backupdir=$XDG_CONFIG_HOME/vim/backup
+set viminfo+=n$XDG_CONFIG_HOME/vim/viminfo
+set runtimepath=$XDG_CONFIG_HOME/vim,$XDG_CONFIG_HOME/vim/after,$VIM,$VIMRUNTIME
+
+execute pathogen#infect()
+
+" Settings
+set cc=80
+set number
+set hidden
+set backup
+set showcmd
+set undofile
+set linebreak
+set nocompatible
+set backspace=indent,eol,start
+
+syntax on
+filetype indent plugin on
+
+" 4 spaced expanded tabs by default
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+set expandtab
+
+if &t_Co > 255 || has ('gui_running')
+    colorscheme zenburn
+endif
+
+set guioptions=acM
+set guifont=CMU\ Typewriter\ Text\ 11
+
+set incsearch
+set smartcase
+set ignorecase
+
+set cursorline
+set laststatus=2
+set statusline=%n.\ %f\ %M%=%y%w%r%h\ %{&fenc}\ (%l,%c)\ %p%%
+
+" Speed up ESC in msec
+set ttimeoutlen=50
+
+" Use the Xorg’s secondary buffer as default register
+set clipboard=unnamed
+
+" Fancy arrows are not welcome
+let g:no_rust_conceal = 1
+
+" Use clang when checking C syntax
+let g:syntastic_c_compiler = 'clang'
