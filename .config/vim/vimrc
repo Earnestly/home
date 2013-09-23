@@ -1,4 +1,4 @@
-" ~/.vimrc
+" ~/.config/vim/vimrc
 
 " Set directories
 set undodir=$XDG_CONFIG_HOME/vim/undo
