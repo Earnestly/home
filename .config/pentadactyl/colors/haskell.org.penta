@@ -41,6 +41,10 @@ pre {
 .source-haskell .kw1 {
 }
 
+/* functions, return, getChar, etc. */
+.source-haskell .kw3 {
+}
+
 /* Types */
 .source-haskell .kw4 {
 }
@@ -59,5 +63,9 @@ pre {
 
 /* numbers */
 .source-haskell .nu0 {
+}
+
+/* comments */
+.source-haskell .co1 {
 }
 EOF
