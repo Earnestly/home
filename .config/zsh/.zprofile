@@ -1,6 +1,6 @@
 # ~/.config/zsh/.zprofile
 
-export PATH="$HOME"/.local/bin:"$PATH"
+export PATH="$HOME"/.local/bin:"$HOME"/.cabal/bin:"$PATH"
 
 export XDG_CACHE_HOME="$HOME"/.cache
 export XDG_CONFIG_HOME="$HOME"/.config
@@ -15,6 +15,7 @@ export XCOMPOSEFILE="$XDG_CONFIG_HOME"/XCompose
 export TIGRC_USER="$XDG_CONFIG_HOME"/tigrc
 export NOTMUCH_CONFIG="$XDG_CONFIG_HOME"/notmuchrc
 export SLRNHOME="$XDG_CONFIG_HOME"/slrn
+export VIMINIT='let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc" | source $MYVIMRC'
 
 export EDITOR=vim
 export VISUAL=vim
