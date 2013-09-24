@@ -11,12 +11,15 @@ include "%S/en_US.UTF-8/Compose"
 <Multi_key> <m> <i> : "∞"
 <Multi_key> <m> <x> : "𝑿"
 <Multi_key> <m> <y> : "𝒀"
+<Multi_key> <m> <less> : "↜"
+<Multi_key> <m> <minus> : "↭"
+<Multi_key> <m> <greater> : "↝"
 
 # quotes
 <Multi_key> <bracketleft> <apostrophe> : "｢"
 <Multi_key> <bracketright> <apostrophe> : "｣"
 
-# grammar
+# easier grammar
 <Multi_key> <semicolon> <apostrophe> : "’"
 <Multi_key> <colon> <apostrophe> : "‘"
 
