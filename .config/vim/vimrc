@@ -1,11 +1,12 @@
 " ~/.config/vim/vimrc
 
 " Set directories
-set undodir=$XDG_CONFIG_HOME/vim/undo
-set directory=$XDG_CONFIG_HOME/vim/swap
+set undodir=$XDG_CACHE_HOME/vim/undo
+set directory=$XDG_CACHE_HOME/vim/swap
+set backupdir=$XDG_CACHE_HOME/vim/backup
 let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc"
-set backupdir=$XDG_CONFIG_HOME/vim/backup
-set viminfo+=n$XDG_CONFIG_HOME/vim/viminfo
+" XXX viminfo seems to be ignored and will use ~/.viminfo regardless
+set viminfo+=n$XDG_CACHE_HOME/vim/viminfo
 set runtimepath=$XDG_CONFIG_HOME/vim,$XDG_CONFIG_HOME/vim/after,$VIM,$VIMRUNTIME
 
 execute pathogen#infect()
