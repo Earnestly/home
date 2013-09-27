@@ -15,7 +15,6 @@ export XCOMPOSEFILE="$XDG_CONFIG_HOME"/XCompose
 export TIGRC_USER="$XDG_CONFIG_HOME"/tigrc
 export NOTMUCH_CONFIG="$XDG_CONFIG_HOME"/notmuchrc
 export SLRNHOME="$XDG_CONFIG_HOME"/slrn
-export VIMINIT='let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc" | source $MYVIMRC'
 
 export EDITOR=vim
 export VISUAL=vim
