@@ -3,14 +3,20 @@
 include "%S/en_US.UTF-8/Compose"
 
 # prefix 'm' = mathematical symbols
-<Multi_key> <m> <n> : "𝒏"
-<Multi_key> <m> <l> : "λ"
-<Multi_key> <m> <p> : "π"
 <Multi_key> <m> <d> : "Δ"
 <Multi_key> <m> <e> : "ϵ"
 <Multi_key> <m> <i> : "∞"
-<Multi_key> <m> <x> : "𝑿"
-<Multi_key> <m> <y> : "𝒀"
+<Multi_key> <m> <l> : "λ"
+<Multi_key> <m> <p> : "π"
+<Multi_key> <m> <t> : "𝛩"
+
+<Multi_key> <m> <a> : "𝑎"
+<Multi_key> <m> <b> : "𝑏"
+<Multi_key> <m> <c> : "𝑐"
+<Multi_key> <m> <n> : "𝑛"
+<Multi_key> <m> <x> : "𝑥"
+<Multi_key> <m> <y> : "𝑦"
+
 <Multi_key> <m> <less> : "↜"
 <Multi_key> <m> <minus> : "↭"
 <Multi_key> <m> <greater> : "↝"
