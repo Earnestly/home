@@ -17,6 +17,7 @@ setopt autocd \
        histignorealldups \
        histsavenodups \
        histverify \
+       rmstarsilent \
        interactivecomments \
        histreduceblanks
 
@@ -97,5 +98,6 @@ for d in "$HOME"/devel/^temp*(/); do
     hash -d "${d##*/}=$d"
 done
 
+# keybinds
 bindkey -e
 bindkey '^W' vi-backward-kill-word
