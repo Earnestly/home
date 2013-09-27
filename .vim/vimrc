@@ -1,4 +1,4 @@
-" ~/.config/vim/vimrc
+" ~/.vimrc
 
 execute pathogen#infect()
 
