@@ -1,5 +1,8 @@
 #!/bin/bash
-# scred -t <time> -d [xorg display] -s [size] <outfile.ext>
+
+if (($# < 3)); then
+    printf "%s\n" "scred -t <time> -d [xorg display] -s [size] <outfile.ext>"
+fi
 
 while getopts "t:d:s:r:" argv; do
    case "$argv" in
