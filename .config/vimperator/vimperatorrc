@@ -44,13 +44,19 @@ set! noscript.notify=false
 set! plugins.click_to_play=true
 
 " Open current url as an argument to quvi
-nmap <S-q> :js openWithQuvi()<CR>
+nmap <S-q> :js openwithquvi()<CR>
+nmap <S-l> :js openwithytdl()<CR>
 
 " Custom url hints
 js <<EOF
-hints.addMode("q", "Launch video from hint", function(elem, loc)
+hints.addMode("q", "Launch video (quvi) from hint", function(elem, loc)
               io.system('quvi "' + loc.replace(/([$`"\\])/g, "\\$1")
               + '" &> /dev/null &'));
+
+hints.addMode("l", "Launch video (youtube-dl) from hint", function(elem, loc)
+              io.system('mpv $(youtube-dl -g "' 
+                        + loc.replace(/([$`"\\])/g, "\\$1")
+                        + '") &> /dev/null &'));
 EOF
 
 " Style
@@ -71,8 +77,13 @@ function toggleStatusbar() {
     bb.style.overflow = (bb.style.height == '') ? '' : 'hidden';
 }
 
-function openWithQuvi() {
+function openwithquvi() {
     io.system('quvi "' + content.location.href.replace(/([$`"\\])/g, "\\$1") 
                        + '" &> /dev/null &');
+
+function openwithytdl() {
+    io.system('mpv $(youtube-dl -g "' 
+              + content.location.href.replace(/([$`"\\])/g, "\\$1") 
+              + '") &> /dev/null &');
 }
 EOF
