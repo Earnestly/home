@@ -50,8 +50,9 @@ nmap <S-l> :js openwithytdl()<CR>
 " Custom url hints
 js <<EOF
 hints.addMode("q", "Launch video (quvi) from hint", function(elem, loc)
-              io.system('quvi "' + loc.replace(/([$`"\\])/g, "\\$1")
-              + '" &> /dev/null &'));
+              io.system('quvi dump -b mute "' 
+                        + loc.replace(/([$`"\\])/g, "\\$1")
+                        + '"'));
 
 hints.addMode("l", "Launch video (youtube-dl) from hint", function(elem, loc)
               io.system('mpv $(youtube-dl -g "' 
@@ -78,8 +79,9 @@ function toggleStatusbar() {
 }
 
 function openwithquvi() {
-    io.system('quvi "' + content.location.href.replace(/([$`"\\])/g, "\\$1") 
-                       + '" &> /dev/null &');
+    io.system('quvi dump -b mute "' 
+              + content.location.href.replace(/([$`"\\])/g, "\\$1") 
+              + '"');
 
 function openwithytdl() {
     io.system('mpv $(youtube-dl -g "' 
