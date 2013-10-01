@@ -40,8 +40,12 @@ au Fullscreen .* :js toggleStatusbar()
 set! extension.checkCompatibility=false
 set! browser.tabs.onTop=false
 set! noscript.keys.tempAllowPage="alt z"
+set! noscript.keys.revokeTemp="alt c"
 set! noscript.notify=false
 set! plugins.click_to_play=true
+set! plugin.default.state=1
+set! security.ssl.require_safe_negotiation=true
+set! security.ssl.treat_unsafe_negotiation_as_broken=true
 
 " Open current url as an argument to quvi
 nmap <S-q> :js openwithquvi()<CR>
@@ -52,12 +56,12 @@ js <<EOF
 hints.addMode("q", "Launch video (quvi) from hint", function(elem, loc)
               io.system('quvi dump -b mute "' 
                         + loc.replace(/([$`"\\])/g, "\\$1")
-                        + '"'));
+                        + '" &'));
 
 hints.addMode("l", "Launch video (youtube-dl) from hint", function(elem, loc)
-              io.system('mpv $(youtube-dl -g "' 
+              io.system('mpv --really-quiet $(youtube-dl -qg "' 
                         + loc.replace(/([$`"\\])/g, "\\$1")
-                        + '") &> /dev/null &'));
+                        + '") &'));
 EOF
 
 " Style
@@ -81,11 +85,11 @@ function toggleStatusbar() {
 function openwithquvi() {
     io.system('quvi dump -b mute "' 
               + content.location.href.replace(/([$`"\\])/g, "\\$1") 
-              + '"');
+              + '" &');
 
 function openwithytdl() {
-    io.system('mpv $(youtube-dl -g "' 
+    io.system('mpv --really-quiet $(youtube-dl -qg "' 
               + content.location.href.replace(/([$`"\\])/g, "\\$1") 
-              + '") &> /dev/null &');
+              + '") &');
 }
 EOF

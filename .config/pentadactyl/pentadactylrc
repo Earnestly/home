@@ -43,18 +43,20 @@ set! noscript.keys.revokeTemp="alt c"
 set! noscript.notify=false
 set! plugins.click_to_play=true
 set! plugin.default.state=1
+set! security.ssl.require_safe_negotiation=true
+set! security.ssl.treat_unsafe_negotiation_as_broken=true
 
 " Open the current URL as an argument to quvi
 nmap <S-q> -s -js <<EOF
 commands.execute('!quvi dump -b mute "' 
-                 + content.location.href.replace(/([$`"\\])/g, "\\$1") + '"');
+                 + content.location.href.replace(/([$`"\\])/g, "\\$1") + '" &');
 EOF
 
 " Open the current URL as an argument to youtube-dl
 nmap <S-u> -s -js <<EOF
-commands.execute('!mpv $(youtube-dl -g "' 
+commands.execute('!mpv --really-quiet $(youtube-dl -qg "' 
                  + content.location.href.replace(/([$`"\\])/g, "\\$1")
-                 + '") &> /dev/null &');
+                 + '") &');
 EOF
 
 " Custom hints, thanks to holomorph, John-Galt and grawity
@@ -62,13 +64,13 @@ js <<EOF
 hints.addMode("q", "Launch video (quvi) from hint", function(elem, loc) 
               commands.execute('!quvi dump -b mute "' 
                                + loc.replace(/([$`"\\])/g, "\\$1") 
-                               + '"'));
+                               + '" &'));
 
 /* Use youtube-dl when quvi fails */
 hints.addMode("u", "Launch video (youtube-dl) from hint", function(elem, loc) 
-              commands.execute('!mpv $(youtube-dl -g "' 
+              commands.execute('!mpv --really-quiet $(youtube-dl -qg "' 
                                + loc.replace(/([$`"\\])/g, "\\$1") 
-                               + '") &> /dev/null &'));
+                               + '") &'));
 EOF
 
 " Style
