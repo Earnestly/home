@@ -1,15 +1,15 @@
 #!/bin/bash
 # ~/bin/dmenu_loader
 
-# dmenu_loader file
+# dmenu_loader <file>
 
 # A simple script which loads a key value pair into an associative array where
 # the key is displayed by dmenu and the value is acted upon given the
 # corresponding key
 
 # Configuration example:
-# '#' Comments
-# Title=<optional: title for dmenu>
+# Title=[optional: title for dmenu]
+# # Comments
 # Command=<required: program used to act on result from dmenu>
 # Key Display=Value Executed
 
