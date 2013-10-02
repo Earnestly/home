@@ -32,6 +32,8 @@ include "%S/en_US.UTF-8/Compose"
 # misc
 <Multi_key> <colon> <bar> <bar> : "ಠ_ಠ"
 <Multi_key> <less> <3> : "❤"
+<Multi_key> <bar> <asciicircum> : "↑"
+<Multi_key> <bar> <v> : "↓"
 
 # fun with paleotypography
 <Multi_key> <T> <H> : "Ð" # 'Th'e
