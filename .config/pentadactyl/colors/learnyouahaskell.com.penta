@@ -1,10 +1,11 @@
 style -append learnyouahaskell.com/* <<EOF
 body {
-    font-size: 1em !important;
-    font-family: "TeX Gyre Schola" !important;
-    color: #444 !important;
-    background-color: #FFFFDA !important;
     text-align: justify !important;
+    font-family: "TeX Gyre Bonum" !important;
+    color: #444448 !important;
+    background: #EEEEDD !important;
+    text-rendering: optimizeLegibility !important;
+    font-size: 1em !important;
 }
 
 .bgwrapper {
@@ -22,7 +23,7 @@ p {
 
 .fixed {
     font-family: "CMU Typewriter Text" !important;
-    font-size: 1.1em !important;
+    font-size: 1.2em !important;
 }
 
 .label {
