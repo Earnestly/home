@@ -28,6 +28,9 @@ nmap s -e :toolbartoggle Bookmarks Toolbar
 " Easily show downloads
 nmap <S-d> -e :downloads
 
+" Stop <C-j> doing whatever it does
+nmap <C-j> <nop>
+
 " Use vim instead of gvim for now
 set editor='termite -e "vim +<line> <file>"'
 
@@ -55,9 +58,9 @@ EOF
 
 " Open the current URL as an argument to youtube-dl
 nmap <S-u> -s -js <<EOF
-commands.execute('!mpv --really-quiet $(youtube-dl -qg "' 
+commands.execute('!(mpv --really-quiet $(youtube-dl -qg "' 
                  + content.location.href.replace(/([$`"\\])/g, "\\$1")
-                 + '") &');
+                 + '")) &');
 EOF
 
 " Custom hints, thanks to holomorph, John-Galt and grawity
@@ -69,9 +72,9 @@ hints.addMode("q", "Launch video (quvi) from hint", function(elem, loc)
 
 /* Use youtube-dl when quvi fails */
 hints.addMode("u", "Launch video (youtube-dl) from hint", function(elem, loc) 
-              commands.execute('!mpv --really-quiet $(youtube-dl -qg "' 
+              commands.execute('!(mpv --really-quiet $(youtube-dl -qg "' 
                                + loc.replace(/([$`"\\])/g, "\\$1") 
-                               + '") &'));
+                               + '")) &'));
 EOF
 
 " Style
