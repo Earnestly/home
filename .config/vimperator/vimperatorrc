@@ -58,10 +58,10 @@ hints.addMode("q", "Launch video (quvi) from hint", function(elem, loc)
                         + loc.replace(/([$`"\\])/g, "\\$1")
                         + '" &'));
 
-hints.addMode("l", "Launch video (youtube-dl) from hint", function(elem, loc)
-              io.system('mpv --really-quiet $(youtube-dl -qg "' 
+hints.addMode("u", "Launch video (youtube-dl) from hint", function(elem, loc)
+              io.system('(mpv --really-quiet $(youtube-dl -qg "' 
                         + loc.replace(/([$`"\\])/g, "\\$1")
-                        + '") &'));
+                        + '")) &'));
 EOF
 
 " Style
@@ -89,8 +89,8 @@ function openwithquvi() {
 }
 
 function openwithytdl() {
-    io.system('mpv --really-quiet $(youtube-dl -qg "' 
+    io.system('(mpv --really-quiet $(youtube-dl -qg "' 
               + content.location.href.replace(/([$`"\\])/g, "\\$1") 
-              + '") &');
+              + '")) &');
 }
 EOF
