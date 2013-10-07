@@ -86,6 +86,7 @@ function openwithquvi() {
     io.system('quvi dump -b mute "' 
               + content.location.href.replace(/([$`"\\])/g, "\\$1") 
               + '" &');
+}
 
 function openwithytdl() {
     io.system('mpv --really-quiet $(youtube-dl -qg "' 
