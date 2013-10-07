@@ -102,6 +102,19 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
+# control music
+mode "music" {
+        bindsym s exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf stop
+        bindsym p exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf toggle
+        bindsym l exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf next
+        bindsym h exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf prev
+
+        # back to normal: Enter or Escape
+        bindsym Escape mode "default"
+}
+
+bindsym $mod+m mode "music"
+
 # class                 border  backgr. text    indicator
 client.focused          #506070 #506070 #ffffff #2e9ef4
 client.focused_inactive #222222 #222222 #ffffff #222222
@@ -155,4 +168,4 @@ bindsym XF86AudioPrev exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf prev
 # meh
 bindsym XF86Launch1 exec firefox
 bindsym $mod+o exec dmenu_loader ~/.local/share/dmenu/dmenu_pdf
-bindsym $mod+m exec dmenu_loader ~/.local/share/dmenu/dmenu_pls
+bindsym $mod+y exec dmenu_loader ~/.local/share/dmenu/dmenu_pls
