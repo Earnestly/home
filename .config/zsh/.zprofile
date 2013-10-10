@@ -6,15 +6,16 @@ export XDG_CACHE_HOME="$HOME"/.cache
 export XDG_CONFIG_HOME="$HOME"/.config
 export XDG_DATA_HOME="$HOME"/.local/share
 
-export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/settings.ini
 export MPV_HOME="$XDG_CONFIG_HOME"/mpv
+export SLRNHOME="$XDG_CONFIG_HOME"/slrn
 export QUVI_HOME="$XDG_CONFIG_HOME"/quvi
 export GNUPGHOME="$XDG_CONFIG_HOME"/gnupg
+export TIGRC_USER="$XDG_CONFIG_HOME"/tigrc
+export GIMP2_DIRECTORY="$XDG_CONFIG_HOME"/gimp
 export ELINKS_CONFDIR="$XDG_CONFIG_HOME"/elinks
 export XCOMPOSEFILE="$XDG_CONFIG_HOME"/XCompose
-export TIGRC_USER="$XDG_CONFIG_HOME"/tigrc
 export NOTMUCH_CONFIG="$XDG_CONFIG_HOME"/notmuchrc
-export SLRNHOME="$XDG_CONFIG_HOME"/slrn
+export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/settings.ini
 
 export EDITOR=vim
 export VISUAL=vim
