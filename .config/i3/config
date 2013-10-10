@@ -149,6 +149,9 @@ assign [class="Firefox"] 2
 assign [class="mpv"] 3
 assign [class="Wine"] 5
 
+# Focus latest urgent window
+bindsym $mod+slash [urgent="latest"] focus
+
 # Toggle trackpad
 bindsym XF86TouchpadToggle exec trackpad_toggle
 
