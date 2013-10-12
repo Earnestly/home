@@ -81,6 +81,7 @@ EOF
 colorscheme vimium_hints
 
 " Custom per-site CSS
+colorscheme justify
 colorscheme htdp.org
 colorscheme azillionmonkeys.com
 colorscheme learnyouahaskell.com
