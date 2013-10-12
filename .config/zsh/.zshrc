@@ -43,7 +43,7 @@ preexec() {
     print -Pn "\e];$cmd:q\a"
 } 
 
-# Quick and easy note taking
+# Quick and easy note taking (I should make this into a seperate script)
 n() {
     $EDITOR "${@[@]/#/"$HOME/docs/notes/"}"
 }
