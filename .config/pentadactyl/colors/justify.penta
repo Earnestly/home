@@ -1,0 +1,8 @@
+" Web designers apparently suck at design
+
+style -append * <<EOF
+* { 
+    text-align: justify !important;
+    text-rendering: optimizeLegibility !important;
+}
+EOF
