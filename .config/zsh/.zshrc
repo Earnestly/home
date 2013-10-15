@@ -7,22 +7,25 @@ autoload -Uz compinit
 compinit
 
 # shell options
-setopt autocd \
-       dotglob \
-       extendedglob \
-       completealiases \
-       histappend \
-       sharehistory \
-       histignorespace \
-       histignorealldups \
-       histsavenodups \
-       histverify \
-       rmstarsilent \
-       interactivecomments \
-       histreduceblanks
+shopts=(
+    autocd
+    dotglob
+    extendedglob
+    completealiases
+    histappend
+    sharehistory
+    histignorespace
+    histignorealldups
+    histsavenodups
+    histverify
+    rmstarsilent
+    interactivecomments
+    histreduceblanks
+)
+setopt $shopts
 
-HELPDIR=~/.config/zsh/help
-HISTFILE=~/.config/zsh/.zsh_history
+HELPDIR="$XDG_CONFIG_HOME"/zsh/help
+HISTFILE="$XDG_CONFIG_HOME"/zsh/.zsh_history
 HISTSIZE=10000
 SAVEHIST=$HISTSIZE
 
@@ -83,6 +86,7 @@ alias mutt="dtach -A $XDG_RUNTIME_DIR/mutt /usr/bin/mutt -F ~/.config/mutt/muttr
 
 alias ix="curl -F 'f:1=<-' ix.io"
 alias sprunge="curl -F 'sprunge=<-' sprunge.us"
+alias xc='xclip -o | sprunge'
 
 # XXX force XDG_CONFIG_HOME where possible
 alias ncmpcpp='ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf'
