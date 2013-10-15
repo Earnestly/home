@@ -39,7 +39,7 @@ au fullscreen on set go-=s
 au fullscreen off set go+=s
 
 " Change some default about:configs
-set! extension.checkCompatibility=false
+set! extensions.checkCompatibility.nightly=false
 set! browser.tabs.onTop=false
 set! noscript.keys.tempAllowPage="alt z"
 set! noscript.keys.revokeTemp="alt c"
@@ -58,9 +58,8 @@ EOF
 
 " Open the current URL as an argument to youtube-dl
 nmap <S-u> -s -js <<EOF
-commands.execute('!(mpv --really-quiet $(youtube-dl -qg "' 
-                 + content.location.href.replace(/([$`"\\])/g, "\\$1")
-                 + '")) &');
+commands.execute('!yt-dl "' 
+                 + content.location.href.replace(/([$`"\\])/g, "\\$1") + '" &');
 EOF
 
 " Custom hints, thanks to holomorph, John-Galt and grawity
@@ -72,9 +71,8 @@ hints.addMode("q", "Launch video (quvi) from hint", function(elem, loc)
 
 /* Use youtube-dl when quvi fails */
 hints.addMode("u", "Launch video (youtube-dl) from hint", function(elem, loc) 
-              commands.execute('!(mpv --really-quiet $(youtube-dl -qg "' 
-                               + loc.replace(/([$`"\\])/g, "\\$1") 
-                               + '")) &'));
+              commands.execute('!yt-dl "' 
+                               + loc.replace(/([$`"\\])/g, "\\$1") + '" &'));
 EOF
 
 " Style
