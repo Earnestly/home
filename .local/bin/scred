@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# A very basic wrapper around `ffmpeg` to quickly record the screen at a
+# predefined time.  Codec used is based on file extension.
+
 if (($# < 3)); then
     printf "%s\n" "scred -t <time> -d [xorg display] -s [size] <outfile.ext>"
 fi
@@ -15,9 +18,11 @@ while getopts "t:d:s:r:" argv; do
         r)
             recrate="$OPTARG" ;;
         \?)
-            printf >&2 "%s\n" "Invalid Option: -$OPTARG" ;;
+            printf >&2 "%s\n" "Invalid Option: -$OPTARG"
+            exit 1 ;;
     esac
 done
+# shift off the rest of the arguments to "$@"
 shift $((OPTIND-1))
 
 ffopts=(

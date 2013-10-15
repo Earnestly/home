@@ -1,5 +1,9 @@
 #!/bin/bash
+
 # asr <package>
+
+# Download official Arch Linux PKGBUILDs and source files directly from the
+# svntogit repositories.
 
 # Oh boy, here we go!
 pkgname="$1"
@@ -25,10 +29,9 @@ done
 
 # Fail if we've gone through the array elements without success
 if ((!status)); then
-    printf >&2 "%s\n" "Cannot locate the package: $pkgname."
+    printf >&2 "%s\n" "Cannot locate: $pkgname."
     exit 1
 fi
-
 
 # Checkout trunk and clean up left overs
 if [[ -d "$pkgname" ]]; then
