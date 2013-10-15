@@ -145,6 +145,10 @@ for_window [class="plugin-container"] floating enable
 for_window [class="Firefox"] floating enable
 for_window [class="Firefox" instance="Navigator"] floating disable
 
+# fontforge floating toolboxes
+for_window [class="fontforge" title="Layers"] floating enable
+for_window [class="fontforge" title="Tools"] floating enable
+
 assign [class="Firefox"] 2
 assign [class="mpv"] 3
 assign [class="Wine"] 5
