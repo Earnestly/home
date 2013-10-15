@@ -42,3 +42,10 @@ export SDL_AUDIODRIVER=pulse
 export GTK_IM_MODULE=xim
 
 export GOPATH="$HOME"/devel/go
+
+# Enable C-S-t in termite which opens a new terminal in the same working
+# directory.
+if [[ $TERM == xterm-termite ]]; then
+    . /etc/profile.d/vte.sh
+    __vte_osc7
+fi
