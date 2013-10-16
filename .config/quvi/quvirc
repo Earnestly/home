@@ -3,9 +3,11 @@
 [core]
 check-mode-offline = true
 #subtitle-language = cc_en,tts_en
-user-agent = ""
 stream = 480p,720p,best
 #verbosity = debug
+
+[http]
+user-agent = "quvi/0.9"
 
 #[dump]
 #query-metainfo = true
