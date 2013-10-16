@@ -62,6 +62,11 @@ commands.execute('!yt-dl "'
                  + content.location.href.replace(/([$`"\\])/g, "\\$1") + '" &');
 EOF
 
+nmap <S-u> -s -js <<EOF
+commands.execute('!lstream "' 
+                 + content.location.href.replace(/([$`"\\])/g, "\\$1") + '" &');
+EOF
+
 " Custom hints, thanks to holomorph, John-Galt and grawity
 js <<EOF
 hints.addMode("q", "Launch video (quvi) from hint", function(elem, loc) 
@@ -72,6 +77,10 @@ hints.addMode("q", "Launch video (quvi) from hint", function(elem, loc)
 /* Use youtube-dl when quvi fails */
 hints.addMode("u", "Launch video (youtube-dl) from hint", function(elem, loc) 
               commands.execute('!yt-dl "' 
+                               + loc.replace(/([$`"\\])/g, "\\$1") + '" &'));
+
+hints.addMode("U", "Launch stream (livestreamer) from hint", function(elem, loc) 
+              commands.execute('!lstream "' 
                                + loc.replace(/([$`"\\])/g, "\\$1") + '" &'));
 EOF
 
