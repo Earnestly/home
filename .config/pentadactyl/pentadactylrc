@@ -62,7 +62,7 @@ commands.execute('!yt-dl "'
                  + content.location.href.replace(/([$`"\\])/g, "\\$1") + '" &');
 EOF
 
-nmap <S-u> -s -js <<EOF
+nmap <S-s> -s -js <<EOF
 commands.execute('!lstream "' 
                  + content.location.href.replace(/([$`"\\])/g, "\\$1") + '" &');
 EOF
