@@ -36,7 +36,7 @@ set ignorecase
 
 set cursorline
 set laststatus=2
-set statusline=%n.\ %f\ %M%=%y%w%r%h\ %{&fenc}\ (%l,%c)\ %p%%
+set statusline=%n.\ %F\ %M%=%y%w%r%h\ %{&fenc}\ (%l,%c)\ %p%%
 
 " Speed up ESC in msec
 set ttimeoutlen=50
