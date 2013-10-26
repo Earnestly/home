@@ -10,4 +10,4 @@ lopts=(
     "${2:-best}"
 )
 
-livestreamer -Q "${lopts[@]}"
+exec livestreamer -Q "${lopts[@]}"
