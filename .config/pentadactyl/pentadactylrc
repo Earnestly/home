@@ -8,6 +8,7 @@ group user
 
 " ui
 set guioptions=Csn
+set showtabline=never
 set hlfind
 
 " Speed up scrolling
