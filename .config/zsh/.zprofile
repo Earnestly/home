@@ -18,7 +18,7 @@ export NOTMUCH_CONFIG="$XDG_CONFIG_HOME"/notmuchrc
 export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/settings.ini
 
 export EDITOR=vim
-export VISUAL=vim
+export VISUAL=gvim
 
 export PAGER=less
 export LESSHISTFILE=-
