@@ -1,0 +1,7 @@
+#!/bin/bash
+# ~/.local/bin/pomf
+
+upload=$(curl -sF "files[]=@$1" http://pomf.se/upload.php)
+geturl=$(jshon -e files -e 0 -e url -u <<< "$upload")
+
+printf "%s/%s\n" "http://a.pomf.se" "$geturl"
