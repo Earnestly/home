@@ -12,4 +12,6 @@
 
 (load-theme 'zenburn t)
 
-(setq vc-follow-symlinks t)
+(setq vc-follow-symlinks t
+      backup-inhibited t
+      auto-save-default nil)
