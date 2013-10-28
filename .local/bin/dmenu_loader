@@ -15,7 +15,7 @@
 
 conf="$1"
 title="${title:-Title}"
-opts=(-i -l 20)
+opts=(-fn "Inconsolata" -i -l 20)
 
 declare -a cmd # Some commands might have arguments
 declare -A index
