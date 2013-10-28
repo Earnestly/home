@@ -3,12 +3,17 @@
 # Create a dmenu of current live streamers from speedrunslive
 
 declare -A names
-declare -a url
-dopts=(-p "Streams:" -fn "Inconsolata" -i -l 20)
+declare -a urls
+dopts=(-p "streams:" -fn "Dina Bold 8" -i -l 20)
 jshopts=(-e channels -a -e channel -e name -u -p -e title -u -p -e link -u)
 
 # Here we go!
 json=$(curl -s 'http://api.twitch.tv/api/team/srl/live_channels.json')
+if (($? != 0)); then
+    # Provide some feedback if there's an error
+    i3-nagbar -f "pango: Dina Bold 8" -m "srl: Error downloading json data"
+    exit 1
+fi
 
 # First line is always the streamer's name, followed by the title and then the
 # streamer's url
@@ -24,9 +29,8 @@ while {
 done < <(jshon "${jshopts[@]}" <<< "$json")
 
 # Display the keys and store it as the selection
-selection=$(printf "%s\n" "${!names[@]}" | dmenu "${dopts[@]}")
-
-if (( $? == 0 )); then
+selection=$(printf "%s\n" "${!names[@]}" | sort | dmenu "${dopts[@]}")
+if (($? == 0)); then
     # Blindly pass the value based on the key from selection to lstream
     exec lstream "${names[$selection]}"
 fi
