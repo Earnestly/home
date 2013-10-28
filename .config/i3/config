@@ -1,7 +1,8 @@
 # ~/.config/i3/config
 
 # Font for window titles.
-font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
+#font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
+font pango: Dina, Bold 8
 
 new_window pixel 2
 workspace_auto_back_and_forth yes
@@ -175,3 +176,4 @@ bindsym XF86AudioPrev exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf prev
 bindsym XF86Launch1 exec firefox
 bindsym $mod+o exec dmenu_loader ~/.local/share/dmenu/dmenu_pdf
 bindsym $mod+y exec dmenu_loader ~/.local/share/dmenu/dmenu_pls
+bindsym $mod+n exec srl
