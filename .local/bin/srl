@@ -1,0 +1,32 @@
+#!/bin/bash
+# ~/.local/bin/srl
+# Create a dmenu of current live streamers from speedrunslive
+
+declare -A names
+declare -a url
+dopts=(-p "Streams:" -fn "Inconsolata" -i -l 20)
+jshopts=(-e channels -a -e channel -e name -u -p -e title -u -p -e link -u)
+
+# Here we go!
+json=$(curl -s 'http://api.twitch.tv/api/team/srl/live_channels.json')
+
+# First line is always the streamer's name, followed by the title and then the
+# streamer's url
+while { 
+    read -r name
+    read -r title
+    read -r url 
+}; do 
+    # Store the name and title for dmenu to display as the key in an associative
+    # array where the url is the value.
+    names["$name ($title)"]="$url"
+    urls+=("$url")
+done < <(jshon "${jshopts[@]}" <<< "$json")
+
+# Display the keys and store it as the selection
+selection=$(printf "%s\n" "${!names[@]}" | dmenu "${dopts[@]}")
+
+if (( $? == 0 )); then
+    # Blindly pass the value based on the key from selection to lstream
+    exec lstream "${names[$selection]}"
+fi
