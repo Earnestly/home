@@ -62,6 +62,13 @@ nmv() {
 }
 compdef "_files -W $HOME/docs/notes -/" nmv
 
+# Simple wallpaper setter
+wallp() {
+    ln -sf "${@[@]/#/$XDG_DATA_HOME/walls/}" "$XDG_DATA_HOME"/wall
+    display -window root -resize '1366x768!' "$XDG_DATA_HOME"/wall
+}
+compdef "_files -W $XDG_DATA_HOME/walls -/" wallp
+
 # aliases
 alias ...='cd ../..'
 alias ....='cd ../../..'
