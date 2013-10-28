@@ -7,6 +7,7 @@ general {
 }
 
 order += "volume master"
+#order += "volume capture"
 order += "cpu_usage"
 order += "cpu_temperature 0"
 order += "wireless wlp3s0"
@@ -15,34 +16,42 @@ order += "battery 0"
 order += "tztime local"
 
 volume master {
-    format = "VOL:%volume ⋄"
+    format = "VOL:%volume"
     device = "default"
     mixer = "Master"
     mixer_idx = 0
 }
 
+# This returns bogus numbers
+#volume capture {
+#    format = "MIC:%volume ⋄"
+#    device = "default"
+#    mixer = "Capture"
+#    mixer_idx = 0
+#}
+
 cpu_usage {
-	format = "CPU:%usage ⋄"
+	format = "CPU:%usage"
 }
 
 cpu_temperature 0 {
     path = "/sys/devices/platform/coretemp.0/temp1_input"
-    format = "TEMP:%degrees°C ⋄"
+    format = "TEMP:%degrees°C"
 }
 
 wireless wlp3s0 {
-    format_up = "NET:%ip:%quality ⋄"
+    format_up = "NET:%ip:%quality"
     format_down = "NET:OFF"
 }
 
 disk "/" {
-    format = "HDD:%used/%free ⋄"
+    format = "HDD:%used/%free"
 }
 
 battery 0 {
-    format = "%status %remaining ⋄"
+    format = "%status %remaining"
 }
 
 tztime local {
-    format = "%A %B %d ⋄ %H:%M"
+    format = "%A %B %d %H:%M"
 }
