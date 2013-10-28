@@ -8,14 +8,11 @@ jshopts=(-e channels -a -e channel -e name -u -p -e title -u -p -e link -u)
 
 # XXX Not happy about this, and generally the entire structure
 fail() {
-    if (($? != 0)); then
-        # Provide some feedback if there's an error
-        i3-nagbar -f "pango: Dina Bold 8" -m "srl: Error downloading json data"
-        exit 1
-    fi
+    i3-nagbar -f "pango: Dina Bold 8" -m "srl: Error downloading json data."
+    exit 1
 }
 
-# Here we go!  
+# Here we go!  Selectively fail but still display any successful attempts
 srl=$(curl -s 'http://api.twitch.tv/api/team/srl/live_channels.json' || fail)
 sda=$(curl -s 'http://api.twitch.tv/api/team/sda/live_channels.json' || fail)
 
