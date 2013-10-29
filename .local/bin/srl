@@ -2,7 +2,7 @@
 # ~/.local/bin/srl
 # Create a dmenu of current live streamers from speedrunslive
 
-declare -A names
+declare -A streams
 dopts=(-p "streams:" -fn "Dina Bold 8" -i -l 20)
 jshopts=(-e channels -a -e channel -e name -u -p -e title -u -p -e link -u)
 
@@ -25,14 +25,12 @@ while {
 }; do 
     # Store the name and title for dmenu to display as the key in an associative
     # array where the url is the value.
-    names["$name ($title)"]="$url"
+    streams["$name ($title)"]="$url"
 done < <(jshon "${jshopts[@]}" <<< "$sda"
          jshon "${jshopts[@]}" <<< "$srl")
 
-
 # Display the keys and store it as the selection
-selection=$(printf "%s\n" "${!names[@]}" | sort | dmenu "${dopts[@]}")
-if (($? == 0)); then
+if sel=$(printf "%s\n" "${!streams[@]}" | sort | dmenu "${dopts[@]}"); then
     # Blindly pass the value based on the key from selection to lstream
-    exec lstream "${names[$selection]}"
+    exec lstream "${streams[$sel]}"
 fi
