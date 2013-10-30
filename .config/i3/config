@@ -93,30 +93,32 @@ bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exit
 
 # resize window (you can also use the mouse for that)
-mode "resize" {
+mode "RESIZE" {
         bindsym h resize shrink width 5 px or 5 ppt
         bindsym j resize grow height 5 px or 5 ppt
         bindsym k resize shrink height 5 px or 5 ppt
         bindsym l resize grow width 5 px or 5 ppt
 
-        # back to normal: Enter or Escape
+        bindsym q mode "default"
         bindsym Escape mode "default"
 }
 
-bindsym $mod+r mode "resize"
+bindsym $mod+r mode "RESIZE"
 
 # control music
-mode "music" {
+mode "MPD CONTROL" {
         bindsym s exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf stop
         bindsym p exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf toggle
         bindsym l exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf next
         bindsym h exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf prev
+        bindsym plus exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf volume +3%
+        bindsym minus exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf volume -3%
 
-        # back to normal: Enter or Escape
+        bindsym q mode "default"
         bindsym Escape mode "default"
 }
 
-bindsym $mod+m mode "music"
+bindsym $mod+m mode "MPD CONTROL"
 
 # class                 border  backgr. text    indicator
 client.focused          #506070 #506070 #ffffff #2e9ef4
@@ -145,7 +147,7 @@ for_window [class="plugin-container"] floating enable
 for_window [class="Firefox"] floating enable
 for_window [class="Firefox" instance="Navigator"] floating disable
 
-# fontforge floating toolboxes
+# Fontforge floating toolboxes
 for_window [class="fontforge" title="Layers"] floating enable
 for_window [class="fontforge" title="Tools"] floating enable
 
@@ -162,17 +164,18 @@ bindsym XF86TouchpadToggle exec trackpad_toggle
 # Toggle mic mute
 bindcode 198 exec ponymix -t source -d 1 toggle
 
-# media keys
-bindsym XF86AudioMute exec ponymix toggle
-bindsym XF86AudioLowerVolume exec ponymix decrease 3
-bindsym XF86AudioRaiseVolume exec ponymix increase 3
+# Global media keys
+# Send sigusr1 to immediately refresh i3status
+bindsym XF86AudioMute exec ponymix toggle && pkill -SIGUSR1 i3status
+bindsym XF86AudioLowerVolume exec ponymix decrease 3 && pkill -SIGUSR1 i3status
+bindsym XF86AudioRaiseVolume exec ponymix increase 3 && pkill -SIGUSR1 i3status
 
 bindsym XF86AudioStop exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf stop
 bindsym XF86AudioPlay exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf toggle
 bindsym XF86AudioNext exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf next
 bindsym XF86AudioPrev exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf prev
 
-# meh
+# Meh
 bindsym XF86Launch1 exec firefox
 bindsym $mod+o exec dmenu_loader ~/.local/share/dmenu/dmenu_pdf
 bindsym $mod+y exec dmenu_loader ~/.local/share/dmenu/dmenu_pls
