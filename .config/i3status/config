@@ -45,7 +45,7 @@ wireless wlp3s0 {
 }
 
 disk "/" {
-    format = "HDD:%used/%free"
+    format = "HDD:%used"
 }
 
 battery 0 {
