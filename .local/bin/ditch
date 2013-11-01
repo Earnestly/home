@@ -6,8 +6,8 @@ declare -A streams
 declare -A json
 
 # List of teams from twitch.tv for inclusion.  curl will pull down the json data
-# simultaneously.  (Each element forks a new curl process.)
-teams=(sda srl mlg)
+# simultaneously.  (Be careful with too many elements)
+teams=(sda srl mlg raidcallemsone)
 
 dmenu_opts=(-p "streams:" -fn "Dina Bold 8" -i -l 20)
 jshon_opts=(-e channels -a -e channel -e name -u -p -e title -u -p -e link -u)
@@ -38,6 +38,16 @@ done < <(
 
 # Display the keys and store it as the selection
 if sel=$(printf "%s\n" "${!streams[@]}" | sort | dmenu "${dmenu_opts[@]}"); then
-    # Blindly pass the value based on the key from selection to lstream
-    exec lstream "${streams[$sel]}"
+    q="'\''" # Escape single quotes and safely pass the title to --title. ☹
+    lopts=(
+        -p "mpv --title='${sel//\'/$q}' --profile=live"
+        --twitch-legacy-names
+        --stream-sorting-excludes '>720p,>720p+'
+        --ringbuffer-size 800000
+        "${streams[$sel]}"
+        "best"
+    )
+
+    # Blindly pass the value based on the key from selection to livestreamer
+    exec livestreamer -Q "${lopts[@]}"
 fi
