@@ -179,4 +179,4 @@ bindsym XF86AudioPrev exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf prev
 bindsym XF86Launch1 exec firefox
 bindsym $mod+o exec dmenu_loader ~/.local/share/dmenu/dmenu_pdf
 bindsym $mod+y exec dmenu_loader ~/.local/share/dmenu/dmenu_pls
-bindsym $mod+n exec srl
+bindsym $mod+n exec ditch
