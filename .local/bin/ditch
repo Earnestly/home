@@ -1,10 +1,12 @@
 #!/bin/bash
+# ~/.local/bin/ditch
 # Create a dmenu using the twitch team api
 
 declare -A streams
 declare -A json
 
-# List of teams from twitch.tv for inclusion
+# List of teams from twitch.tv for inclusion.  curl will pull down the json data
+# simultaneously.  (Each element forks a new curl process.)
 teams=(sda srl mlg)
 
 dmenu_opts=(-p "streams:" -fn "Dina Bold 8" -i -l 20)
@@ -13,7 +15,7 @@ jshon_opts=(-e channels -a -e channel -e name -u -p -e title -u -p -e link -u)
 # Generate an associative array where the key is the team and the value is the
 # url to the twitch team api for that team.
 for i in "${teams[@]}"; do
-    json["$i"]=$(curl -s "http://api.twitch.tv/api/team/$i/live_channels.json")
+    json["$i"]=$(curl -s "http://api.twitch.tv/api/team/$i/live_channels.json" &)
 done
 
 # First line is always the streamer's name, followed by the title and then the
