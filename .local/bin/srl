@@ -1,20 +1,20 @@
 #!/bin/bash
-# ~/.local/bin/srl
-# Create a dmenu of current live streamers from speedrunslive
+# Create a dmenu using the twitch team api
 
 declare -A streams
-dopts=(-p "streams:" -fn "Dina Bold 8" -i -l 20)
-jshopts=(-e channels -a -e channel -e name -u -p -e title -u -p -e link -u)
+declare -A json
 
-# XXX Not happy about this, and generally the entire structure
-fail() {
-    i3-nagbar -f "pango: Dina Bold 8" -m "srl: Error downloading json data."
-    exit 1
-}
+# List of teams from twitch.tv for inclusion
+teams=(sda srl mlg)
 
-# Here we go!  Selectively fail but still display any successful attempts
-srl=$(curl -s 'http://api.twitch.tv/api/team/srl/live_channels.json' || fail)
-sda=$(curl -s 'http://api.twitch.tv/api/team/sda/live_channels.json' || fail)
+dmenu_opts=(-p "streams:" -fn "Dina Bold 8" -i -l 20)
+jshon_opts=(-e channels -a -e channel -e name -u -p -e title -u -p -e link -u)
+
+# Generate an associative array where the key is the team and the value is the
+# url to the twitch team api for that team.
+for i in "${teams[@]}"; do
+    json["$i"]=$(curl -s "http://api.twitch.tv/api/team/$i/live_channels.json")
+done
 
 # First line is always the streamer's name, followed by the title and then the
 # streamer's url
@@ -25,12 +25,17 @@ while {
 }; do 
     # Store the name and title for dmenu to display as the key in an associative
     # array where the url is the value.
-    streams["$name ($title)"]="$url"
-done < <(jshon "${jshopts[@]}" <<< "$sda"
-         jshon "${jshopts[@]}" <<< "$srl")
+    if [[ ! "$name" = http* ]]; then
+        streams["$name ($title)"]="$url"
+    fi
+done < <(
+    for i in "${json[@]}"; do
+        jshon "${jshon_opts[@]}" <<< "$i"
+    done
+)
 
 # Display the keys and store it as the selection
-if sel=$(printf "%s\n" "${!streams[@]}" | sort | dmenu "${dopts[@]}"); then
+if sel=$(printf "%s\n" "${!streams[@]}" | sort | dmenu "${dmenu_opts[@]}"); then
     # Blindly pass the value based on the key from selection to lstream
     exec lstream "${streams[$sel]}"
 fi
