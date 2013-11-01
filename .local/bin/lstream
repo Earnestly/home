@@ -4,7 +4,8 @@
 
 lopts=(
     -p "mpv --profile=live"
-    --stream-sorting-excludes '>high,>mobile_high,>720p'
+    --twitch-legacy-names
+    --stream-sorting-excludes '>720p,>720p+'
     --ringbuffer-size 800000
     "$1"
     "${2:-best}"
