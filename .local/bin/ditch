@@ -7,7 +7,7 @@ declare -A json
 
 # List of teams from twitch.tv for inclusion.  curl will pull down the json data
 # simultaneously.  (Be careful with too many elements)
-teams=(sda srl mlg raidcallemsone)
+teams=(sda srl mlg)
 
 dmenu_opts=(-p "streams:" -fn "Dina Bold 8" -i -l 20)
 jshon_opts=(-e channels -a -e channel -e name -u -p -e title -u -p -e link -u)
@@ -38,16 +38,17 @@ done < <(
 
 # Display the keys and store it as the selection
 if sel=$(printf "%s\n" "${!streams[@]}" | sort | dmenu "${dmenu_opts[@]}"); then
-    q="'\''" # Escape single quotes and safely pass the title to --title. ☹
-    lopts=(
-        -p "mpv --title='${sel//\'/$q}' --profile=live"
-        --twitch-legacy-names
+    lstreamer_opts=(
+        # Strip out any single quotes, this is ugly though, very ugly.
+        -Q -p "mpv --title='${sel//\'/}' --profile=live"
+        --twitch-legacy-names --ringbuffer-size 800000
+        # By default we will exclude anything higher than 720p, if no other
+        # quality is available and best fails, fallback on source/mobile_source
         --stream-sorting-excludes '>720p,>720p+'
-        --ringbuffer-size 800000
         "${streams[$sel]}"
-        "best"
+        "best,source,mobile_source"
     )
 
     # Blindly pass the value based on the key from selection to livestreamer
-    exec livestreamer -Q "${lopts[@]}"
+    exec livestreamer "${lstreamer_opts[@]}"
 fi
