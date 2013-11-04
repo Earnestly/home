@@ -7,15 +7,21 @@ declare -A json
 
 # List of teams from twitch.tv for inclusion.  curl will pull down the json data
 # simultaneously.  (Be careful with too many elements)
-teams=(sda srl mlg)
+teams=(srl sda mlg)
 
 dmenu_opts=(-p "streams:" -fn "Dina Bold 8" -i -l 20)
 jshon_opts=(-e channels -a -e channel -e name -u -p -e title -u -p -e link -u)
 
+get_json() {
+    local team="$1"
+    curl -s "http://api.twitch.tv/api/team/$team/live_channels.json"
+}
+
 # Generate an associative array where the key is the team and the value is the
 # url to the twitch team api for that team.
 for i in "${teams[@]}"; do
-    json["$i"]=$(curl -s "http://api.twitch.tv/api/team/$i/live_channels.json" &)
+    # Hack around idiots who put CRLFs into titles until jshon can literal print
+    json["$i"]=$(get_json "$i" | sed -e 's/\\r\\n/ /g' &)
 done
 
 # First line is always the streamer's name, followed by the title and then the
