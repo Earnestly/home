@@ -9,8 +9,10 @@ declare -A json
 # simultaneously.  (Be careful with too many elements)
 teams=(srl sda mlg)
 
-dmenu_opts=(-p "streams:" -fn "Dina Bold 8" -i -l 20)
-jshon_opts=(-e channels -a -e channel -e name -u -p -e title -u -p -e link -u)
+# Make sure to not (-u) 'unstring' the title as it may contain valid escapes
+# which break the strict ordering requirements for the while read loop.  We will
+# manually de-string the titles later.
+jshon_opts=(-e channels -a -e channel -e name -u -p -e link -u -p -e title)
 
 get_json() {
     local team="$1"
@@ -20,17 +22,19 @@ get_json() {
 # Generate an associative array where the key is the team and the value is the
 # url to the twitch team api for that team.
 for i in "${teams[@]}"; do
-    # Hack around idiots who put CRLFs into titles until jshon can literal print
-    json["$i"]=$(get_json "$i" | sed -e 's/\\r\\n/ /g' &)
+    json["$i"]=$(get_json "$i" &)
 done
 
-# First line is always the streamer's name, followed by the title and then the
-# streamer's url
+# First line is always the streamer's name, followed by the url and then the
+# streamer's title
 while { 
     read -r name
-    read -r title
     read -r url 
+    read -r title
 }; do 
+    # Manually de-quote the title
+    title="${title#\"*}" title="${title%\"*}"
+
     # Store the name and title for dmenu to display as the key in an associative
     # array where the url is the value.
     if [[ ! "$name" = http* ]]; then
@@ -42,11 +46,17 @@ done < <(
     done
 )
 
+# Display the number of current streamers in dmenu's prompt
+nstreams="${#streams[@]}"
+dmenu_prompt="Streams ($nstreams)"
+
+dmenu_opts=(-p "$dmenu_prompt" -fn "Dina Bold 8" -i -l 20)
+
 # Display the keys and store it as the selection
 if sel=$(printf "%s\n" "${!streams[@]}" | sort | dmenu "${dmenu_opts[@]}"); then
     lstreamer_opts=(
         # Strip out any single quotes, this is ugly though, very ugly.
-        -Q -p "mpv --title='${sel//\'/}' --profile=live"
+        -Q -p "mpv --really-quiet --title='${sel//\'/}' --profile=live"
         --twitch-legacy-names --ringbuffer-size 800000
         # By default we will exclude anything higher than 720p, if no other
         # quality is available and best fails, fallback on source/mobile_source
