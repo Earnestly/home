@@ -5,6 +5,7 @@ title="mpv: ${filename}"
 
 # video
 vo=opengl
+#vo=vaapi,opengl
 
 # audio
 ao=pulse
@@ -16,5 +17,5 @@ alang=en,eng
 # profiles
 [live]
 profile-desc="Prevent A/V desync during live streams"
-autosync=4
 mc=0
+autosync=30
