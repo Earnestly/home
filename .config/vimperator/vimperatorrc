@@ -49,7 +49,8 @@ set! security.ssl.treat_unsafe_negotiation_as_broken=true
 
 " Open current url as an argument to quvi
 nmap <S-q> :js openwithquvi()<CR>
-nmap <S-l> :js openwithytdl()<CR>
+nmap <S-u> :js openwithytdl()<CR>
+nmap <S-s> :js openwithlstream()<CR>
 
 " Custom url hints
 js <<EOF
@@ -60,6 +61,10 @@ hints.addMode("q", "Launch video (quvi) from hint", function(elem, loc)
 hints.addMode("u", "Launch video (youtube-dl) from hint", function(elem, loc)
               io.system('yt-dl "' 
                         + loc.replace(/([$`"\\])/g, "\\$1") + '" &'));
+
+hints.addMode("U", "Launch video (youtube-dl) from hint", function(elem, loc)
+              io.system('yt-dl "' 
+                        + loc.replace(/([$`"\\])/g, "\\$1") + '" &'));
 EOF
 
 " Style
@@ -67,8 +72,12 @@ colorscheme vimium_hints
 colorscheme userchrome
 
 " Custom per-site CSS
+colorscheme justify
 colorscheme htdp.org
 colorscheme azillionmonkeys.com
+colorscheme learnyouahaskell.com
+colorscheme realworldhaskell.org
+colorscheme haskell.org
 
 " Functions
 :js <<EOF
@@ -87,6 +96,11 @@ function openwithquvi() {
 
 function openwithytdl() {
     io.system('yt-dl "' 
+              + content.location.href.replace(/([$`"\\])/g, "\\$1") + '" &');
+}
+
+function openwithlstream() {
+    io.system('lstream "' 
               + content.location.href.replace(/([$`"\\])/g, "\\$1") + '" &');
 }
 EOF
