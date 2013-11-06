@@ -51,29 +51,36 @@ set! plugin.default.state=1
 set! security.ssl.require_safe_negotiation=true
 set! security.ssl.treat_unsafe_negotiation_as_broken=true
 
+" TODO
+" Add some generic helper functions for dealing with this horrible code
+" duplication.
+
+" :js <<EOF
+" potatoes()
+" EOF
+
 " Open the current URL as an argument to quvi
 nmap <S-q> -s -js <<EOF
 commands.execute('!quvi dump -b mute "' 
-                 + content.location.href.replace(/([$`"\\])/g, "\\$1") + '" &');
+                 + buffer.URL.replace(/([$`"\\])/g, "\\$1") + '" &');
 EOF
 
 " Open the current URL as an argument to youtube-dl
 nmap <S-u> -s -js <<EOF
 commands.execute('!yt-dl "' 
-                 + content.location.href.replace(/([$`"\\])/g, "\\$1") + '" &');
+                 + buffer.URL.replace(/([$`"\\])/g, "\\$1") + '" &');
 EOF
 
 nmap <S-s> -s -js <<EOF
 commands.execute('!lstream "' 
-                 + content.location.href.replace(/([$`"\\])/g, "\\$1") + '" &');
+                 + buffer.URL.replace(/([$`"\\])/g, "\\$1") + '" &');
 EOF
 
 " Custom hints, thanks to holomorph, John-Galt and grawity
 js <<EOF
 hints.addMode("q", "Launch video (quvi) from hint", function(elem, loc) 
               commands.execute('!quvi dump -b mute "' 
-                               + loc.replace(/([$`"\\])/g, "\\$1") 
-                               + '" &'));
+                               + loc.replace(/([$`"\\])/g, "\\$1") + '" &'));
 
 /* Use youtube-dl when quvi fails */
 hints.addMode("u", "Launch video (youtube-dl) from hint", function(elem, loc) 
