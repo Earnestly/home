@@ -8,7 +8,6 @@ export XDG_DATA_HOME="$HOME"/.local/share
 
 export MPV_HOME="$XDG_CONFIG_HOME"/mpv
 export SLRNHOME="$XDG_CONFIG_HOME"/slrn
-export QUVI_HOME="$XDG_CONFIG_HOME"/quvi
 export GNUPGHOME="$XDG_CONFIG_HOME"/gnupg
 export TIGRC_USER="$XDG_CONFIG_HOME"/tigrc
 export GIMP2_DIRECTORY="$XDG_CONFIG_HOME"/gimp
