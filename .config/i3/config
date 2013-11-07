@@ -107,12 +107,12 @@ bindsym $mod+r mode "RESIZE"
 
 # control music
 mode "MPD CONTROL" {
-        bindsym s exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf stop
-        bindsym p exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf toggle
-        bindsym l exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf next
-        bindsym h exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf prev
-        bindsym plus exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf volume +3%
-        bindsym minus exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf volume -3%
+        bindsym s exec mpc stop
+        bindsym p exec mpc toggle
+        bindsym l exec mpc next
+        bindsym h exec mpc prev
+        bindsym equal exec mpc volume +3
+        bindsym minus exec mpc volume -3
 
         bindsym q mode "default"
         bindsym Escape mode "default"
@@ -170,10 +170,10 @@ bindsym XF86AudioMute exec ponymix toggle && pkill -SIGUSR1 i3status
 bindsym XF86AudioLowerVolume exec ponymix decrease 3 && pkill -SIGUSR1 i3status
 bindsym XF86AudioRaiseVolume exec ponymix increase 3 && pkill -SIGUSR1 i3status
 
-bindsym XF86AudioStop exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf stop
-bindsym XF86AudioPlay exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf toggle
-bindsym XF86AudioNext exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf next
-bindsym XF86AudioPrev exec ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf prev
+bindsym XF86AudioStop exec mpc stop
+bindsym XF86AudioPlay exec mpc toggle
+bindsym XF86AudioNext exec mpc next
+bindsym XF86AudioPrev exec mpc prev
 
 # Meh
 bindsym XF86Launch1 exec firefox
