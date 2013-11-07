@@ -5,33 +5,43 @@
 declare -A streams
 declare -A json
 
-# List of teams from twitch.tv for inclusion.  curl will pull down the json data
-# simultaneously.  (Be careful with too many elements)
-teams=(srl sda mlg)
+# List of teams or streamers from twitch.tv for inclusion.  curl will pull down
+# the json data simultaneously.  (Be careful with too many elements)
+
+# t: = twitch team name, s: twitch stream name
+twitch_list=(t:srl t:sda t:mlg s:fatzke)
 
 # Make sure to not (-u) 'unstring' the title as it may contain valid escapes
 # which break the strict ordering requirements for the while read loop.  We will
 # manually de-string the titles later.
-jshon_opts=(-e channels -a -e channel -e name -u -p -e link -u -p -e title)
+jshon_team_opts=(-e channels -a -e channel -e name -u -p -e link -u -p -e title)
+
+# Options required for the steam API
+jshon_stream_opts=(-e stream -e channel -e name -u -p -e url -u -p -e game)
 
 get_json() {
-    local team="$1"
-    curl -s "http://api.twitch.tv/api/team/$team/live_channels.json"
+    local s="$1"
+
+    if [[ "$s" = t:* ]]; then # team
+        curl -s "http://api.twitch.tv/api/team/${s#*:}/live_channels.json" &
+    elif [[ "$s" = s:* ]]; then # stream
+        curl -s "https://api.twitch.tv/kraken/streams/${s#*:}" &
+    fi
 }
 
 # Generate an associative array where the key is the team and the value is the
 # url to the twitch team api for that team.
-for i in "${teams[@]}"; do
-    json["$i"]=$(get_json "$i" &)
+for i in "${twitch_list[@]}"; do
+    json["$i"]=$(get_json "$i")
 done
 
 # First line is always the streamer's name, followed by the url and then the
 # streamer's title
-while { 
+while {
     read -r name
-    read -r url 
+    read -r url
     read -r title
-}; do 
+}; do
     # Manually de-quote the title
     title="${title#\"*}" title="${title%\"*}"
 
@@ -41,12 +51,16 @@ while {
         streams["$name ($title)"]="$url"
     fi
 done < <(
-    for i in "${json[@]}"; do
-        jshon "${jshon_opts[@]}" <<< "$i"
+    for i in "${!json[@]}"; do
+        if [[ "$i" = t:* ]]; then
+            jshon "${jshon_team_opts[@]}" <<< "${json[$i]}"
+        elif [[ "$i" = s:* ]]; then
+            jshon "${jshon_stream_opts[@]}" <<< "${json[$i]}"
+        fi
     done
 )
 
-# Display the number of current streamers in dmenu's prompt
+# Display the number of current streams in dmenu's prompt
 nstreams="${#streams[@]}"
 dmenu_prompt="Streams ($nstreams)"
 
