@@ -8,16 +8,17 @@ declare -A json
 # List of teams or streamers from twitch.tv for inclusion.  curl will pull down
 # the json data simultaneously.  (Be careful with too many elements)
 
-# t: = twitch team name, s: twitch stream name
-twitch_list=(t:srl t:sda t:mlg s:fatzke)
+# t: = twitch team name
+# s: = twitch stream names seperated by commas
+twitch_list=(t:srl t:sda t:mlg s:fatzke,dragon)
 
 # Make sure to not (-u) 'unstring' the title as it may contain valid escapes
 # which break the strict ordering requirements for the while read loop.  We will
 # manually de-string the titles later.
-jshon_team_opts=(-e channels -a -e channel -e name -u -p -e link -u -p -e title)
+jshon_team_opts=(-e channels -a -e channel -e name -upe link -upe title)
 
 # Options required for the steam API
-jshon_stream_opts=(-e stream -e channel -e name -u -p -e url -u -p -e game)
+jshon_stream_opts=(-e streams -a -e channel -e name -upe url -upe game)
 
 get_json() {
     local s="$1"
@@ -25,7 +26,7 @@ get_json() {
     if [[ "$s" = t:* ]]; then # team
         curl -s "http://api.twitch.tv/api/team/${s#*:}/live_channels.json" &
     elif [[ "$s" = s:* ]]; then # stream
-        curl -s "https://api.twitch.tv/kraken/streams/${s#*:}" &
+        curl -s "https://api.twitch.tv/kraken/streams?channel=${s#*:}" &
     fi
 }
 
