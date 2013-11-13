@@ -1,0 +1,91 @@
+style -append wikipedia.org <<EOF
+body {
+    background: #EFEFEE !important;
+    text-align: justify !important;
+    font-family: "Linux Libertine O" !important;
+    font-size: 1.3em !important;
+}
+
+span.mw-editsection {
+    display: none !important;
+}
+
+/* h1#firstHeading.firstHeading { */
+h1 {
+    font-size: 2.5em !important;
+    font-weight: bold !important;
+    text-align: right !important;
+    font-family: "Palatino Linotype" !important;
+    color: #777778 !important;
+    overflow: visible !important;
+}
+
+h2 {
+    font-size: 2em !important;
+    font-weight: bold !important;
+    text-align: left !important;
+    font-family: "Palatino Linotype" !important;
+    color: #777778 !important;
+    overflow: visible !important;
+}
+
+h3 {
+    font-size: 1em !important;
+    font-weight: bold !important;
+    text-align: left !important;
+    font-family: "Palatino Linotype" !important;
+    color: #777778 !important;
+    overflow: visible !important;
+}
+
+
+table.vertical-navbox.nowraplinks {
+    width: 0em !important;
+    border: none !important;
+    padding: 0em !important;
+    border-spacing: none !important;
+}
+
+#mw-page-base {
+    background: #EFEFEE !important;
+    background-image: none !important;
+}
+
+div#mw-panel,div#mw-head {
+    display: none !important;
+}
+
+div#toc.toc {
+    border: none !important;
+    display: block !important;
+    background: inherit !important;
+}
+
+table.ambox {
+    display: none !important;
+}
+
+div#content {
+    margin-left: 7em !important;
+    margin-right: 7em !important;
+    color: #444448 !important;
+    background: #EEEEDE !important;
+    box-shadow: inset 0 0 0.5em #AAA !important;
+    border-color: #666667 !important;
+    border-style: none !important;
+    border-radius: 0.1em;
+}
+
+div#toctitle {
+    text-align: left !important;
+}
+
+span.toctoggle {
+    display: none !important;
+}
+
+div#footer {
+    margin-left: 7em !important;
+    margin-right: 7em !important;
+}
+EOF
