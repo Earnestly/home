@@ -23,10 +23,10 @@ function launchv(target, quvi=false) {
 
     /* filter certain urls to more appropriate programs before passing to
      * quvi */
-    if(uri.match(/twitch\.tv/))
-        exec("!lstream", uri);
-    else if(uri.match(/twitch\.tv\/.*\/c\/[0-9]+/))
+    if(uri.match(/twitch\.tv\/.*\/c\/[0-9]+/))
         exec("!yt-dl", uri);
+    else if(uri.match(/twitch\.tv/))
+        exec("!lstream", uri);
 
     /* Open youtube playlists of any kind directly with mpv */
     else if(uri.match(/youtube.*[?&]list=PL/))
