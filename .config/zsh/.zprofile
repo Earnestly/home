@@ -14,10 +14,11 @@ export GIMP2_DIRECTORY="$XDG_CONFIG_HOME"/gimp
 export ELINKS_CONFDIR="$XDG_CONFIG_HOME"/elinks
 export XCOMPOSEFILE="$XDG_CONFIG_HOME"/XCompose
 export NOTMUCH_CONFIG="$XDG_CONFIG_HOME"/notmuchrc
+export PENTADACTYL_RUNTIME="$XDG_CONFIG_HOME"/pentadactyl
 export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/settings.ini
 
 export EDITOR=vim
-export VISUAL=gvim
+export VISUAL=vim
 
 export PAGER=less
 export LESSHISTFILE=-
@@ -26,8 +27,7 @@ export BROWSER=firefox
 export TERMINAL=termite
 
 # Disable Mono and Gecko installation prompts and prevent .desktop creation
-# mscoree,mshtml=
-export WINEDLLOVERRIDES=winemenubuilder.exe=d
+export WINEDLLOVERRIDES="winemenubuilder.exe=d;mscoree,mshtml=d"
 
 export WINEARCH=win32
 export WINEDEBUG=-all
