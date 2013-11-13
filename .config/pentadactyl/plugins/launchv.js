@@ -46,9 +46,9 @@ hints.addMode("u", "Launch video from hint (yt-dl)",
     function (elem, loc) launchv(loc, quvi=false));
 
 group.commands.add(["launchv", "lv"], "Launches current buffer video (yt-dl).",
-    function(args) { var uri = buffer.URL.replace(/([$`"\\])/g, "\\$1");
+    function(args) { var uri = buffer.URL;
         launchv(uri, quvi=false); });
 
 group.commands.add(["launchvq", "lvq"], "Launches current buffer video (quvi).",
-    function(args) { var uri = buffer.URL.replace(/([$`"\\])/g, "\\$1");
+    function(args) { var uri = buffer.URL;
         launchv(uri); });
