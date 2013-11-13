@@ -8,7 +8,6 @@ group user
 
 " ui
 set guioptions=Csn
-set showtabline=never
 set hlfind
 
 " Speed up scrolling
@@ -54,10 +53,6 @@ set! security.ssl.treat_unsafe_negotiation_as_broken=true
 " TODO
 " Add some generic helper functions for dealing with this horrible code
 " duplication.
-
-" :js <<EOF
-" potatoes()
-" EOF
 
 " Open the current URL as an argument to quvi
 nmap <S-q> -s -js <<EOF
