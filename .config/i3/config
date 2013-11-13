@@ -20,9 +20,6 @@ bindsym $mod+Return exec termite
 # kill focused window
 bindsym $mod+Shift+q kill
 
-# start dmenu (a program launcher)
-bindsym $mod+p exec dmenu_run
-
 # change focus
 bindsym $mod+h focus left
 bindsym $mod+j focus down
@@ -93,29 +90,43 @@ bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exit
 
 # resize window (you can also use the mouse for that)
-mode "RESIZE" {
-        bindsym h resize shrink width 5 px or 5 ppt
-        bindsym j resize grow height 5 px or 5 ppt
-        bindsym k resize shrink height 5 px or 5 ppt
-        bindsym l resize grow width 5 px or 5 ppt
+mode "RESIZE MODE" {
+    bindsym h resize shrink width 5 px or 5 ppt
+    bindsym j resize grow height 5 px or 5 ppt
+    bindsym k resize shrink height 5 px or 5 ppt
+    bindsym l resize grow width 5 px or 5 ppt
 
-        bindsym q mode "default"
-        bindsym Escape mode "default"
+    bindsym q mode "default"
+    bindsym Escape mode "default"
 }
 
 bindsym $mod+r mode "RESIZE"
 
+mode "DMENU MODE" {
+    bindsym d exec ditch; mode "default"
+    bindsym w exec dwall; mode "default"
+    bindsym p exec dmenu_run; mode "default"
+    bindsym u exec dmenu_loader ~/.local/share/dmenu/dmenu_yt; mode "default"
+    bindsym o exec dmenu_loader ~/.local/share/dmenu/dmenu_pdf; mode "default"
+    bindsym l exec dmenu_loader ~/.local/share/dmenu/dmenu_pls; mode "default"
+
+    bindsym q mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+n mode "DMENU MODE"
+
 # control music
 mode "MPD CONTROL" {
-        bindsym s exec mpc stop
-        bindsym p exec mpc toggle
-        bindsym l exec mpc next
-        bindsym h exec mpc prev
-        bindsym equal exec mpc volume +3
-        bindsym minus exec mpc volume -3
+    bindsym s exec mpc stop
+    bindsym p exec mpc toggle
+    bindsym l exec mpc next
+    bindsym h exec mpc prev
+    bindsym equal exec mpc volume +3
+    bindsym minus exec mpc volume -3
 
-        bindsym q mode "default"
-        bindsym Escape mode "default"
+    bindsym q mode "default"
+    bindsym Escape mode "default"
 }
 
 bindsym $mod+m mode "MPD CONTROL"
@@ -130,7 +141,7 @@ client.urgent           #900000 #900000 #ffffff #900000
 # finds out, if available)
 bar {
 	position top
-    status_command i3status
+    status_command i3status-conky
 
     colors {
         background         #101010
@@ -177,7 +188,3 @@ bindsym XF86AudioPrev exec mpc prev
 
 # Meh
 bindsym XF86Launch1 exec firefox
-bindsym $mod+o exec dmenu_loader ~/.local/share/dmenu/dmenu_pdf
-bindsym $mod+y exec dmenu_loader ~/.local/share/dmenu/dmenu_pls
-bindsym $mod+u exec dmenu_loader ~/.local/share/dmenu/dmenu_yt
-bindsym $mod+n exec ditch
