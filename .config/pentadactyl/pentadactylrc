@@ -28,8 +28,15 @@ nmap s -e :toolbartoggle Bookmarks Toolbar
 " Easily show downloads
 nmap <S-d> -e :downloads
 
-" Stop <C-j> doing whatever it does
+" Stop <C-j> and <C-k> doing whatever it does
 nmap <C-j> <nop>
+nmap <C-k> <nop>
+
+" Open the current URL as an argument to yt-dl
+nmap <S-u> :launchv<CR>
+
+" Same above but with quvi
+nmap <S-q> :launchvq<CR>
 
 " Use vim instead of gvim for now
 set editor='termite -e "vim +<line> <file>"'
@@ -46,46 +53,10 @@ set! noscript.keys.revokeTemp="alt c"
 set! noscript.notify=false
 set! plugins.click_to_play=true
 set! plugin.default.state=1
+
 " Require websites preform safe ssl negotiation
 set! security.ssl.require_safe_negotiation=true
 set! security.ssl.treat_unsafe_negotiation_as_broken=true
-
-" TODO
-" Add some generic helper functions for dealing with this horrible code
-" duplication.
-
-" Open the current URL as an argument to quvi
-nmap <S-q> -s -js <<EOF
-commands.execute('!quvi dump -b mute "' 
-                 + buffer.URL.replace(/([$`"\\])/g, "\\$1") + '" &');
-EOF
-
-" Open the current URL as an argument to youtube-dl
-nmap <S-u> -s -js <<EOF
-commands.execute('!yt-dl "' 
-                 + buffer.URL.replace(/([$`"\\])/g, "\\$1") + '" &');
-EOF
-
-nmap <S-s> -s -js <<EOF
-commands.execute('!lstream "' 
-                 + buffer.URL.replace(/([$`"\\])/g, "\\$1") + '" &');
-EOF
-
-" Custom hints, thanks to holomorph, John-Galt and grawity
-js <<EOF
-hints.addMode("q", "Launch video (quvi) from hint", function(elem, loc) 
-              commands.execute('!quvi dump -b mute "' 
-                               + loc.replace(/([$`"\\])/g, "\\$1") + '" &'));
-
-/* Use youtube-dl when quvi fails */
-hints.addMode("u", "Launch video (youtube-dl) from hint", function(elem, loc) 
-              commands.execute('!yt-dl "' 
-                               + loc.replace(/([$`"\\])/g, "\\$1") + '" &'));
-
-hints.addMode("U", "Launch stream (livestreamer) from hint", function(elem, loc) 
-              commands.execute('!lstream "' 
-                               + loc.replace(/([$`"\\])/g, "\\$1") + '" &'));
-EOF
 
 " Style
 colorscheme vimium_hints
