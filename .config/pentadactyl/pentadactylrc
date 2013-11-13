@@ -92,6 +92,7 @@ colorscheme vimium_hints
 
 " Custom per-site CSS
 colorscheme justify
+colorscheme wikipedia.org
 colorscheme htdp.org
 colorscheme azillionmonkeys.com
 colorscheme learnyouahaskell.com
