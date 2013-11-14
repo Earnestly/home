@@ -10,7 +10,7 @@
    * ;q - Same but prefers quvi
 */
  
-function launchv(target, quvi=false) {
+function launchv(target, quvi=true) {
 
     /* Escape anything which could be used to inject shell commands before
      * passing it to the commands */
