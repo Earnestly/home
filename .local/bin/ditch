@@ -22,6 +22,9 @@ jshon_team_opts=(-e channels -a -e channel -e name -upe link -upe title)
 # Options required for the steam API
 jshon_stream_opts=(-e streams -a -e channel -e name -upe url -upe game)
 
+# Stream quality, each will be attempted in order and falls back to the next
+stream_quality="mobile_medium,medium,best,source,mobile_source"
+
 get_json() {
     local s="$1"
 
@@ -78,9 +81,9 @@ if sel=$(printf "%s\n" "${!streams[@]}" | sort | dmenu "${dmenu_opts[@]}"); then
         --twitch-legacy-names --ringbuffer-size 800000
         # By default we will exclude anything higher than 720p, if no other
         # quality is available and best fails, fallback on source/mobile_source
-        --stream-sorting-excludes '>=720p,>=720p+'
+        #--stream-sorting-excludes '>=720p,>=720p+'
         "${streams[$sel]}"
-        "best,source,mobile_source"
+        "$stream_quality"
     )
 
     # Blindly pass the value based on the key from selection to livestreamer
