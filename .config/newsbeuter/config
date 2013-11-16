@@ -3,7 +3,6 @@ auto-reload yes
 confirm-exit yes
 mark-as-read-on-hover yes
 notify-beep yes
-pager "less"
 browser "firefox %u &> /dev/null &"
 
 # key binds
