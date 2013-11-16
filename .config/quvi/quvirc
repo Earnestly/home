@@ -14,4 +14,4 @@ user-agent = "quvi/0.9"
 
 [exec]
 #enable-stdout = true
-external = mpv --quiet --cache 4096 --title=%t %u
+external = mpv --really-quiet --loop=inf --cache 4096 --title=%t %u
