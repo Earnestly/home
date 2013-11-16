@@ -14,5 +14,7 @@
 
 (setq vc-follow-symlinks t
       backup-inhibited t
-      auto-save-default nil)
+      auto-save-default nil
+      mouse-autoselect-window t)
+
 (put 'scroll-left 'disabled nil)
