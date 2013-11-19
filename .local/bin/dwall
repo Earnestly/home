@@ -1,0 +1,32 @@
+#!/bin/bash
+# ~/.local/bin/dwall
+# Simple wallpaper setter using dmenu
+
+declare -A wallpapers
+
+wall_dir="${XDG_DATA_HOME:-$HOME/.local/share}"/walls
+wall_sym="${XDG_DATA_HOME:-$HOME/.local/share}"/wall
+
+wall_list=("$wall_dir"/*)
+
+for w in "${wall_list[@]}"; do
+    # wallpaper.file=/path/to/wallpaper.file
+    wallpapers["${w##*/}"]="$w"
+done
+
+dmenu_opts=(-ia top-gapless -l 10 -is 300 -fn 'Dina Bold 8')
+
+# Build the dmenu according to the format "IMG:<img>\t<text>" to display the
+# image preview
+wall_sel=$(
+    for p in "${!wallpapers[@]}"; do
+        printf "IMG:%s\t%s\n" "${wallpapers[$p]}" "$p" 
+    done | dmenu  "${dmenu_opts[@]}"
+)
+
+# Link the chosen wallpaper to the target symlink and then set the wallpaper via
+# said symlink
+if [[ -n "$wall_sel" ]]; then
+    ln -sf "$wall_dir"/"$wall_sel" "$wall_sym"
+    display -window root -resize '1366x768!' "$wall_sym"
+fi
