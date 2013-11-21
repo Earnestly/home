@@ -12,7 +12,7 @@ declare -A json
 # s: = twitch stream names seperated by commas (limit: 25, max: 100.  Add 
 #      `&limit=100` to raise this.)
 twitch_list=(t:srl t:sda t:mlg t:wcs t:csgopros
-             s:fatzke,lukerf44,tirean,justshanz,misterpost)
+             s:fatzke,lukerf44,tirean,justshanz,misterpost,fragbitelive)
 
 # Make sure to not (-u) 'unstring' the title as it may contain valid escapes
 # which break the strict ordering requirements for the while read loop.  We will
@@ -69,21 +69,16 @@ done < <(
 # Display the number of current streams in dmenu's prompt
 nstreams="${#streams[@]}"
 dmenu_prompt="Streams ($nstreams)"
-
 dmenu_opts=(-p "$dmenu_prompt" -fn "Dina Bold 8" -i -l 40)
 
 # Display the keys and store it as the selection
-
 if sel=$(printf "%s\n" "${!streams[@]}" | sort | dmenu "${dmenu_opts[@]}"); then
+
+    # Strip out any single quotes from the title, this is ugly though, very ugly.
     lstreamer_opts=(
-        # Strip out any single quotes, this is ugly though, very ugly.
         -Q -p "mpv --force-window --really-quiet --title='${sel//\'/}' --profile=live"
         --twitch-legacy-names --ringbuffer-size 800000
-        # By default we will exclude anything higher than 720p, if no other
-        # quality is available and best fails, fallback on source/mobile_source
-        #--stream-sorting-excludes '>=720p,>=720p+'
-        "${streams[$sel]}"
-        "$stream_quality"
+        "${streams[$sel]}" "$stream_quality"
     )
 
     # Blindly pass the value based on the key from selection to livestreamer
