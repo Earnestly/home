@@ -100,7 +100,7 @@ mode "RESIZE MODE" {
     bindsym Escape mode "default"
 }
 
-bindsym $mod+r mode "RESIZE"
+bindsym $mod+r mode "RESIZE MODE"
 
 mode "DMENU MODE" {
     bindsym d exec ditch; mode "default"
