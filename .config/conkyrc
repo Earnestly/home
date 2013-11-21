@@ -32,7 +32,7 @@ TEXT
 "color":"\#5f5f5f"},\
 {"full_text":"NET:${wireless_essid wlp3s0} ${wireless_link_qual wlp3s0}%",\
 "color":"\#5f5f5f"},\
-{"full_text":"BAT:${battery_short}${battery_percent}%",\
+{"full_text":"BAT:${battery_short}",\
 "color":"\#5f5f5f"},\
 {"full_text":"${time %A %B %d %H:%M}",\
 "color":"\#5f5f5f"}],
