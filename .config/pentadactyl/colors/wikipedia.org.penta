@@ -10,11 +10,10 @@ span.mw-editsection {
     display: none !important;
 }
 
-/* h1#firstHeading.firstHeading { */
 h1 {
-    font-size: 2.5em !important;
+    font-size: 2.2em !important;
     font-weight: bold !important;
-    text-align: right !important;
+    text-align: center !important;
     font-family: "Palatino Linotype" !important;
     color: #777778 !important;
     overflow: visible !important;
@@ -91,6 +90,10 @@ div#footer {
 
 table.infobox td {
     text-align: right !important;
+}
+
+table.infobox tr td:nth-child(1) {
+    text-align: left !important;
 }
 
 table.infobox,
