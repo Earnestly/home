@@ -15,7 +15,6 @@ function launchv(target, quvi=true) {
     /* Escape anything which could be used to inject shell commands before
      * passing it to the commands */
     var uri = target.replace(/([$`"\\])/g, "\\$1");
-    var cmd;
 
     function exec(launcher, uri) {
         return commands.execute(launcher + ' "' + uri + '" &');
