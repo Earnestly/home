@@ -68,56 +68,44 @@ bindkey -v
 vimode=i
 
 # Shift-tab
-if [[ -n $terminfo[kcbt] ]]; then
-    bindkey $terminfo[kcbt] reverse-menu-complete
-fi
+bindkey $terminfo[kcbt] reverse-menu-complete
 
 # Delete
-if [[ -n $terminfo[kdch1] ]]; then
-    bindkey -M vicmd $terminfo[kdch1] vi-delete-char
-    bindkey          $terminfo[kdch1] delete-char
-fi
+bindkey -M vicmd $terminfo[kdch1] vi-delete-char
+bindkey          $terminfo[kdch1] delete-char
+
 # Insert
-if [[ -n $terminfo[kich1] ]]; then
-    bindkey -M vicmd $terminfo[kich1] vi-insert
-    bindkey          $terminfo[kich1] overwrite-mode
-fi
+bindkey -M vicmd $terminfo[kich1] vi-insert
+bindkey          $terminfo[kich1] overwrite-mode
+
 # Home
-if [[ -n $terminfo[khome] ]]; then
-    bindkey -M vicmd $terminfo[khome] vi-beginning-of-line
-    bindkey          $terminfo[khome] vi-beginning-of-line
-fi
+bindkey -M vicmd $terminfo[khome] vi-beginning-of-line
+bindkey          $terminfo[khome] vi-beginning-of-line
+
 # End
-if [[ -n $terminfo[kend] ]]; then
-    bindkey -M vicmd $terminfo[kend] vi-end-of-line
-    bindkey          $terminfo[kend] vi-end-of-line
-fi
+bindkey -M vicmd $terminfo[kend] vi-end-of-line
+bindkey          $terminfo[kend] vi-end-of-line
 
 # Backspace (and <C-h>)
-if [[ -n $terminfo[kbs] ]]; then
-    bindkey -M vicmd $terminfo[kbs] backward-char
-    bindkey          $terminfo[kbs] backward-delete-char
-fi
+bindkey -M vicmd $terminfo[kbs] backward-char
+bindkey          $terminfo[kbs] backward-delete-char
 
 # Page up (and <C-b> in vicmd)
-if [[ -n $terminfo[kpp] ]]; then
-    bindkey -M vicmd $terminfo[kpp] beginning-of-buffer-or-history
-    bindkey          $terminfo[kpp] beginning-of-buffer-or-history
-fi
+bindkey -M vicmd $terminfo[kpp] beginning-of-buffer-or-history
+bindkey          $terminfo[kpp] beginning-of-buffer-or-history
 
 bindkey -M vicmd '^B' beginning-of-buffer-or-history
 
 # Page down (and <C-f> in vicmd)
-if [[ -n $terminfo[knp] ]]; then
-    bindkey -M vicmd $terminfo[knp] end-of-buffer-or-history
-    bindkey          $terminfo[knp] end-of-buffer-or-history
-fi
+bindkey -M vicmd $terminfo[knp] end-of-buffer-or-history
+bindkey          $terminfo[knp] end-of-buffer-or-history
 
 # Do history expansion on space
 bindkey ' ' magic-space
 
-# No vi-backward-kill-word
-bindkey '^W' backward-kill-word
+# Use M-w for small words
+bindkey '^[w' backward-kill-word
+bindkey '^W' vi-backward-kill-word
 
 bindkey -M vicmd '^H' backward-char
 bindkey          '^H' backward-delete-char
@@ -139,6 +127,9 @@ bindkey -M vicmd 'v' edit-command-line
 # History search
 bindkey '^P' up-line-or-search
 bindkey '^N' down-line-or-search
+
+# Patterned history search
+bindkey -M vicmd '?' history-incremental-pattern-search-backward
 
 # Verify search result before accepting
 bindkey -M isearch '^M' accept-search

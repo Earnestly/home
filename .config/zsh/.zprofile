@@ -14,6 +14,7 @@ export GIMP2_DIRECTORY="$XDG_CONFIG_HOME"/gimp
 export ELINKS_CONFDIR="$XDG_CONFIG_HOME"/elinks
 export XCOMPOSEFILE="$XDG_CONFIG_HOME"/XCompose
 export NOTMUCH_CONFIG="$XDG_CONFIG_HOME"/notmuchrc
+export GUILE_HISTORY="$XDG_CONFIG_HOME"/guile/history
 export PENTADACTYL_RUNTIME="$XDG_CONFIG_HOME"/pentadactyl
 export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/settings.ini
 
