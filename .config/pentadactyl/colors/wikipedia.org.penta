@@ -2,8 +2,8 @@ style -append wikipedia.org <<EOF
 body {
     background: #EFEFEE !important;
     text-align: justify !important;
-    font-family: "Linux Libertine O" !important;
-    font-size: 1.3em !important;
+    font-family: "Plantagenet Cherokee" !important;
+    font-size: 1.2em !important;
 }
 
 span.mw-editsection {
@@ -13,27 +13,27 @@ span.mw-editsection {
 h1 {
     font-size: 2.2em !important;
     font-weight: bold !important;
-    text-align: center !important;
-    font-family: "Palatino Linotype" !important;
-    color: #777778 !important;
+    font-style: italic !important;
+    font-family: "Heuristica" !important;
+    color: #888889 !important;
     overflow: visible !important;
 }
 
 h2 {
     font-size: 2em !important;
     font-weight: bold !important;
-    text-align: left !important;
-    font-family: "Palatino Linotype" !important;
-    color: #777778 !important;
+    font-style: italic !important;
+    font-family: "Heuristica" !important;
+    color: #888889 !important;
     overflow: visible !important;
 }
 
 h3 {
     font-size: 1em !important;
     font-weight: bold !important;
-    text-align: left !important;
-    font-family: "Palatino Linotype" !important;
-    color: #777778 !important;
+    font-style: italic !important;
+    font-family: "Heuristica" !important;
+    color: #888889 !important;
     overflow: visible !important;
 }
 
