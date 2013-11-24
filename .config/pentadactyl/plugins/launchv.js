@@ -29,7 +29,7 @@ function launchv(target, quvi=true) {
 
     /* Open youtube playlists of any kind directly with mpv */
     else if(uri.match(/youtube.*[?&]list=PL/))
-        exec("!mpv", uri);
+        exec("!mpv --really-quiet --cache=4096", uri);
 
     /* For everything else */
     else if(quvi)
