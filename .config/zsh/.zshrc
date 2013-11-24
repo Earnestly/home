@@ -1,7 +1,7 @@
 # ~/.config/zsh/.zshrc
 
 # Modules
-autoload -Uz edit-command-line run-help compinit
+autoload -Uz edit-command-line run-help compinit zmv
 zmodload zsh/complist
 compinit
 
@@ -51,7 +51,7 @@ function precmd {
 
 # Print the current running command's name to the window title
 function preexec { 
-    local cmd=${1[(wr)^(*=*|sudo|ssh|-*)]}
+    local cmd=${1[(wr)^(*=*|sudo|exec|ssh|-*)]}
     print -Pn "\e];$cmd:q\a"
 } 
 
@@ -169,8 +169,8 @@ alias la='ls --color=auto --group-directories-first -AhXF'
 alias ll='ls --color=auto --group-directories-first -lhXF'
 
 alias dmesg='dmesg -exL'
-alias weechat="dtach -A $XDG_RUNTIME_DIR/weechat /usr/bin/weechat"
-alias mutt="dtach -A $XDG_RUNTIME_DIR/mutt /usr/bin/mutt -F ~/.config/mutt/muttrc"
+alias weechat="exec dtach -A $XDG_RUNTIME_DIR/weechat /usr/bin/weechat"
+alias mutt="exec dtach -A $XDG_RUNTIME_DIR/mutt /usr/bin/mutt -F ~/.config/mutt/muttrc"
 
 alias ix="curl -F 'f:1=<-' ix.io"
 alias sprunge="curl -F 'sprunge=<-' sprunge.us"
