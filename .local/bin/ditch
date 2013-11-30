@@ -11,8 +11,8 @@ declare -A json
 # t: = twitch team name
 # s: = twitch stream names seperated by commas (limit: 25, max: 100.  Add 
 #      `&limit=100` to raise this.)
-twitch_list=(t:srl t:sda t:mlg t:wcs t:csgopros
-             s:fatzke,lukerf44,tirean,justshanz,misterpost,fragbitelive)
+twitch_list=(t:srl t:sda t:csgopros
+s:fatzke,lukerf44,tirean,justshanz,misterpost,fragbitelive,redbullesports,eidgod)
 
 # Make sure to not (-u) 'unstring' the title as it may contain valid escapes
 # which break the strict ordering requirements for the while read loop.  We will
@@ -54,7 +54,7 @@ while {
     # Store the name and title for dmenu to display as the key in an associative
     # array where the url is the value.
     if [[ "$name" != http* ]]; then
-        streams["$name ($title)"]="$url"
+        streams["$title ($name)"]="$url"
     fi
 done < <(
     for i in "${!json[@]}"; do
