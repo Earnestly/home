@@ -4,11 +4,10 @@
 
 lopts=(
     -Q -p "mpv --force-window --profile=live"
-    --twitch-legacy-names
     --stream-sorting-excludes '>720p,>720p+'
     --ringbuffer-size 800000
     "$1"
-    "${2:-best,source,mobile_source}"
+    "${2:-mobile_medium,mobile_high,best,source,mobile_source}"
 )
 
 exec livestreamer "${lopts[@]}"
