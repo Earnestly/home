@@ -2,9 +2,6 @@
 # ~/.local/bin/ditch
 # Create a dmenu using the twitch team and stream api
 
-declare -A streams
-declare -A json
-
 # List of teams or streamers from twitch.tv for inclusion.  curl will pull down
 # the json data simultaneously.  (Be careful with too many elements)
 
@@ -12,18 +9,22 @@ declare -A json
 # s: = twitch stream names seperated by commas (limit: 25, max: 100.  Add 
 #      `&limit=100` to raise this.)
 twitch_list=(t:srl t:sda t:csgopros
-s:fatzke,lukerf44,tirean,justshanz,misterpost,fragbitelive,redbullesports,eidgod)
+             s:fatzke,lukerf44,tirean,justshanz,misterpost,fragbitelive,eidgod,\
+             redbullesports)
 
 # Make sure to not (-u) 'unstring' the title as it may contain valid escapes
 # which break the strict ordering requirements for the while read loop.  We will
 # manually de-string the titles later.
 jshon_team_opts=(-e channels -a -e channel -e name -upe link -upe title)
 
-# Options required for the steam API
+# Arguments required for the steam API
 jshon_stream_opts=(-e streams -a -e channel -e name -upe url -upe game)
 
 # Stream quality, each will be attempted in order and falls back to the next
 stream_quality="mobile_medium,medium,best,source,mobile_source"
+
+# Options passed to dmenu, the `-p` prompt is passed later
+dmenu_opts=(-fn "Dina Bold 8" -i -l 40)
 
 get_json() {
     local s="$1"
@@ -37,12 +38,14 @@ get_json() {
 
 # Generate an associative array where the key is the team and the value is the
 # url to the twitch team api for that team.
+declare -A json
 for i in "${twitch_list[@]}"; do
     json["$i"]=$(get_json "$i" &)
 done
 
 # First line is always the streamer's name, followed by the url and then the
 # streamer's title
+declare -A streams
 while {
     read -r name
     read -r url
@@ -68,17 +71,14 @@ done < <(
 
 # Display the number of current streams in dmenu's prompt
 nstreams="${#streams[@]}"
-dmenu_prompt="Streams ($nstreams)"
-dmenu_opts=(-p "$dmenu_prompt" -fn "Dina Bold 8" -i -l 40)
+dmenu_opts+=(-p "Streams ($nstreams)")
 
 # Display the keys and store it as the selection
 if sel=$(printf "%s\n" "${!streams[@]}" | sort | dmenu "${dmenu_opts[@]}"); then
-
-    # Strip out any single quotes from the title, this is ugly though, very ugly.
     lstreamer_opts=(
-        -Q -p "mpv --force-window --really-quiet --title='${sel//\'/}' --profile=live"
-        --twitch-legacy-names --ringbuffer-size 800000
-        "${streams[$sel]}" "$stream_quality"
+        # Strip out any single quotes from the title, this is ugly though, very ugly.
+        -Q -p "mpv --force-window --really-quiet --title='${sel//\'/’}' --profile=live"
+        --ringbuffer-size 800000 "${streams[$sel]}" "$stream_quality"
     )
 
     # Blindly pass the value based on the key from selection to livestreamer
