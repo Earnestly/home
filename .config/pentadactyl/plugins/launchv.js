@@ -8,15 +8,18 @@
    Hints: 
    * ;u - launches the current hint prefering yt-dl
    * ;q - Same but prefers quvi
+   
+   Note: If the url contains a youtube playlist it will return the playlist's
+         url rather than the direct youtube video.
 */
  
-function launchv(target, quvi=true) {
+function launchv(target, quvi=true){
 
     /* Escape anything which could be used to inject shell commands before
      * passing it to the commands */
     var uri = target.replace(/([$`"\\])/g, "\\$1");
 
-    function exec(launcher, uri) {
+    function exec(launcher, uri){
         return commands.execute(launcher + ' "' + uri + '" &');
     }
 
@@ -29,7 +32,14 @@ function launchv(target, quvi=true) {
 
     /* Open youtube playlists of any kind directly with mpv */
     else if(uri.match(/youtube.*[?&]list=PL/))
-        exec("!mpv --really-quiet --cache=4096", uri);
+
+        /* Check if the url is part of a playlist but a direct video (watch?v=)
+         * url is provided and return the real playlist url */
+        if(uri.match(/watch\?v=/)){
+            var uri = uri.replace(/watch\?v.+?\&/, "playlist\?")
+            exec("!mpv --really-quiet --cache=4096", uri);
+        }else
+            exec("!mpv --really-quiet --cache=4096", uri);
 
     /* For everything else */
     else if(quvi)
@@ -45,9 +55,11 @@ hints.addMode("u", "Launch video from hint (yt-dl)",
     function (elem, loc) launchv(loc, quvi=false));
 
 group.commands.add(["launchv", "lv"], "Launches current buffer video (yt-dl).",
-    function(args) { var uri = buffer.URL;
-        launchv(uri, quvi=false); });
+    function(args){ var uri = buffer.URL;
+        launchv(uri, quvi=false);
+    });
 
 group.commands.add(["launchvq", "lvq"], "Launches current buffer video (quvi).",
-    function(args) { var uri = buffer.URL;
-        launchv(uri); });
+    function(args){ var uri = buffer.URL;
+        launchv(uri);
+    });
