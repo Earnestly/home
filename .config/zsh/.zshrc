@@ -29,7 +29,7 @@ setopt \
     histreduceblanks \
     histignorealldups
 
-READNULLCMD=$PAGER
+READNULLCMD="$PAGER"
 HELPDIR="$XDG_CONFIG_HOME"/zsh/help
 HISTFILE="$XDG_CONFIG_HOME"/zsh/.zsh_history
 HISTSIZE=10000
@@ -126,10 +126,7 @@ bindkey -M vicmd 'v' edit-command-line
 
 # History search
 bindkey '^P' up-line-or-search
-bindkey '^N' down-line-or-search
-
-# Patterned history search
-bindkey -M vicmd '?' history-incremental-pattern-search-backward
+bindkey '^N' history-incremental-pattern-search-backward
 
 # Verify search result before accepting
 bindkey -M isearch '^M' accept-search
