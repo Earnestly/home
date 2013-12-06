@@ -1,3 +1,5 @@
+;; ~/.emacs.d/init.el
+
 (package-initialize)
 (add-to-list 'package-archives 
              '("melpa" . "http://melpa.milkbox.net/packages/")
@@ -18,7 +20,4 @@
       auto-save-default nil
       mouse-autoselect-window t)
 
-(custom-set-faces
- '(default
-    ((t (:inherit nil :stipple nil :background "#242424" :foreground "#f6f3e8" :inverse-video nil :box nil :strike-through nil :overline nil 
-		  :underline nil :slant normal :weight normal :height 130 :width normal :family "Consolas")))))
+(set-face-attribute 'default nil :family "CMU Typewriter Text" :height 120)
