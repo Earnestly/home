@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # asr <package>
 
 # Download official Arch Linux PKGBUILDs and source files directly from the
@@ -29,7 +28,7 @@ done
 
 # Fail if we've gone through the array elements without success
 if ((!status)); then
-    printf >&2 "%s\n" "Cannot locate: $pkgname."
+    printf >&2 "Cannot locate: %s.\n" "$pkgname"
     exit 1
 fi
 
@@ -44,6 +43,6 @@ if [[ -d "$pkgname" ]]; then
     fi
 else
     # This should never happen
-    printf >&2 "%s\n" "Directory does not exist."
+    printf >&2 "Directory does not exist.\n"
     exit 1
 fi
