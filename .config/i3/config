@@ -8,7 +8,7 @@ new_window pixel 2
 workspace_auto_back_and_forth yes
 workspace_layout tabbed
 
-# use super key
+# Use super key
 set $mod Mod4
 
 # use Mouse+$mod to drag floating windows to their wanted position
@@ -20,17 +20,23 @@ bindsym $mod+Return exec termite
 # kill focused window
 bindsym $mod+Shift+q kill
 
-# change focus
+# Change focus
 bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
 bindsym $mod+l focus right
 
-# move focused window
+# Move container
 bindsym $mod+Shift+h move left
 bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
+
+# Move container to next output
+bindsym $mod+Ctrl+h move container to output left
+bindsym $mod+Ctrl+j move container to output down
+bindsym $mod+Ctrl+k move container to output up
+bindsym $mod+Ctrl+l move container to output right
 
 # split in horizontal orientation
 bindsym $mod+semicolon split h
@@ -162,12 +168,14 @@ for_window [class="Firefox" instance="Navigator"] floating disable
 for_window [class="fontforge" title="Layers"] floating enable
 for_window [class="fontforge" title="Tools"] floating enable
 
+for_window [class="Wine"] floating enable
+
 assign [class="Firefox"] 2
 assign [class="mpv"] 3
 assign [class="Wine"] 5
 
 # Focus latest urgent window
-bindsym $mod+slash [urgent="latest"] focus
+bindsym $mod+u [urgent="latest"] focus
 
 # Toggle trackpad
 bindsym XF86TouchpadToggle exec trackpad_toggle
@@ -176,10 +184,11 @@ bindsym XF86TouchpadToggle exec trackpad_toggle
 bindcode 198 exec ponymix -t source -d 1 toggle
 
 # Global media keys
-# Send sigusr1 to immediately refresh i3status
-bindsym XF86AudioMute exec ponymix toggle && pkill -SIGUSR1 i3status
-bindsym XF86AudioLowerVolume exec ponymix decrease 3 && pkill -SIGUSR1 i3status
-bindsym XF86AudioRaiseVolume exec ponymix increase 3 && pkill -SIGUSR1 i3status
+# Send SIGUSR1 to immediately refresh i3status
+# E.g. bindsym XF86AudioMute exec ponymix toggle && pkill -SIGUSR1 i3status
+bindsym XF86AudioMute exec ponymix toggle
+bindsym XF86AudioLowerVolume exec ponymix decrease 3
+bindsym XF86AudioRaiseVolume exec ponymix increase 3
 
 bindsym XF86AudioStop exec mpc stop
 bindsym XF86AudioPlay exec mpc toggle
