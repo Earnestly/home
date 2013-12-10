@@ -18,11 +18,13 @@ export GUILE_HISTORY="$XDG_CONFIG_HOME"/guile/history
 export PENTADACTYL_RUNTIME="$XDG_CONFIG_HOME"/pentadactyl
 export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/settings.ini
 
+export XAUTHORITY="$XDG_RUNTIME_DIR"/X11-authority
+
 export EDITOR=vim
 export VISUAL=vim
 
 export PAGER=less
-export LESSHISTFILE=-
+export LESSHISTFILE="$XDG_CACHE_HOME"/lesshist
 
 export BROWSER=firefox
 export TERMINAL=termite
