@@ -26,13 +26,13 @@ TEXT
 "color":"\#5f5f5f"},\
 {"full_text":"CPU:${cpu}%",\
 "color":"\#5f5f5f"},\
-{"full_text":"TEMP:${platform coretemp.0 temp 1}°C",\
+{"full_text":"TEMP:${platform coretemp.0 temp 1}C",\
 "color":"\#5f5f5f"},\
 {"full_text":"HDD:${fs_used}",\
 "color":"\#5f5f5f"},\
 {"full_text":"NET:${wireless_essid wlp3s0} ${wireless_link_qual wlp3s0}%",\
 "color":"\#5f5f5f"},\
-{"full_text":"BAT:${battery_short}",\
+{"full_text":"${if_existing /proc/acpi/battery/BAT0/state}BAT:${battery_short}${endif}",\
 "color":"\#5f5f5f"},\
 {"full_text":"${time %A %B %d %H:%M}",\
 "color":"\#5f5f5f"}],
