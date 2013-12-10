@@ -126,7 +126,10 @@ bindkey -M vicmd 'v' edit-command-line
 
 # History search
 bindkey '^P' up-line-or-search
-bindkey '^N' history-incremental-pattern-search-backward
+bindkey '^N' down-line-or-search
+
+# Ctrl-/
+bindkey '^_' history-incremental-pattern-search-backward
 
 # Verify search result before accepting
 bindkey -M isearch '^M' accept-search
