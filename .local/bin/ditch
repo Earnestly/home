@@ -9,8 +9,7 @@
 # s: = twitch stream names seperated by commas (limit: 25, max: 100.  Add 
 #      `&limit=100` to raise this.)
 twitch_list=(t:srl t:sda t:csgopros
-             s:fatzke,lukerf44,tirean,justshanz,misterpost,fragbitelive,eidgod,\
-             redbullesports)
+    s:fatzke,lukerf44,tirean,justshanz,misterpost,fragbitelive,eidgod,redbullesports)
 
 # Make sure to not (-u) 'unstring' the title as it may contain valid escapes
 # which break the strict ordering requirements for the while read loop.  We will
@@ -21,7 +20,7 @@ jshon_team_opts=(-e channels -a -e channel -e name -upe link -upe title)
 jshon_stream_opts=(-e streams -a -e channel -e name -upe url -upe game)
 
 # Stream quality, each will be attempted in order and falls back to the next
-stream_quality="mobile_medium,medium,best,source,mobile_source"
+stream_quality="medium,best,source"
 
 # Options passed to dmenu, the `-p` prompt is passed later
 dmenu_opts=(-fn "Dina Bold 8" -i -l 40)
@@ -82,5 +81,8 @@ if sel=$(printf "%s\n" "${!streams[@]}" | sort | dmenu "${dmenu_opts[@]}"); then
     )
 
     # Blindly pass the value based on the key from selection to livestreamer
-    exec livestreamer "${lstreamer_opts[@]}"
+    if ! livestreamer "${lstreamer_opts[@]}"; then
+        i3-nagbar -m "Failed to open stream \`${streams[$sel]}'" -t error
+    fi
 fi
+
