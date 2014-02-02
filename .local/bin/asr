@@ -18,8 +18,8 @@ status="${#urls[@]}"
 for url in "${urls[@]}"; do
     # Determine which repository the package exists in
     if git ls-remote --exit-code "$url" refs/heads/packages/"$pkgname"; then
-        git clone --no-checkout --branch packages/"$pkgname" \
-            --single-branch "$url" "$pkgname"
+        git clone --no-checkout --branch packages/"$pkgname" --single-branch "$url" "$pkgname"
+
         # Break out if we succeed to avoid duplicate packages being found.
         break
     else
