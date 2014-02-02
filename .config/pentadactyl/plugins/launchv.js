@@ -25,7 +25,7 @@ function launchv(target, quvi=true){
 
     /* filter certain urls to more appropriate programs before passing to
      * quvi */
-    if(uri.match(/twitch\.tv\/.*\/c\/[0-9]+/))
+    if(uri.match(/twitch\.tv\/.*\/[bc]\/[0-9]+/))
         exec("!yt-dl", uri);
     else if(uri.match(/twitch\.tv/))
         exec("!lstream", uri);
