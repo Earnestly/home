@@ -51,10 +51,11 @@ selection=$(
 )
 
 # Pass the value from the array based on key selection and check if the first
-# word (XXX usually the command) is a valid
+# word (assumption: usually the command) is a valid
 if hash "${cmd% *}"; then
     command "${cmd[@]}" "${index[$selection]}"
 else
     printf >&2 "No Command specified.\n"
     exit 1
 fi
+
