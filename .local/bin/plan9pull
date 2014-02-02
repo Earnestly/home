@@ -9,8 +9,8 @@ src="$HOME"/.local/src
 cd "$src"
 curl "$url" | bsdtar xf -
 
-cd "$src/plan9"
+cd "$src"/plan9
 git add --all # Track any newly added files
-git commit -m "Snapshot from $(date +%Y-%m-%d)" \
-   --author="plan9 developers <none@plan9.bell-labs.com>" || exit
+git commit -m "Snapshot from $(date +%Y-%m-%d)" --author="Plan 9 Developers <none@plan9.bell-labs.com>" || exit
 git push -u origin master
+
