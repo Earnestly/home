@@ -2,7 +2,7 @@ style -append wikipedia.org <<EOF
 body {
     background: #EFEFEE !important;
     text-align: justify !important;
-    font-family: "Plantagenet Cherokee" !important;
+    font-family: "Linux Libertine O" !important;
     font-size: 1.2em !important;
 }
 
