@@ -3,13 +3,19 @@
 # Create a dmenu using the twitch team and stream api
 
 # List of teams or streamers from twitch.tv for inclusion.  curl will pull down
-# the json data simultaneously.  (Be careful with too many elements)
+# the json data simultaneously.  (Be careful with too many items (`t:` or `s:`))
 
 # t: = twitch team name
 # s: = twitch stream names seperated by commas (limit: 25, max: 100.  Add 
 #      `&limit=100` to raise this.)
 twitch_list=(t:srl t:sda t:csgopros
-    s:fatzke,lukerf44,tirean,justshanz,misterpost,fragbitelive,eidgod,redbullesports)
+             s:fatzke,lukerf44,tirean,justshanz,misterpost,eidgod,ultimaomega07)
+
+# Stream quality, each will be attempted in order and falls back to the next
+stream_quality="medium,high,best,source"
+
+# Options passed to dmenu, the `-p` prompt is passed later
+dmenu_opts=(-fn "Dina Bold 8" -i -l 40)
 
 # Make sure to not (-u) 'unstring' the title as it may contain valid escapes
 # which break the strict ordering requirements for the while read loop.  We will
@@ -18,12 +24,6 @@ jshon_team_opts=(-e channels -a -e channel -e name -upe link -upe title)
 
 # Arguments required for the steam API
 jshon_stream_opts=(-e streams -a -e channel -e name -upe url -upe game)
-
-# Stream quality, each will be attempted in order and falls back to the next
-stream_quality="medium,best,source"
-
-# Options passed to dmenu, the `-p` prompt is passed later
-dmenu_opts=(-fn "Dina Bold 8" -i -l 40)
 
 get_json() {
     local s="$1"
@@ -80,9 +80,12 @@ if sel=$(printf "%s\n" "${!streams[@]}" | sort | dmenu "${dmenu_opts[@]}"); then
         --ringbuffer-size 800000 "${streams[$sel]}" "$stream_quality"
     )
 
-    # Blindly pass the value based on the key from selection to livestreamer
+    # Pass the value based on the key from selection to livestreamer
     if ! livestreamer "${lstreamer_opts[@]}"; then
-        i3-nagbar -m "Failed to open stream \`${streams[$sel]}'" -t error
+        if hash i3-nagbar; then
+            i3-nagbar -m "Failed: ${streams[$sel]}" -t error
+        else
+            printf >&2 "Failed: %s (%d)" "${streams[$sel]}"
+        fi
     fi
 fi
-
