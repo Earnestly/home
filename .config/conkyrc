@@ -32,8 +32,7 @@ TEXT
 "color":"\#5f5f5f"},\
 {"full_text":"NET:${wireless_essid wlp3s0} ${wireless_link_qual wlp3s0}%",\
 "color":"\#5f5f5f"},\
-{"full_text":"${if_smapi_bat_installed 0}BAT:${smapi_bat_perc 0}% \
-${smapi BAT0/state} ${smapi_bat_temp 0}C${endif}",\
+{"full_text":"${if_smapi_bat_installed 0}BAT:${smapi_bat_perc 0}% ${smapi BAT0/state} ${smapi_bat_temp 0}C${endif}",\
 "color":"\#5f5f5f"},\
 {"full_text":"${time %A %B %d %H:%M}",\
 "color":"\#5f5f5f"}],
