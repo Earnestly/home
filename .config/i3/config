@@ -1,15 +1,14 @@
 # ~/.config/i3/config
 
-# Font for window titles.
-#font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
+# font for window titles and bar
 font pango: Dina, Bold 8
 
 new_window pixel 2
 workspace_auto_back_and_forth yes
 workspace_layout tabbed
 
-# Use super key
-set $mod Mod4
+# use super key
+set $mod mod4
 
 # use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -20,7 +19,7 @@ bindsym $mod+Return exec termite
 # kill focused window
 bindsym $mod+Shift+q kill
 
-# Change focus
+# change focus
 bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
@@ -120,7 +119,7 @@ mode "DMENU MODE" {
     bindsym Escape mode "default"
 }
 
-bindsym $mod+n mode "DMENU MODE"
+bindsym $mod+p mode "DMENU MODE"
 
 # control music
 mode "MPD CONTROL" {
@@ -137,6 +136,7 @@ mode "MPD CONTROL" {
 
 bindsym $mod+m mode "MPD CONTROL"
 
+# colors
 # class                 border  backgr. text    indicator
 client.focused          #506070 #506070 #ffffff #2e9ef4
 client.focused_inactive #222222 #222222 #ffffff #222222
@@ -164,8 +164,8 @@ for_window [class="plugin-container"] floating enable
 for_window [class="Firefox"] floating enable
 for_window [class="Firefox" instance="Navigator"] floating disable
 
-# Fontforge floating toolboxes
-for_window [class="fontforge" title="Layers"] floating enable
+# fontforge floating toolboxes
+for_window [class="fontforge" title="layers"] floating enable
 for_window [class="fontforge" title="Tools"] floating enable
 
 for_window [class="Wine"] floating enable
@@ -174,18 +174,18 @@ assign [class="Firefox"] 2
 assign [class="mpv"] 3
 assign [class="Wine"] 5
 
-# Focus latest urgent window
+# focus latest urgent window
 bindsym $mod+u [urgent="latest"] focus
 
-# Toggle trackpad
+# toggle trackpad
 bindsym XF86TouchpadToggle exec trackpad_toggle
 
-# Toggle mic mute
-bindcode 198 exec ponymix -t source -d 1 toggle
+# toggle mic mute
+bindsym XF86AudioMicMute exec ponymix -t source -d 1 toggle
 
-# Global media keys
-# Send SIGUSR1 to immediately refresh i3status
-# E.g. bindsym XF86AudioMute exec ponymix toggle && pkill -SIGUSR1 i3status
+# global media keys
+# send SIGUSR1 to immediately refresh i3status
+# e.g. bindsym XF86AudioMute exec ponymix toggle && pkill -SIGUSR1 i3status
 bindsym XF86AudioMute exec ponymix toggle
 bindsym XF86AudioLowerVolume exec ponymix decrease 3
 bindsym XF86AudioRaiseVolume exec ponymix increase 3
@@ -195,5 +195,5 @@ bindsym XF86AudioPlay exec mpc toggle
 bindsym XF86AudioNext exec mpc next
 bindsym XF86AudioPrev exec mpc prev
 
-# Meh
+# meh
 bindsym XF86Launch1 exec firefox
