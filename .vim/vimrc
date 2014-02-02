@@ -1,5 +1,6 @@
 " ~/.vimrc
 
+set nocompatible
 execute pathogen#infect()
 
 " Settings
@@ -11,7 +12,6 @@ set showcmd
 set undofile
 set wildmenu
 set linebreak
-set nocompatible
 set backspace=indent,eol,start
 
 syntax on
@@ -30,7 +30,7 @@ if &t_Co > 255 || has ('gui_running')
 endif
 
 set guioptions=acM
-set guifont=Fira\ Mono\ 11
+set guifont=Inconsolatazi4\ 12.5
 
 set incsearch
 set smartcase
@@ -43,7 +43,7 @@ set statusline=%n.\ %F\ %M%=%y%w%r%h\ %{&fenc}\ (%l,%c)\ %p%%
 " Speed up ESC in msec
 set ttimeoutlen=50
 
-" Use the Xorg’s secondary buffer as default register
+" Use the Xorg's primary buffer as default register
 set clipboard=unnamed
 
 " Set directories
