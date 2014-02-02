@@ -128,8 +128,8 @@ bindkey -M vicmd 'v' edit-command-line
 bindkey '^P' up-line-or-search
 bindkey '^N' down-line-or-search
 
-# Ctrl-/
-bindkey '^_' history-incremental-pattern-search-backward
+# Patterned history search with zsh expansion, globbing, etc.
+bindkey '^K' history-incremental-pattern-search-forward
 
 # Verify search result before accepting
 bindkey -M isearch '^M' accept-search
@@ -185,7 +185,7 @@ unalias run-help
 alias help='run-help'
 
 # Directory hashes
-for d in "$HOME"/devel/^temp*(/); do
+for d in "$HOME"/dev/^temp*(/); do
     hash -d "${d##*/}=$d"
 done
 
