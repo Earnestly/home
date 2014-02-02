@@ -9,6 +9,7 @@ vo=opengl
 
 # audio
 ao=pulse
+#softvol=yes
 
 # lang
 slang=en,eng
