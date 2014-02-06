@@ -20,4 +20,4 @@
       auto-save-default nil
       mouse-autoselect-window t)
 
-(set-face-attribute 'default nil :family "CMU Typewriter Text" :height 120)
+(set-face-attribute 'default nil :family "Inconsolatazi4" :height 120)
