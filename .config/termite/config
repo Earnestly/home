@@ -4,13 +4,22 @@ scroll_on_output = false
 scroll_on_keystroke = true
 audible_bell = false
 visible_bell = false
-mouse_autohide = true
+mouse_autohide = false
 allow_bold = true
 dynamic_title = true
 urgent_on_bell = true
 clickable_url = true
-#font = PT Mono 9
-font = CMU Typewriter Text 11
+
+#font = Audimat Mono Regular 12.5
+#font = CMU Typewriter Text 12
+#font = Droid Sans Mono 12
+#font = LetterGothic 12.5
+font = Inconsolatazi4 12
+#font = Dash 8
+#font = CentSchbook Mono BT 12.5
+#font = Fira Mono 10.5
+#font = Source Code Pro Earnest 11.2
+
 scrollback_lines = 10000
 search_wrap = true
 #icon_name = terminal
@@ -18,7 +27,6 @@ search_wrap = true
 
 # 0.0: opaque, 1.0: transparent
 transparency = 0.0
-pseudo_transparency = false
 
 # "system", "on" or "off"
 cursor_blink = system
@@ -36,30 +44,39 @@ browser = firefox
 [colors]
 #foreground = #dcdccc
 #foreground_bold = #ffffff
-#foreground_dim = #888888
+##foreground_dim = #888888
 #background = #3f3f3f
 #cursor = #dcdccc
 
 # if unset, will reverse foreground and background
-highlight = #2f2f2f
+#highlight = #2f2f2f
+
+foreground = #bbbdbb
+foreground_bold = #ffffff
+#foreground_dim = #888888
+background = #121212
+#cursor = #dcdccc
+
+# if unset, will reverse foreground and background
+highlight = #2f2f3f
 
 # colors from color0 to color254 can be set
-#color0 = #3f3f3f
-#color1 = #705050
-#color2 = #60b48a
-#color3 = #dfaf8f
-#color4 = #506070
-#color5 = #dc8cc3
-#color6 = #8cd0d3
-#color7 = #dcdccc
-#color8 = #709080
-#color9 = #dca3a3
-#color10 = #c3bf9f
-#color11 = #f0dfaf
-#color12 = #94bff3
-#color13 = #ec93d3
-#color14 = #93e0e3
-#color15 = #ffffff
+color0 = #282a2e
+color1 = #af3a3a
+color2 = #96a034
+color3 = #e2935b
+color4 = #5581a7
+color5 = #855d99
+color6 = #56958d
+color7 = #bbbdbb
+color8 = #373b41
+color9 = #e06666
+color10 = #c2cc66
+color11 = #facb70
+color12 = #84aed3
+color13 = #c69bdd
+color14 = #91cfc6
+color15 = #d5d9d6
 
 [hints]
 #font = Monospace 12
