@@ -129,7 +129,8 @@ bindkey '^P' up-line-or-search
 bindkey '^N' down-line-or-search
 
 # Patterned history search with zsh expansion, globbing, etc.
-bindkey '^K' history-incremental-pattern-search-forward
+bindkey -M vicmd '^T' history-incremental-pattern-search-backward
+bindkey          '^T' history-incremental-pattern-search-backward
 
 # Verify search result before accepting
 bindkey -M isearch '^M' accept-search
