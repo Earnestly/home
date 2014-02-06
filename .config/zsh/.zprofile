@@ -29,8 +29,8 @@ export LESSHISTFILE="$XDG_CACHE_HOME"/lesshist
 export BROWSER=firefox
 export TERMINAL=termite
 
-# Disable Mono and Gecko installation prompts and prevent .desktop creation
-export WINEDLLOVERRIDES="winemenubuilder.exe=d;mscoree,mshtml=d"
+# Disable Mono and Gecko installation and .desktop creation
+export WINEDLLOVERRIDES="winemenubuilder.exe,mscoree,mshtml=d"
 
 export WINEARCH=win32
 export WINEDEBUG=-all
