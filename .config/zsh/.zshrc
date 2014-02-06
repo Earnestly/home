@@ -10,24 +10,23 @@ zle -N zle-line-init
 zle -N zle-keymap-select
 
 # Shell options
-setopt \
-    autocd \
-    nobgnice \
-    promptsubst \
-    interactivecomments \
+setopt autocd \
     dotglob \
-    rmstarsilent \
-    extendedglob \
-    completealiases \
-    numericglobsort \
-    printexitvalue \
+    nobgnice \
     histappend \
     histverify \
+    promptsubst \
+    rmstarsilent \
+    extendedglob \
     sharehistory \
+    printexitvalue \
     histsavenodups \
+    completealiases \
+    numericglobsort \
     histignorespace \
     histreduceblanks \
-    histignorealldups
+    histignorealldups \
+    interactivecomments \
 
 READNULLCMD="$PAGER"
 HELPDIR="$XDG_CONFIG_HOME"/zsh/help
@@ -36,24 +35,23 @@ HISTSIZE=10000
 SAVEHIST=$HISTSIZE
 
 # Style
-PROMPT='%m • %n %#${vimode} %F{cyan}%~%f '
+PROMPT='%m %n %#${vimode} %F{cyan}%~%f '
 
 zstyle ':completion:*' menu select
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' rehash yes
 
 # Functions
-
 # Print basic prompt to the window title
 function precmd {
     print -Pn '\e];%n %~\a'
 }
 
 # Print the current running command's name to the window title
-function preexec { 
+function preexec {
     local cmd=${1[(wr)^(*=*|sudo|exec|ssh|-*)]}
     print -Pn "\e];$cmd:q\a"
-} 
+}
 
 # Replace vimode indicators
 function zle-line-init zle-keymap-select {
