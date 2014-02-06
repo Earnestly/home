@@ -7,9 +7,6 @@
 # Oh boy, here we go!
 pkgname="$1"
 
-# XXX ಠ_ಠ
-keep_git="${2:-n}"
-
 # A bit of future-proofing
 urls=("git://projects.archlinux.org/svntogit/packages.git"
       "git://projects.archlinux.org/svntogit/community.git")
@@ -37,11 +34,6 @@ fi
 if [[ -d "$pkgname" ]]; then
     cd "$pkgname"
     git checkout HEAD:trunk -- .
-
-    # XXX Handle this more gracefully
-    if [[ "$keep_git" == n ]]; then
-        rm -rf .git
-    fi
 else
     # This should never happen
     printf >&2 "Directory does not exist.\n"
