@@ -1,7 +1,7 @@
 # ~/.config/i3/config
 
 # font for window titles and bar
-font pango: Dina, Bold 8.5
+font pango: Dina, Bold 8
 
 new_window pixel 2
 workspace_auto_back_and_forth yes
@@ -96,10 +96,10 @@ bindsym $mod+Shift+e exit
 
 # resize window (you can also use the mouse for that)
 mode "RESIZE MODE" {
-    bindsym h resize shrink width 5 px or 5 ppt
-    bindsym j resize grow height 5 px or 5 ppt
-    bindsym k resize shrink height 5 px or 5 ppt
-    bindsym l resize grow width 5 px or 5 ppt
+    bindsym h resize shrink width 1 px or 1 ppt
+    bindsym j resize grow height 1 px or 1 ppt
+    bindsym k resize shrink height 1 px or 1 ppt
+    bindsym l resize grow width 1 px or 1 ppt
 
     bindsym q mode "default"
     bindsym Escape mode "default"
@@ -108,12 +108,12 @@ mode "RESIZE MODE" {
 bindsym $mod+r mode "RESIZE MODE"
 
 mode "DMENU MODE" {
-    bindsym d exec ditch; mode "default"
-    bindsym w exec dwall; mode "default"
-    bindsym p exec dmenu_run; mode "default"
-    bindsym u exec dmenu_loader ~/.local/share/dmenu/dmenu_yt; mode "default"
-    bindsym o exec dmenu_loader ~/.local/share/dmenu/dmenu_pdf; mode "default"
-    bindsym l exec dmenu_loader ~/.local/share/dmenu/dmenu_pls; mode "default"
+    bindsym d exec --no-startup-id ditch; mode "default"
+    bindsym w exec --no-startup-id dwall; mode "default"
+    bindsym p exec --no-startup-id dmenu_run; mode "default"
+    bindsym u exec --no-startup-id dmenu_loader ~/.local/share/dmenu/dmenu_yt; mode "default"
+    bindsym o exec --no-startup-id dmenu_loader ~/.local/share/dmenu/dmenu_pdf; mode "default"
+    bindsym l exec --no-startup-id dmenu_loader ~/.local/share/dmenu/dmenu_pls; mode "default"
 
     bindsym q mode "default"
     bindsym Escape mode "default"
