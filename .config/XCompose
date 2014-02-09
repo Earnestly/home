@@ -35,6 +35,9 @@ include "%S/en_US.UTF-8/Compose"
 <Multi_key> <bar> <asciicircum> : "↑"
 <Multi_key> <bar> <v> : "↓"
 
+# irc shortcuts
+<Multi_key> <v> <i> : "$EDITOR"
+
 # fun with paleotypography
 <Multi_key> <T> <H> : "Ð" # 'Th'e
 <Multi_key> <t> <h> : "ð" 
