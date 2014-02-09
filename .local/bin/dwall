@@ -27,6 +27,8 @@ wall_sel=$(
 # Link the chosen wallpaper to the target symlink and then set the wallpaper via
 # said symlink
 if [[ -n "$wall_sel" ]]; then
+    # Get the first match and exit, meh
+    resolution=$(xrandr | awk '/ connected/ { print $3; exit }')
     ln -sf "$wall_dir"/"$wall_sel" "$wall_sym"
-    display -window root -resize '1366x768!' "$wall_sym"
+    display -window root -resize $resolution\! "$wall_sym"
 fi
