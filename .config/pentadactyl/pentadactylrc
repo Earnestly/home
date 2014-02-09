@@ -33,10 +33,10 @@ nmap <C-j> <nop>
 nmap <C-k> <nop>
 
 " Open the current URL as an argument to yt-dl
-nmap <S-u> :launchv<CR>
+nmap <S-u> -e :launchv
 
 " Same above but with quvi
-nmap <S-q> :launchvq<CR>
+nmap <S-q> -e :launchvq
 
 " Use vim instead of gvim for now
 set editor='termite -e "vim +<line> <file>"'
