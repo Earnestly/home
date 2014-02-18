@@ -30,7 +30,7 @@ TEXT
 "color":"\#5f5f5f"},\
 {"full_text":"HDD:${fs_used}",\
 "color":"\#5f5f5f"},\
-{"full_text":"NET:${if_up wlp3s0}${wireless_essid wlp3s0} ${wireless_link_qual wlp3s0}% DOWN:${downspeedf wlp3s0}/UP:${upspeedf wlp3s0}${else}OFF${endif}",\
+{"full_text":"NET:${if_up wlp3s0}${wireless_essid wlp3s0} ${wireless_link_qual wlp3s0}% DN:${downspeedf wlp3s0}/UP:${upspeedf wlp3s0}${else}OFF${endif}",\
 "color":"\#5f5f5f"},\
 {"full_text":"${if_smapi_bat_installed 0}BAT:${smapi_bat_perc 0}% ${smapi BAT0/state} ${smapi_bat_temp 0}C${endif}",\
 "color":"\#5f5f5f"},\
