@@ -1,18 +1,23 @@
-/* Quick function to help reduce duplication in my config, thanks mostly to
-   holomorph who did pretty much all of this ❤ 
+/* ~/.config/pentadactyl/plugins/launchv.js
 
-   Adds two new commands and two new hint modes:
-   * :launchv  - Opens the current buffer url prefering yt-dl
-   * :launchvq - Same as above but prefers quvi
-   
-   Hints: 
-   * ;u - launches the current hint prefering yt-dl
-   * ;q - Same but prefers quvi
-   
-   Note: If the url contains a youtube playlist it will return the playlist's
-         url rather than the direct youtube video.
+    Quick function to help reduce duplication in my config, thanks mostly to
+    holomorph who started pretty much all of this
+
+    Adds two new commands and two new hint modes:
+    * :launchv  - Opens the current buffer url prefering yt-dl
+    * :launchvq - Same as above but prefers quvi
+
+    Hints:
+    * ;u - launches the current hint prefering yt-dl
+    * ;q - Same but prefers quvi
+
+    Note: If the url contains a youtube playlist it will return the playlist's
+          url rather than the direct youtube video.
+
+    Todo:
+    * Remove the duplication between quvi and yt-dl and unify the keys/hints
 */
- 
+
 function launchv(target, quvi=true){
 
     /* Escape anything which could be used to inject shell commands before
@@ -27,7 +32,11 @@ function launchv(target, quvi=true){
     /* filter certain urls to more appropriate programs before passing to
      * quvi */
     if(uri.match(/twitch\.tv\/.*\/[bc]\/[0-9]+/))
-        exec("yt-dl", uri);
+
+        /* XXX Currently youtube-dl will only fetch the first 30 minutes of the
+         *     stream.  Replacing this with lstream until fixed. */
+        //exec("yt-dl", uri);
+        exec("lstream", uri);
     else if(uri.match(/twitch\.tv/))
         exec("lstream", uri);
 
@@ -49,6 +58,7 @@ function launchv(target, quvi=true){
         exec("yt-dl", uri);
 }
 
+/* Ugly duplication :( */
 hints.addMode("q", "Launch video from hint (quvi)",
     function (elem, loc) launchv(loc));
 
