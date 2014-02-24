@@ -20,15 +20,16 @@ function launchv(target, quvi=true){
     var uri = target.replace(/([$`"\\])/g, "\\$1");
 
     function exec(launcher, uri){
-        return commands.execute(launcher + ' "' + uri + '" &');
+        commandline.echo("Launching video: " + uri);
+        return io.system(launcher + ' "' + uri + '" &');
     }
 
     /* filter certain urls to more appropriate programs before passing to
      * quvi */
     if(uri.match(/twitch\.tv\/.*\/[bc]\/[0-9]+/))
-        exec("!yt-dl", uri);
+        exec("yt-dl", uri);
     else if(uri.match(/twitch\.tv/))
-        exec("!lstream", uri);
+        exec("lstream", uri);
 
     /* Open youtube playlists of any kind directly with mpv */
     else if(uri.match(/youtube.*[?&]list=PL/))
@@ -37,15 +38,15 @@ function launchv(target, quvi=true){
          * url is provided and return the real playlist url */
         if(uri.match(/watch\?v=/)){
             var uri = uri.replace(/watch\?v.+?\&/, "playlist\?")
-            exec("!mpv --really-quiet --cache=4096", uri);
+            exec("mpv --really-quiet --cache=4096", uri);
         }else
-            exec("!mpv --really-quiet --cache=4096", uri);
+            exec("mpv --really-quiet --cache=4096", uri);
 
     /* For everything else */
     else if(quvi)
-        exec("!quvi dump -b mute", uri);
+        exec("quvi dump -b mute", uri);
     else
-        exec("!yt-dl", uri);
+        exec("yt-dl", uri);
 }
 
 hints.addMode("q", "Launch video from hint (quvi)",
