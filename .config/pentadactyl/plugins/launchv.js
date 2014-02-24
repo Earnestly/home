@@ -25,7 +25,7 @@ function launchv(target, quvi=true){
     var uri = target.replace(/([$`"\\])/g, "\\$1");
 
     function exec(launcher, uri){
-        commandline.echo("Launching: " + launcher + " " + uri);
+        dactyl.echomsg("Launching: " + launcher + " " + uri);
         return io.system(launcher + ' "' + uri + '" &');
     }
 
