@@ -26,7 +26,12 @@ set softtabstop=4
 set expandtab
 
 if &t_Co > 255 || has ('gui_running')
-    colorscheme zenburn
+    set background=dark
+    let base16colorspace=256
+    colorscheme base16-tomorrow
+
+    "let g:zenburn_high_Contrast=1
+    "colorscheme zenburn
 endif
 
 set guioptions=acM
