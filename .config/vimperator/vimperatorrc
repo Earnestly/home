@@ -9,6 +9,9 @@ set noscrollbars
 set tabnumbers
 set hlsearch
 
+set autocomplete
+set wildmode=list:longest,full
+
 " Speed up scrolling
 noremap h 5h
 noremap j 5j
@@ -21,11 +24,11 @@ set focuscontent=true
 " Toggle bookmark toolbar
 nmap s :set toolbars=invbookmarks<CR>
 
-" XXX Tab control
-nmap <A-h> :tabprev
-nmap <A-l> :tabnext
-nmap <A-S-h> :tabmove -1
-nmap <A-S-l> :tabmove +1
+" Tab control
+nmap <A-h> :tabprev<CR>
+nmap <A-l> :tabnext<CR>
+nmap <A-S-h> :tabmove -1<CR>
+nmap <A-S-l> :tabmove +1<CR>
 
 " Easily show downloads
 nmap <S-d> :tab downloads<CR>
@@ -48,36 +51,24 @@ set! security.ssl.require_safe_negotiation=true
 set! security.ssl.treat_unsafe_negotiation_as_broken=true
 
 " Open current url as an argument to quvi
-nmap <S-q> :js openwithquvi()<CR>
-nmap <S-u> :js openwithytdl()<CR>
-nmap <S-s> :js openwithlstream()<CR>
 
-" Custom url hints
-js <<EOF
-hints.addMode("q", "Launch video (quvi) from hint", function(elem, loc)
-              io.system('quvi dump -b mute "' 
-                        + loc.replace(/([$`"\\])/g, "\\$1") + '" &'));
+" Open the current URL as an argument to yt-dl
+nmap <S-u> -e :launchv
 
-hints.addMode("u", "Launch video (youtube-dl) from hint", function(elem, loc)
-              io.system('yt-dl "' 
-                        + loc.replace(/([$`"\\])/g, "\\$1") + '" &'));
-
-hints.addMode("U", "Launch video (youtube-dl) from hint", function(elem, loc)
-              io.system('yt-dl "' 
-                        + loc.replace(/([$`"\\])/g, "\\$1") + '" &'));
-EOF
+" Same above but with quvi
+nmap <S-q> -e :launchvq
 
 " Style
 colorscheme vimium_hints
 colorscheme userchrome
 
 " Custom per-site CSS
-colorscheme justify
-colorscheme htdp.org
-colorscheme azillionmonkeys.com
-colorscheme learnyouahaskell.com
-colorscheme realworldhaskell.org
-colorscheme haskell.org
+"colorscheme justify
+"colorscheme htdp.org
+"colorscheme azillionmonkeys.com
+"colorscheme learnyouahaskell.com
+"colorscheme realworldhaskell.org
+"colorscheme haskell.org
 
 " Functions
 :js <<EOF
@@ -87,20 +78,5 @@ function toggleStatusbar() {
         return;
     bb.style.height = (bb.style.height == '') ? '0px' : '';
     bb.style.overflow = (bb.style.height == '') ? '' : 'hidden';
-}
-
-function openwithquvi() {
-    io.system('quvi dump -b mute "' 
-              + content.location.href.replace(/([$`"\\])/g, "\\$1") + '" &');
-}
-
-function openwithytdl() {
-    io.system('yt-dl "' 
-              + content.location.href.replace(/([$`"\\])/g, "\\$1") + '" &');
-}
-
-function openwithlstream() {
-    io.system('lstream "' 
-              + content.location.href.replace(/([$`"\\])/g, "\\$1") + '" &');
 }
 EOF
