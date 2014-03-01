@@ -1,6 +1,7 @@
 #!/bin/bash
 # ~/.local/bin/ditch
 # Create a dmenu using the twitch team and stream api
+# Requires jshon, dmenu-imlib-pango
 
 # List of teams or streamers from twitch.tv for inclusion.  curl will pull down
 # the json data simultaneously.  (Be careful with too many items (`t:` or `s:`))
@@ -9,13 +10,14 @@
 # s: = twitch stream names seperated by commas (limit: 25, max: 100.  Add 
 #      `&limit=100` to raise this.)
 twitch_list=(t:srl t:sda t:csgopros
-             s:fatzke,lukerf44,tirean,justshanz,misterpost,eidgod,ultimaomega07)
+    s:cgn0,s:fatzke,lukerf44,tirean,justshanz,misterpost,eidgod,ultimaomega07)
 
 # Stream quality, each will be attempted in order and falls back to the next
 stream_quality="medium,high,best,source"
 
-# Options passed to dmenu, the `-p` prompt is passed later
-dmenu_opts=(-fn "Dina Bold 8" -i -l 40)
+# Options passed to dmenu, the `-p` prompt is passed later, remove `-w` if you
+# use plain old dmenu
+dmenu_opts=(-fn "Dina Bold 8" -w -i -l 40)
 
 # Make sure to not (-u) 'unstring' the title as it may contain valid escapes
 # which break the strict ordering requirements for the while read loop.  We will
@@ -85,7 +87,7 @@ if sel=$(printf "%s\n" "${!streams[@]}" | sort | dmenu "${dmenu_opts[@]}"); then
         if hash i3-nagbar; then
             i3-nagbar -m "Failed: ${streams[$sel]}" -t error
         else
-            printf >&2 "Failed: %s (%d)" "${streams[$sel]}"
+            printf >&2 "Failed: %s" "${streams[$sel]}"
         fi
     fi
 fi
