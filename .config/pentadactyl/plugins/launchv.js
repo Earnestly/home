@@ -18,7 +18,7 @@
     * Remove the duplication between quvi and yt-dl and unify the keys/hints
 */
 
-function launchv(target, quvi=true){
+function launchv(target, quvi=false){
 
     /* Escape anything which could be used to inject shell commands before
      * passing it to the commands */
