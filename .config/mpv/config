@@ -6,6 +6,7 @@ title="mpv: ${filename}"
 # video
 vo=opengl
 #vo=vaapi,opengl
+force-window
 
 # audio
 ao=pulse
@@ -15,8 +16,14 @@ ao=pulse
 slang=en,eng
 alang=en,eng
 
+# use cache for network streams
+cache=auto
+cache-default=4096
+
 # profiles
 [live]
 profile-desc="Prevent A/V desync during live streams"
 mc=0
 autosync=30
+# make sure to cache even if we're consuming a file stream
+cache=4096
