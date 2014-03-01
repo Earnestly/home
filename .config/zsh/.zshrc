@@ -152,7 +152,7 @@ compdef "_files -W $HOME/docs/notes -/" nmv
 # aliases
 alias ...='cd ../..'
 alias ....='cd ../../..'
-alias rr='rm -rv'
+alias rr='rm -rvI'
 alias rm='rm -vI'
 alias cp='cp -vi'
 alias mv='mv -vi'
