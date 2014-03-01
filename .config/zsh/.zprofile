@@ -10,13 +10,22 @@ export MPV_HOME="$XDG_CONFIG_HOME"/mpv
 export SLRNHOME="$XDG_CONFIG_HOME"/slrn
 export GNUPGHOME="$XDG_CONFIG_HOME"/gnupg
 export TIGRC_USER="$XDG_CONFIG_HOME"/tigrc
+export PERL_CPANM_HOME="$XDG_CACHE_HOME"/cpanm
 export GIMP2_DIRECTORY="$XDG_CONFIG_HOME"/gimp
 export ELINKS_CONFDIR="$XDG_CONFIG_HOME"/elinks
 export XCOMPOSEFILE="$XDG_CONFIG_HOME"/XCompose
 export NOTMUCH_CONFIG="$XDG_CONFIG_HOME"/notmuchrc
 export GUILE_HISTORY="$XDG_CONFIG_HOME"/guile/history
 export PENTADACTYL_RUNTIME="$XDG_CONFIG_HOME"/pentadactyl
+export VIMPERATOR_RUNTIME="$XDG_CONFIG_HOME"/vimperator
 export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/settings.ini
+
+# perl
+export PERL5LIB="$HOME"/.local/lib/perl5
+export PERL_MM_OPT="INSTALL_BASE=$HOME/.local"
+export PERL_MB_OPT="--install_base $HOME/.local"
+
+export MANPATH="$HOME"/.local/man:"$MANPATH"
 
 export XAUTHORITY="$XDG_RUNTIME_DIR"/X11-authority
 
