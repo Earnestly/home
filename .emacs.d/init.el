@@ -13,6 +13,7 @@
 ;; Mostly stolen from better-defaults
 (evil-mode t)
 (ido-mode t)
+(eyebrowse-mode t)
 
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "C-s") 'isearch-forward-regexp)
