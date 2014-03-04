@@ -57,6 +57,6 @@ export GOPATH="$HOME"/dev/go
 # Enable C-S-t in termite which opens a new terminal in the same working
 # directory.
 if [[ -n "$VTE_VERSION" ]]; then
-    . /etc/profile.d/vte.sh
-    __vte_osc7
+    source /etc/profile.d/vte.sh
+    __vte_prompt_command
 fi
