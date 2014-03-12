@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# startx
+# Alternative, simpler startx which makes use of the XDG specification
+
+# Make sure we aren't running in an xserver
+if [[ -n "$DISPLAY" ]]; then
+    exit 1
+fi
+
+xinitrc="${XDG_CONFIG_HOME:-$HOME/.config}"/xinitrc
+log="$XDG_CACHE_HOME"/xsession.log
+
+if [[ -z "$XAUTHORITY" ]]; then
+    export XAUTHORITY="$XDG_RUNTIME_DIR"/X11-authority
+else
+    export XAUTHORITY
+fi
+
+# Delete this when using dbus.socket/service
+unset DBUS_SESSION_BUS_ADDRESS
+
+unset SESSION_MANAGER
+export DISPLAY=:"$XDG_VTNR"
+
+# I can blindly add a new entry with xauth because this is stored in a tmpfs
+xauth -qf "$XAUTHORITY" add "$DISPLAY" . "$(mcookie)" &> /dev/null
+
+serveropts=(
+    vt"$XDG_VTNR" 
+    -noreset
+    -nolisten tcp 
+    -auth "$XAUTHORITY"
+)
+
+# If using systemd --user with dbus.service
+#sysdopts=(
+#    --user
+#    --scope
+#    --unit="xinit-$DISPLAY.scope"
+#    --description="Simple xinit wrapper"
+#)
+
+#exec systemd-run "${sysdopts[@]}" xinit "${1:-$xinitrc}" -- "$DISPLAY" "${serveropts[@]}" "$@" 3> "$log"
+exec xinit "${1:-$xinitrc}" -- "$DISPLAY" "${serveropts[@]}" "$@" 3> "$log"
