@@ -28,14 +28,14 @@ set expandtab
 if &t_Co > 255 || has ('gui_running')
     set background=dark
     let base16colorspace=256
-    colorscheme base16-tomorrow
+    colorscheme base16-twilight
 
     "let g:zenburn_high_Contrast=1
     "colorscheme zenburn
 endif
 
 set guioptions=acM
-set guifont=Inconsolatazi4\ 12.5
+set guifont=Inconsolatazi4\ 12
 
 set incsearch
 set smartcase
