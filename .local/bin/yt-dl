@@ -8,4 +8,4 @@
     read -r url
 } < <(youtube-dl -eg "$1")
 
-exec mpv --really-quiet --loop=inf --title="$title" "$url"
+mpv --really-quiet --loop=inf --title="$title" "$url"
