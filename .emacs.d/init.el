@@ -13,7 +13,9 @@
 ;; Mostly stolen from better-defaults
 (evil-mode t)
 (ido-mode t)
+
 (eyebrowse-mode t)
+(eyebrowse-setup-opinionated-keys)
 
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "C-s") 'isearch-forward-regexp)
@@ -35,5 +37,7 @@
       mouse-autoselect-window t
       inhibit-splash-screen t
       ido-enable-flex-matching t
+      eyebrowse-wrap-around-p t
+      eyebrowse-switch-back-and-forth-p t
       ido-save-directory-list-file "~/.emacs.d/cache/ido.last"
       default-frame-alist '((font . "Inconsolatazi4-12")))
