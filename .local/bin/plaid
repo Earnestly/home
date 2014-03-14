@@ -48,7 +48,9 @@ handle_local() {
 
 handle_youtube() {
     local url="$1"
-    local json=$(quvi dump -p json "$url")
+    local json
+
+    json=$(quvi dump -p json "$url")
 
     title=$(jshon -e quvi -e playlist -e QUVI_PLAYLIST_PROPERTY_TITLE <<< "$json")
 
@@ -62,7 +64,9 @@ handle_youtube() {
 handle_sda() {
     local url="$1"
     local urls
-    local data=$(elinks -dump -no-numbering "$url")
+    local data
+
+    data=$(elinks -dump -no-numbering "$url")
 
     # Use the name of the demo as the title, e.g.
     # http://.../demo?The_Demo_Name → The_Demo_Name
