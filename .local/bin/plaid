@@ -1,12 +1,8 @@
 #!/bin/bash
 # ~/.local/bin/plaid <url or path to playlist>
-
-# Requires: 
-# * jshon
-# * elinks
-# * dmenu_loader
-# * quvi
-# * mpv
+# Generate a playlist for mpv's consumption while creating and/or appending to
+# a dmenu_loader file.
+# Requires jshon, elinks, dmenu_loader, quvi, mpv
 
 # Environment
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
@@ -34,6 +30,7 @@ Command=exec plaid
 EOF
 fi
 
+# If the playlist already exists and is a file, use that
 handle_local() {
     local url="$1"
     local k v
@@ -56,11 +53,12 @@ handle_youtube() {
     title=$(jshon -e quvi -e playlist -e QUVI_PLAYLIST_PROPERTY_TITLE <<< "$json")
 
     # Strip any spaces, %20s and quotes, ಠ_ಠ
-    title="${title// /}"; title="${title//\"/}"; title="${title//\'/}"; title="${title//\%20/_}"
+    title="${title// /_}"; title="${title//\"/}"; title="${title//\'/}"; title="${title//\%20/_}"
 
     playlist=$(jshon -e quvi -e playlist -e media -a -e QUVI_PLAYLIST_MEDIA_PROPERTY_URL -u <<< "$json")
 }
 
+# Speed Demos Archives
 handle_sda() {
     local url="$1"
     local urls
