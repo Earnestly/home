@@ -1,0 +1,117 @@
+#!/bin/bash
+# ~/.local/bin/plaid <url or path to playlist>
+
+# Requires: 
+# * jshon
+# * elinks
+# * dmenu_loader
+# * quvi
+# * mpv
+
+# Environment
+XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+
+# Globals
+dmenu_plaid="$XDG_DATA_HOME"/dmenu/plaid/dmenu_plaid
+playlist_dir="$XDG_DATA_HOME"/dmenu/plaid/playlists
+
+# These two functions are intended to be global, each handle_* function MUST
+# create these two
+playlist=nil
+title=nil
+
+# Make sure directories exist before doing anything
+if [[ ! -d "$playlist_dir" ]]; then
+    mkdir -p "$playlist_dir"
+fi
+
+# Generate skeleton structure for `dmenu_loader`
+if [[ ! -e "$dmenu_plaid" ]]; then
+cat <<EOF > "$dmenu_plaid"
+Title=Playlist
+Command=exec plaid
+
+EOF
+fi
+
+handle_local() {
+    local url="$1"
+    local k v
+
+    # Just scan the file for any matches and use them
+    while IFS='=' read -r k v; do
+        if [[ "$v" == "$url" ]]; then
+            title="$k"
+            playlist_file="$v"
+        else
+            exit 1
+        fi
+    done < "$dmenu_plaid"
+}
+
+handle_youtube() {
+    local url="$1"
+    local json=$(quvi dump -p json "$url")
+
+    title=$(jshon -e quvi -e playlist -e QUVI_PLAYLIST_PROPERTY_TITLE <<< "$json")
+
+    # Strip any spaces, %20s and quotes, ಠ_ಠ
+    title="${title// /}"; title="${title//\"/}"; title="${title//\'/}"; title="${title//\%20/_}"
+
+    playlist=$(jshon -e quvi -e playlist -e media -a -e QUVI_PLAYLIST_MEDIA_PROPERTY_URL -u <<< "$json")
+}
+
+handle_sda() {
+    local url="$1"
+    local urls
+    local data=$(elinks -dump -no-numbering "$url")
+
+    # Use the name of the demo as the title, e.g.
+    # http://.../demo?The_Demo_Name → The_Demo_Name
+    title="${url#*\?}"
+    # Uses archive.org instead of dl.speeddemoarchives.org
+    playlist=$(
+        while read -r line; do
+            printf "%s\n" "$line"
+        done < <(awk '$2 !~ /http.*(HQ|LQ|IQ)/ && /http.*download/ { print $2 }' <<< "$data")
+    )
+}
+
+case "$1" in
+    "$playlist_dir"/*) handle_local "$1"
+    ;;
+    *youtube.com*) handle_youtube "$1"
+    ;;
+    *speeddemosarchive.com*) handle_sda "$1"
+    ;;
+    *) exit 1
+    ;;
+esac
+
+playlist_file="$playlist_dir"/"$title"
+
+# Populate the playlist file with the actual playlist entires
+if [[ ! -e "$playlist_file" ]]; then
+    printf "%s\n" "$playlist" >> "$playlist_file"
+fi
+
+# Use a counter to increment any occurances of a match, if we've gone through
+# the entire file without a match, append a new entry
+occurs=0
+while IFS='=' read -r k v; do
+   if [[ "$k" == "$title" && "$v" == "$playlist_file" ]]; then
+       ((occurs++))
+   fi
+done < "$dmenu_plaid"
+
+if ! ((occurs)); then
+    printf "%s=%s\n" "$title" "$playlist_file" >> "$dmenu_plaid"
+fi
+
+mpv_opts=(
+    --save-position-on-quit 
+    --really-quiet
+    --playlist="$playlist_file"
+)
+
+mpv "${mpv_opts[@]}" 
