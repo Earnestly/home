@@ -1,7 +1,11 @@
 #!/bin/bash
-# ~/.local/bin/pomf
+# ~/.local/bin/pomf <file [file [...]]>
 
-upload=$(curl -sF "files[]=@$1" http://pomf.se/upload.php)
-geturl=$(jshon -e files -e 0 -e url -u <<< "$upload")
+for f in "$@"; do
+    if [[ -e "$f" ]]; then
+        upload=$(curl -sSF "files[]=@$f" http://pomf.se/upload.php)
+        geturl=$(jshon -e files -e 0 -e url -u <<< "$upload")
 
-printf "%s/%s\n" "http://a.pomf.se" "$geturl"
+        printf "%s: %s/%s\n" "$f" "http://a.pomf.se" "$geturl"
+    fi
+done
