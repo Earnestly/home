@@ -43,13 +43,7 @@ handle_local() {
             title="$k"
             playlist_file="$v"
         fi
-        ((c++))
     done < "$dmenu_plaid"
-
-    # Bail if we don't match anything inside the file
-    if ((c)); then
-        exit 1
-    fi
 
     playlist_file="$playlist_dir"/"$title"
 }
@@ -69,6 +63,8 @@ handle_youtube() {
 
     playlist_file="$playlist_dir"/"$title"
 
+    # Unconditionally remove the playlist and recreate it, this is also going to
+    # create a lot of code duplication, sigh
     if [[ -e "$playlist_file" ]]; then
         rm -- "$playlist_file"
         printf "%s\n" "$playlist" >> "$playlist_file"
@@ -107,7 +103,12 @@ handle_sda() {
 
 case "$1" in
     "$playlist_dir"/*) 
-        handle_local "$1"
+        if [[ -e "$1" ]]; then
+            handle_local "$1"
+        else
+            printf >&2 '%s: Does not exist.\n' "$1"
+            exit 1
+        fi
     ;;
     *youtube.com*) 
         handle_youtube "$1"
@@ -116,7 +117,7 @@ case "$1" in
         handle_sda "$1"
     ;;
     *) 
-        printf '%s: Unknown URI\n' "$1"
+        printf >&2 '%s: Unknown URI\n' "$1"
         exit 1
     ;;
 esac
