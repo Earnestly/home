@@ -1,8 +1,5 @@
 #!/bin/bash
 
-start-pulseaudio-x11 &
-mpd &
-
 # A better unclutter
 hhpc -i 3 &
 
