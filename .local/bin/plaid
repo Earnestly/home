@@ -35,13 +35,12 @@ fi
 # If the playlist already exists and is a file, use that
 handle_local() {
     local url="$1"
-    local k v c
+    local k v
 
     # Just scan the file for any matches and use them
-    while IFS='=' read -r k v; do
+    while IFS='=' read -r k _; do
         if [[ "$v" == "$url" ]]; then
             title="$k"
-            playlist_file="$v"
         fi
     done < "$dmenu_plaid"
 
