@@ -11,8 +11,8 @@
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 
 # Globals
-dmenu_plaid="$XDG_DATA_HOME"/dmenu/plaid/dmenu_plaid
-playlist_dir="$XDG_DATA_HOME"/dmenu/plaid/playlists
+dmenu_file="$XDG_DATA_HOME"/plaid/plaid_dmenu
+playlist_dir="$XDG_DATA_HOME"/plaid/playlists
 
 # Both of these are global and set by functions
 # playlist_file
@@ -24,8 +24,8 @@ if [[ ! -d "$playlist_dir" ]]; then
 fi
 
 # Generate skeleton structure for `dmenu_loader`
-if [[ ! -e "$dmenu_plaid" ]]; then
-cat <<EOF > "$dmenu_plaid"
+if [[ ! -e "$dmenu_file" ]]; then
+cat <<EOF > "$dmenu_file"
 Title=Playlist
 Command=exec plaid
 
@@ -38,11 +38,12 @@ handle_local() {
     local k v
 
     # Just scan the file for any matches and use them
-    while IFS='=' read -r k _; do
+    while IFS='=' read -r k v; do
         if [[ "$v" == "$url" ]]; then
             title="$k"
+            playlist="$v"
         fi
-    done < "$dmenu_plaid"
+    done < "$dmenu_file"
 
     playlist_file="$playlist_dir"/"$title"
 }
@@ -89,7 +90,7 @@ handle_sda() {
             printf "%s\n" "$line"
         done < <(awk '$2 !~ /http.*(HQ|LQ|IQ)/ && /http.*download/ { print $2 }' <<< "$data")
     )
-    
+
     playlist_file="$playlist_dir"/"$title"
 
     if [[ -e "$playlist_file" ]]; then
@@ -101,7 +102,7 @@ handle_sda() {
 }
 
 case "$1" in
-    "$playlist_dir"/*) 
+    "$playlist_dir"/*)
         if [[ -e "$1" ]]; then
             handle_local "$1"
         else
@@ -109,13 +110,13 @@ case "$1" in
             exit 1
         fi
     ;;
-    *youtube.com*) 
+    *youtube.com*)
         handle_youtube "$1"
     ;;
-    *speeddemosarchive.com*) 
+    *speeddemosarchive.com*)
         handle_sda "$1"
     ;;
-    *) 
+    *)
         printf >&2 '%s: Unknown URI\n' "$1"
         exit 1
     ;;
@@ -127,18 +128,20 @@ while IFS='=' read -r k v; do
    if [[ "$k" == "$title" && "$v" == "$playlist_file" ]]; then
        ((occurs++))
    fi
-done < "$dmenu_plaid"
+done < "$dmenu_file"
 
 # If no occurances
 if ! ((occurs)); then
-    printf "%s=%s\n" "$title" "$playlist_file" >> "$dmenu_plaid"
+    printf "%s=%s\n" "$title" "$playlist_file" >> "$dmenu_file"
 fi
 
-mpv_opts=(
-    --save-position-on-quit 
-    --really-quiet
-    --playlist="$playlist_file"
-    --title="$title"
-)
+if [[ -n "$title" && -n "$playlist_file" ]]; then
+    mpv_opts=(
+        --save-position-on-quit
+        --really-quiet
+        --playlist="$playlist_file"
+        --title="$title"
+    )
 
-mpv "${mpv_opts[@]}" 
+    exec mpv "${mpv_opts[@]}"
+fi
