@@ -24,7 +24,7 @@ unset SESSION_MANAGER
 export DISPLAY=:"$XDG_VTNR"
 
 # I can blindly add a new entry with xauth because this is stored in a tmpfs
-xauth -qf "$XAUTHORITY" add "$DISPLAY" . "$(mcookie)" &> /dev/null
+xauth -q add "$DISPLAY" . "$(mcookie)" &> /dev/null
 
 serveropts=(
     vt"$XDG_VTNR" 
