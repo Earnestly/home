@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+# Global
+playlist_dir="$XDG_DATA_HOME"/plaid/playlists
+
+# Any of these modules MUST return both of these variables:
+# playlist_file
+# title
+
+# If the playlist already exists and is a file, use that
+handle_local() {
+    local url="$1"
+    local k v
+
+    # Just scan the file for any matches and use them
+    while IFS='=' read -r k v; do
+        if [[ "$v" == "$url" ]]; then
+            title="$k"
+            playlist="$v"
+        fi
+    done < "$dmenu_file"
+
+    playlist_file="$playlist_dir"/"$title"
+}
+
+handle_youtube() {
+    local url="$1"
+    local json playlist
+
+    json=$(quvi dump -p json "$url")
+
+    title=$(jshon -e quvi -e playlist -e QUVI_PLAYLIST_PROPERTY_TITLE <<< "$json")
+
+    # Strip %20s and quotes, ಠ_ಠ
+    title="${title//\"/}"; title="${title//\'/}"; title="${title//\%20/ }"
+
+    playlist=$(jshon -e quvi -e playlist -e media -a -e QUVI_PLAYLIST_MEDIA_PROPERTY_URL -u <<< "$json")
+
+    playlist_file="$playlist_dir"/"$title"
+
+    # Unconditionally remove the playlist and recreate it, this is also going to
+    # create a lot of code duplication, sigh
+    if [[ -e "$playlist_file" ]]; then
+        rm -- "$playlist_file"
+        printf "%s\n" "$playlist" >> "$playlist_file"
+    else
+        printf "%s\n" "$playlist" >> "$playlist_file"
+    fi
+}
+
+# Speed Demos Archives
+handle_sda() {
+    local url="$1"
+    local urls data playlist line
+
+    data=$(elinks -dump -no-numbering "$url")
+
+    # Use the name of the demo as the title, e.g.
+    # http://.../demo?The_Demo_Name → The_Demo_Name
+    title="${url#*\?}"
+
+    # Uses archive.org instead of dl.speeddemoarchives.org
+    playlist=$(
+        while read -r line; do
+            printf "%s\n" "$line"
+        done < <(awk '$2 !~ /http.*(HQ|LQ|IQ|XQ)/ && /http.*download/ { print $2 }' <<< "$data")
+    )
+
+    playlist_file="$playlist_dir"/"$title"
+
+    if [[ -e "$playlist_file" ]]; then
+        rm -- "$playlist_file"
+        printf "%s\n" "$playlist" >> "$playlist_file"
+    else
+        printf "%s\n" "$playlist" >> "$playlist_file"
+    fi
+}
