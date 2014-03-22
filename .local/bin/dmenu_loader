@@ -33,7 +33,7 @@ if [[ -f "$conf" ]]; then
                 title="$value"
                 ;;
             'Command') 
-                cmd=($value)
+                cmd=("$value")
                 ;;
             *) 
                 index["$key"]="$value" 
@@ -41,22 +41,22 @@ if [[ -f "$conf" ]]; then
         esac
     done < "$conf"
 else
-    printf >&2 "No configuration specified.\n"
+    printf >&2 'No configuration specified.\n'
     exit 1
 fi
 
 # Print the keys for dmenu consumption
 selection=$(
-    printf "%s\n" "${!index[@]}" | sort | dmenu -p "$title" "${opts[@]}"
+    printf '%s\n' "${!index[@]}" | sort | dmenu -p "$title" "${opts[@]}"
 )
 
 if [[ -n "$selection" ]]; then
     # Pass the value from the array based on key selection and check if the first
     # word (assumption: usually the command) is a valid
-    if hash "${cmd% *}"; then
+    if hash "${cmd[0]}"; then
         command "${cmd[@]}" "${index[$selection]}"
     else
-        printf >&2 "No Command specified.\n"
+        printf >&2 'No Command specified.\n'
         exit 1
     fi
 fi
