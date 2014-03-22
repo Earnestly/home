@@ -188,3 +188,9 @@ for d in "$HOME"/dev/^temp*(/); do
     hash -d "${d##*/}=$d"
 done
 
+# Enable C-S-t in (vte) termite which opens a new terminal in the same working
+# directory.
+if [[ -n "$VTE_VERSION" ]]; then
+    source /etc/profile.d/vte.sh
+    __vte_prompt_command
+fi
