@@ -43,7 +43,7 @@ export WINEDLLOVERRIDES="winemenubuilder.exe,mscoree,mshtml=d"
 
 export WINEARCH=win32
 export WINEDEBUG=-all
-export WINEPREFIX="$HOME"/.wine/default
+export WINEPREFIX="$XDG_DATA_HOME"/wine/default
 
 export GREP_OPTIONS=--color=auto
 export LESS=-R
@@ -53,10 +53,3 @@ export SDL_AUDIODRIVER=pulse
 export GTK_IM_MODULE=xim
 
 export GOPATH="$HOME"/dev/go
-
-# Enable C-S-t in termite which opens a new terminal in the same working
-# directory.
-if [[ -n "$VTE_VERSION" ]]; then
-    source /etc/profile.d/vte.sh
-    __vte_prompt_command
-fi
