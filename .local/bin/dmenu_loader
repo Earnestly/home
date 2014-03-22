@@ -50,12 +50,13 @@ selection=$(
     printf "%s\n" "${!index[@]}" | sort | dmenu -p "$title" "${opts[@]}"
 )
 
-# Pass the value from the array based on key selection and check if the first
-# word (assumption: usually the command) is a valid
-if hash "${cmd% *}"; then
-    command "${cmd[@]}" "${index[$selection]}"
-else
-    printf >&2 "No Command specified.\n"
-    exit 1
+if [[ -n "$selection" ]]; then
+    # Pass the value from the array based on key selection and check if the first
+    # word (assumption: usually the command) is a valid
+    if hash "${cmd% *}"; then
+        command "${cmd[@]}" "${index[$selection]}"
+    else
+        printf >&2 "No Command specified.\n"
+        exit 1
+    fi
 fi
-
