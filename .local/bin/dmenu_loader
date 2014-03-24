@@ -50,13 +50,23 @@ selection=$(
     printf '%s\n' "${!index[@]}" | sort | dmenu -p "$title" "${opts[@]}"
 )
 
-if [[ -n "$selection" ]]; then
-    # Pass the value from the array based on key selection and check if the first
-    # word (assumption: usually the command) is a valid
-    if hash "${cmd[0]}"; then
-        command "${cmd[@]}" "${index[$selection]}"
+# Make sure we get a selection before continuing
+if [[ -z "$selection" ]]; then
+    printf >&2 'Nothing selected.\n'
+    exit 0
+fi
+
+# Check that the command exists, we skip any prefixes such as `exec` to
+# avoid checking the wrong command and generating false positives
+for c in "${cmd[@]}"; do
+    if [[ "$c" == exec ]]; then
+        continue
+    fi
+
+    if hash "$c"; then
+        exec "$c" "${index[$selection]}"
     else
         printf >&2 'No Command specified.\n'
         exit 1
     fi
-fi
+done
