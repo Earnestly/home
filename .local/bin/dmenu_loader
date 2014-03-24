@@ -15,7 +15,7 @@
 
 conf="$1"
 title="${title:-Title}"
-opts=(-fn "Dina Bold 8" -i -l 20)
+opts=(-fn "Dina Bold 8" -i -l 20 -w)
 
 declare -a cmd # Some commands might have arguments
 declare -A index
@@ -33,7 +33,7 @@ if [[ -f "$conf" ]]; then
                 title="$value"
                 ;;
             'Command') 
-                cmd=("$value")
+                cmd=($value)
                 ;;
             *) 
                 index["$key"]="$value" 
