@@ -4,13 +4,13 @@
 playlist_dir="$XDG_DATA_HOME"/plaid/playlists
 
 # Any of these modules MUST return both of these variables:
-# playlist_file
-# title
+# playlist_file -> Path to playlist file
+# title         -> Title of the playlist
 
 # If the playlist already exists and is a file, use that
 handle_local() {
     local url="$1"
-    local k v
+    local k v playlist
 
     # Just scan the file for any matches and use them
     while IFS='=' read -r k v; do
