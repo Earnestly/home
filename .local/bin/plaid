@@ -7,12 +7,18 @@
 # XXX Need to remove duplication and think about a better structure, or use
 #     something else, sql?  Eugh
 
+# Make sure we get at least one argument before doing anything
+if (($# > 1)); then
+    printf >&2 'Usage: plaid <uri>\n'
+    exit 1
+fi
+
 # Environment
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 
 # Include handlers
 if ! source "$XDG_DATA_HOME"/plaid/handlers; then
-    printf 'Error sourcing: %s\n' "$XDG_DATA_HOME/plaid/handlers"
+    printf >&2 'Error sourcing: %s\n' "$XDG_DATA_HOME/plaid/handlers"
     exit 1
 fi
 
@@ -34,9 +40,6 @@ Command=exec plaid
 EOF
 fi
 
-if (($# > 1)); then
-    exit 1
-fi
 
 case "$1" in
     "$playlist_dir"/*)
@@ -69,7 +72,7 @@ done < "$dmenu_file"
 
 # If no occurances
 if ! ((occurs)); then
-    printf "%s=%s\n" "$title" "$playlist_file" >> "$dmenu_file"
+    printf '%s=%s\n' "$title" "$playlist_file" >> "$dmenu_file"
 fi
 
 if [[ -n "$title" && -n "$playlist_file" ]]; then
