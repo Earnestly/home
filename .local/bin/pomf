@@ -1,11 +1,22 @@
 #!/bin/bash
 # ~/.local/bin/pomf <file [file [...]]>
 
+# Generate the form arguments for curl
 for f in "$@"; do
     if [[ -e "$f" ]]; then
-        upload=$(curl -sSF "files[]=@$f" http://pomf.se/upload.php)
-        geturl=$(jshon -e files -e 0 -e url -u <<< "$upload")
-
-        printf '%s: %s/%s\n' "$f" "http://a.pomf.se" "$geturl"
+        curl_args+=(-F "files[]=@$f")
+    else
+        printf >&2 '%s: File does not exist\n' "$f"
+        exit 1
     fi
 done
+
+upload=$(curl -#S "${curl_args[@]}" http://pomf.se/upload.php)
+geturls=$(jshon -e files -a -e name -upe url -u <<< "$upload")
+
+while {
+    read -r name
+    read -r url
+}; do
+    printf '%s: %s/%s\n' "$name" "http://a.pomf.se" "$url"
+done <<< "$geturls"
