@@ -9,6 +9,7 @@ set number
 set hidden
 set backup
 set showcmd
+set autoread
 set undofile
 set wildmenu
 set linebreak
