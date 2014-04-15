@@ -9,10 +9,10 @@
 # t: = twitch team name
 # s: = twitch stream names seperated by commas (limit: 25, max: 100.  Add
 #      `&limit=100` to raise this.)
-twitch_list=(t:srl t:sda s:cgn0,s:fatzke,lukerf44,tirean,justshanz,misterpost,eidgod,ultimaomega07)
+twitch_list=(t:srl t:sda s:cgn0,s:fatzke,lukerf44,tirean,justshanz,misterpost,eidgod,ultimaomega07,tduva)
 
 # Stream quality, each will be attempted in order and falls back to the next
-stream_quality='medium,high,best,source'
+stream_quality='best,source,medium,best,source'
 
 # Options passed to dmenu, the `-p` prompt is passed later, remove `-w` if you
 # use plain old dmenu
@@ -79,7 +79,7 @@ selection="$(printf '%s\n' "${!streams[@]}" | dmenu "${dmenu_opts[@]}")"
 
 # Check if the selection actually matches a stream, this will also exit if
 # nothing was selected
-if [[ -z "${streams[$selection]}" ]]; then
+if [[ -z "$selection" || -z "${streams[$selection]}" ]]; then
     exit 1
 fi
 
