@@ -52,9 +52,9 @@ get_json() {
         # Normalise the API with v2
         # XXX Assumes that the matched tokens never appear elsewhere
         sed -i '{
-            s/"streams":/"channels":/g;
+            s/"streams":"/"channels":"/g;
             s/"url":"/"link":"/g;
-            s/"status":"/"title:"/g
+            s/"status":"/"title":"/g
         }' "$data"
     fi
 }
