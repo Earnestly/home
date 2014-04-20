@@ -66,7 +66,6 @@ parse_json() {
 
     for i in "$TMPDIR"/*.json; do
         jshon "${jshon_opts[@]}" < "$i"
-
     done
 }
 
