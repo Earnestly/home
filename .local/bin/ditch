@@ -3,47 +3,71 @@
 # Create a dmenu using the twitch team and stream api
 # Requires jshon, dmenu-imlib-pango
 
-# List of teams or streamers from twitch.tv for inclusion.  curl will pull down
-# the json data simultaneously.  (Be careful with too many items (`t:` or `s:`))
-
+# List of teams or streamers from twitch.tv for inclusion.
 # t: = twitch team name
 # s: = twitch stream names seperated by commas (limit: 25, max: 100.  Add
 #      `&limit=100` to raise this.)
-twitch_list=(t:srl t:sda s:cgn0,s:fatzke,lukerf44,tirean,justshanz,misterpost,eidgod,ultimaomega07,tduva)
+
+# Note: curl will pull down the json data simultaneously.
+# (Be careful with too many items (`t:` or `s:`))
+twitch_list=(
+    t:srl
+    t:sda
+    s:cgn0,fatzke,lukerf44,tirean,justshanz,misterpost,eidgod,ultimaomega07,tduva
+)
 
 # Stream quality, each will be attempted in order and falls back to the next
-stream_quality='best,source,medium,best,source'
+stream_quality='medium,best,source'
 
 # Options passed to dmenu, the `-p` prompt is passed later, remove `-w` if you
 # use plain old dmenu
-dmenu_opts=(-fn 'Dina Bold 8' -w -i -l 40)
+dmenu_opts=(-fn 'Dina Bold 8' -w -i -l 40
+            -nf '#a7a7a7' -nb '#1e1e1e'
+            -sf '#9b859d' -sb '#262626')
 
-# Make sure to not (-u) 'unstring' the title as it may contain valid escapes
-# which break the strict ordering requirements for the while read loop.  We will
-# manually de-string the titles later.
-jshon_team_opts=(-e channels -a -e channel -e name -upe link -upe title)
+TMPDIR="${TMPDIR:-/tmp}"
 
-# Arguments required for the steam API
-jshon_stream_opts=(-e streams -a -e channel -e name -upe url -upe game)
+# Make sure we remove the json once we're done so it doesn't interfere
+# with proceeding runs and doesn't clutter up /tmp
+trap 'rm -rf "$TMPDIR"/*.json' EXIT
 
+# Download all the json to individual files, each file will be read sequentially
+# later, but this allows me to background this function
 get_json() {
     local s="$1"
+    local stream
 
     # team
     if [[ "$s" = t:* ]]; then
-        curl -s http://api.twitch.tv/api/team/"${s#*:}"/live_channels.json
+        curl -s http://api.twitch.tv/api/team/"${s#*:}"/live_channels.json >> "$TMPDIR"/"$s".json
     # stream
     elif [[ "$s" = s:* ]]; then
-        curl -s https://api.twitch.tv/kraken/streams?channel="${s#*:}"
+        curl -s https://api.twitch.tv/kraken/streams?channel="${s#*:}" >> "$TMPDIR"/"$s".json
+        # Normalise the API with v2
+        sed -i 's/"streams":/"channels":/g; s/"url":"/"link":"/g; s/"status":"/"title:"/g' "$TMPDIR"/s:*.json
     fi
 }
 
-# Generate an associative array where the key is the team and the value is the
-# url to the twitch team api for that team.
-declare -A json
-for i in "${twitch_list[@]}"; do
-    json["$i"]=$(get_json "$i" &)
-done
+parse_json() {
+    # Make sure to not (-u) 'unstring' the title as it may contain valid escapes
+    # which break the strict ordering requirements for the while read loop.  We will
+    # manually de-string the titles later.
+    local jshon_opts=(-e channels -a -e channel -e display_name -upe link -upe title)
+    local i json
+
+    # Fire off all the curl calls as soon as possible
+    for i in "${twitch_list[@]}"; do
+        get_json "$i" &
+    done
+
+    # Wait for all the get_json jobs to finish before continuing
+    wait
+
+    for i in "$TMPDIR"/*.json; do
+        jshon "${jshon_opts[@]}" < "$i"
+
+    done
+}
 
 # First line is always the streamer's name, followed by the url and then the
 # streamer's title
@@ -59,17 +83,9 @@ while {
     # Store the name and title for dmenu to display as the key in an associative
     # array where the url is the value.
     if [[ "$name" != http* ]]; then
-        streams["$title ($name)"]="$url"
+        streams["$title [$name]"]="$url"
     fi
-done < <(
-    for i in "${!json[@]}"; do
-        if [[ "$i" = t:* ]]; then
-            jshon "${jshon_team_opts[@]}" <<< "${json[$i]}"
-        elif [[ "$i" = s:* ]]; then
-            jshon "${jshon_stream_opts[@]}" <<< "${json[$i]}"
-        fi
-    done
-)
+done < <(parse_json)
 
 # Display the number of current streams in dmenu's prompt
 dmenu_opts+=(-p "Streams (${#streams[@]})")
@@ -94,7 +110,7 @@ lstreamer_opts=(
 
 # Pass the value based on the key from selectionection to livestreamer
 if ! livestreamer "${lstreamer_opts[@]}"; then
-    if hash i3-nagbar; then
+    if hash i3-nagbar &> /dev/null; then
         i3-nagbar -m "Failed to launch stream ${streams[$selection]}" -t error
     fi
     exit 1
