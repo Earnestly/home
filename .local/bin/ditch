@@ -47,6 +47,7 @@ get_json() {
         curl -s "$v3"/streams?channel="${s#*:}" > "$TMPDIR"/"$s".json
 
         # Normalise the API with v2
+        # XXX Assumes that the matched tokens never appear elsewhere
         sed -i '{
             s/"streams":/"channels":/g;
             s/"url":"/"link":"/g;
