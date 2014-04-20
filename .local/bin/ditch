@@ -43,8 +43,9 @@ get_json() {
     # stream
     elif [[ "$s" = s:* ]]; then
         curl -s https://api.twitch.tv/kraken/streams?channel="${s#*:}" >> "$TMPDIR"/"$s".json
+
         # Normalise the API with v2
-        sed -i 's/"streams":/"channels":/g; s/"url":"/"link":"/g; s/"status":"/"title:"/g' "$TMPDIR"/s:*.json
+        sed -i 's/"streams":/"channels":/g; s/"url":"/"link":"/g; s/"status":"/"title:"/g' "$TMPDIR"/"$s".json
     fi
 }
 
