@@ -36,16 +36,22 @@ trap 'rm -rf "$TMPDIR"/*.json' EXIT
 get_json() {
     local s="$1"
     local stream
+    local v2=http://api.twitch.tv/api
+    local v3=https://api.twitch.tv/kraken
 
     # team
     if [[ "$s" = t:* ]]; then
-        curl -s http://api.twitch.tv/api/team/"${s#*:}"/live_channels.json >> "$TMPDIR"/"$s".json
+        curl -s "$v2"/team/"${s#*:}"/live_channels.json > "$TMPDIR"/"$s".json
     # stream
     elif [[ "$s" = s:* ]]; then
-        curl -s https://api.twitch.tv/kraken/streams?channel="${s#*:}" >> "$TMPDIR"/"$s".json
+        curl -s "$v3"/streams?channel="${s#*:}" > "$TMPDIR"/"$s".json
 
         # Normalise the API with v2
-        sed -i 's/"streams":/"channels":/g; s/"url":"/"link":"/g; s/"status":"/"title:"/g' "$TMPDIR"/"$s".json
+        sed -i '{
+            s/"streams":/"channels":/g;
+            s/"url":"/"link":"/g;
+            s/"status":"/"title:"/g
+        }' "$TMPDIR"/"$s".json
     fi
 }
 
