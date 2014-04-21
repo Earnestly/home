@@ -11,13 +11,13 @@ fi
 xinitrc="${XDG_CONFIG_HOME:-$HOME/.config}"/xinitrc
 log="$XDG_CACHE_HOME"/xsession.log
 
-if [[ -z "$XAUTHORITY" ]]; then
-    export XAUTHORITY="$XDG_RUNTIME_DIR"/X11-authority
-else
+if [[ -n "$XAUTHORITY" ]]; then
     export XAUTHORITY
+else
+    export XAUTHORITY="$XDG_RUNTIME_DIR"/X11-authority
 fi
 
-# Delete this when using dbus.socket/service
+# Delete this when using systemd and dbus.socket/service
 unset DBUS_SESSION_BUS_ADDRESS
 
 unset SESSION_MANAGER
@@ -33,6 +33,8 @@ serveropts=(
     -auth "$XAUTHORITY"
 )
 
+exec xinit "${1:-$xinitrc}" -- "$DISPLAY" "${serveropts[@]}" "$@" &> "$log"
+
 # If using systemd --user with dbus.service
 #sysdopts=(
 #    --user
@@ -41,5 +43,4 @@ serveropts=(
 #    --description="Simple xinit wrapper"
 #)
 
-#exec systemd-run "${sysdopts[@]}" xinit "${1:-$xinitrc}" -- "$DISPLAY" "${serveropts[@]}" "$@" 3> "$log"
-exec xinit "${1:-$xinitrc}" -- "$DISPLAY" "${serveropts[@]}" "$@" 3> "$log"
+#exec systemd-run "${sysdopts[@]}" xinit "${1:-$xinitrc}" -- "$DISPLAY" "${serveropts[@]}" "$@"
