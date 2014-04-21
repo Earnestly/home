@@ -3,24 +3,26 @@
 # Create a dmenu using the twitch team and stream api
 # Requires jshon, dmenu-imlib-pango
 
-# Globals
+# Files
+# ~/.config/ditch/teams         list of twitch teams
+# ~/.config/ditch/streamers     list of individual streamers
+
+# Options
 shopt -s extglob
 
-# List of teams or streamers from twitch.tv for inclusion.
-# t: = twitch team name
-# s: = twitch stream names seperated by commas (limit: 25, max: 100.  Add
-#      `&limit=100` to raise this.)
+# Globals
+data_dir="${XDG_CONFIG_HOME:-$HOME/.config}"/ditch
 
-# Note: curl will pull down the json data simultaneously.
-# (Be careful with too many items (`t:` or `s:`))
-twitch_list=(
-    t:srl
-    t:sda
-    s:cgn0,fatzke,lukerf44,tirean,justshanz,misterpost,eidgod,ultimaomega07,tduva
-)
+# Make sure it exists
+if ! [[ -d "$data_dir" ]]; then
+    mkdir "$data_dir"
+fi
+
+# Used to collect downloaded json
+TMPDIR="${TMPDIR:-/tmp}"
 
 # Stream quality, each will be attempted in order and falls back to the next
-stream_quality='medium,best,source'
+quality='medium,high,best,source'
 
 # Options passed to dmenu, the `-p` prompt is passed later, remove `-w` if you
 # use plain old dmenu
@@ -28,8 +30,46 @@ dmenu_opts=(-fn 'Dina Bold 8' -w -i -l 40
             -nf '#a7a7a7' -nb '#1e1e1e'
             -sf '#9b859d' -sb '#262626')
 
-# Used to collect downloaded json
-TMPDIR="${TMPDIR:-/tmp}"
+get_user_data() {
+    local team list chunk nelem i
+
+    # Get the list of teams, prepend each element with t: so we can use it later
+    # to call the correct API
+    if [[ -s "$data_dir"/teams ]]; then
+        while read -r team; do
+            printf '%s\n' "$team"
+        done < "$data_dir"/teams
+    fi
+
+    if [[ -s "$data_dir"/streamers ]]; then
+        # Even though twitch lets us use up to chunks of 100, curl will fail
+        # due to the argument being too long.  Setting this to 15 seems to be
+        # reasonable but may cause problems if each streamer has a very long
+        # username
+        mapfile -t list < "$data_dir"/streamers
+
+        chunk=15
+        nelem="${#list[@]}"
+
+        if ((nelem < 10)); then
+            for ((i = 0; i < nelem; i++)); do
+                printf '%s,' "${list[$i]}"
+            done
+            printf '&limit=%d\n' "${#list[@]}"
+        else
+            while ((${#list[@]})); do
+                printf '%s,' "${list[@]::$chunk}"
+
+                tmp=(${list[@]::$chunk})
+                printf '&limit=%d\n' "${#tmp[@]}"
+
+                list=(${list[@]:$chunk})
+            done
+        fi
+    fi
+}
+
+mapfile -t twitch_list < <(get_user_data)
 
 # Download all the json to individual files, each file will be read sequentially
 # later, but this allows me to background this function
@@ -37,28 +77,21 @@ get_json() {
     local s="$1"
     local stream
 
-    local v2=http://api.twitch.tv/api
-    local v3=https://api.twitch.tv/kraken
-
     local data="$TMPDIR"/"$s".json
 
-    # teams
-    if [[ "$s" = t:* ]]; then
-        curl -s "$v2"/team/"${s#*:}"/live_channels.json > "$data"
-    # streams
-    elif [[ "$s" = s:* ]]; then
-        curl -s "$v3"/streams?channel="${s#*:}" > "$data"
+    # streams always have a `&limit=` appended
+    if [[ "$s" == *'&limit=' ]]; then
+        curl -s https://api.twitch.tv/kraken/streams?channel="${s#*:}" > "$data"
 
         # Use sed to normalise the API with v2
         # XXX Assumes that the matched tokens never appear elsewhere.
-
-        # Note: If none of the streamers are online after this, jshon itself
-        #       will simply fail but the script ignores this and continues.
         sed -i '{
             s/"streams":/"channels":/g;
             s/"url":"/"link":"/g;
             s/"status":"/"title":"/g
         }' "$data"
+    else
+        curl -s http://api.twitch.tv/api/team/"${s#*:}"/live_channels.json > "$data"
     fi
 }
 
@@ -86,9 +119,10 @@ parse_json() {
     done
 }
 
+declare -A streams
+
 # First line is always the streamer's name, followed by the url and then the
 # streamer's title
-declare -A streams
 while {
     read -r name
     read -r url
@@ -130,7 +164,7 @@ lstreamer_opts=(
     -p "mpv --really-quiet --title='${selection//\'/’}' --profile=live"
     --ringbuffer-size 800000
     "${streams[$selection]}"
-    "$stream_quality"
+    "$quality"
 )
 
 # Pass the value based on the key from selectionection to livestreamer
