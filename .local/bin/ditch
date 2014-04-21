@@ -15,7 +15,7 @@ data_dir="${XDG_CONFIG_HOME:-$HOME/.config}"/ditch
 
 # Make sure it exists
 if ! [[ -d "$data_dir" ]]; then
-    mkdir "$data_dir"
+    mkdir -p "$data_dir"
 fi
 
 # Used to collect downloaded json
@@ -117,7 +117,7 @@ parse_json() {
     done
 }
 
-declare -A streams
+declare -A stream
 
 # First line is always the streamer's name, followed by the url and then the
 # streamer's title
@@ -126,37 +126,35 @@ while {
     read -r url
     read -r title
 } do
-    # Manually de-quote the title and remove backslashes
+    # Manually de-json the title
     title="${title%\"*}" title="${title#\"}" title="${title//\\/}"
 
-    # Store the name and title for dmenu to display as the key in an associative
-    # array where the url is the value.
     if [[ "$name" != http* ]]; then
-        # prettyp is what we will use for displaying via dmenu, we will later 
-        # extract the first word from the result which is $name used as the key
-        # for streams
-        prettyp+=("$name $title")
-        streams["$name"]="$url"
+        # `menu` is what we will use for displaying via dmenu, we will later
+        # extract the first word from the result which is `$name` used as the
+        # key for `streams`
+        menu+=("$name $title")
+        stream["$name"]="$url"
     fi
 done < <(parse_json)
 
 # Display the number of current streams in dmenu's prompt
 dmenu_opts+=(-p "Streams (${#streams[@]})")
 
-# Use awk to pretty print the user and title in a column
-awk='{ a = $1; $1 = ""; printf "%-20s %s\n", a, $0}'
+# Use awk to pretty print the user and title in 2 columns
+awk='{ a = $1; $1 = ""; printf "%-20s %s\n", a, $0 }'
 
 # Display the keys and store it as the selection
-selection="$(printf '%s\n' "${prettyp[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
+selection="$(printf '%s\n' "${menu[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
 
 # Get the username from the result of dmenu
-if [[ "$selection" =~ ([^ ]+)(.*) ]]; then
+if [[ "$selection" =~ ([^ ]+).* ]]; then
     selection="${BASH_REMATCH[1]}"
 fi
 
 # Check if the selection actually matches a stream, this will also exit if
 # nothing was selected
-if [[ -z "$selection" || -z "${streams[$selection]}" ]]; then
+if [[ -z "${stream[$selection]}" ]]; then
     exit
 fi
 
@@ -165,14 +163,14 @@ lstreamer_opts=(
     -Q
     -p "mpv --really-quiet --title='${selection//\'/’}' --profile=live"
     --ringbuffer-size 800000
-    "${streams[$selection]}"
+    "${stream[$selection]}"
     "$quality"
 )
 
 # Pass the value based on the key from selectionection to livestreamer
 if ! livestreamer "${lstreamer_opts[@]}"; then
     if hash i3-nagbar &> /dev/null; then
-        i3-nagbar -m "Failed to launch stream ${streams[$selection]}" -t error
+        i3-nagbar -m "Failed to launch stream ${stream[$selection]}" -t error
     fi
     exit 1
 fi
