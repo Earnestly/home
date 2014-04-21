@@ -1,13 +1,15 @@
 # ~/.config/systemd/user/pulseaudio.service
 
 [Unit]
-Description=Pulse Audio Server
+Description=PulseAudio Server
 Requires=dbus.socket
 
 [Service]
-RemainAfterExit=yes
-ExecStart=/usr/bin/pulseaudio --start
+ExecStart=/usr/bin/pulseaudio
 ExecStop=/usr/bin/pulseaudio --kill
+
+BusName=org.pulseaudio.Server
+Restart=on-failure
 
 [Install]
 WantedBy=default.target
