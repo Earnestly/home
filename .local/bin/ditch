@@ -128,13 +128,15 @@ while {
 } do
     # Manually de-quote the title and remove backslashes
     title="${title%\"*}" title="${title#\"}" title="${title//\\/}"
-    # Strip any leading and trailing spaces
-    title="${title##*( )}" title="${title%%*( )}"
 
     # Store the name and title for dmenu to display as the key in an associative
     # array where the url is the value.
     if [[ "$name" != http* ]]; then
-        streams["$name $title"]="$url"
+        # prettyp is what we will use for displaying via dmenu, we will later 
+        # extract the first word from the result which is $name used as the key
+        # for streams
+        prettyp+=("$name $title")
+        streams["$name"]="$url"
     fi
 done < <(parse_json)
 
@@ -145,11 +147,11 @@ dmenu_opts+=(-p "Streams (${#streams[@]})")
 awk='{ a = $1; $1 = ""; printf "%-20s %s\n", a, $0}'
 
 # Display the keys and store it as the selection
-selection="$(printf '%s\n' "${!streams[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
+selection="$(printf '%s\n' "${prettyp[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
 
-# Rebuild the result without the column spacing awk added
+# Get the username from the result of dmenu
 if [[ "$selection" =~ ([^ ]+)(.*) ]]; then
-    selection="${BASH_REMATCH[1]} ${BASH_REMATCH[2]##*( )}"
+    selection="${BASH_REMATCH[1]}"
 fi
 
 # Check if the selection actually matches a stream, this will also exit if
