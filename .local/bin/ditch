@@ -28,6 +28,7 @@ dmenu_opts=(-fn 'Dina Bold 8' -w -i -l 40
             -nf '#a7a7a7' -nb '#1e1e1e'
             -sf '#9b859d' -sb '#262626')
 
+# Used to collect downloaded json
 TMPDIR="${TMPDIR:-/tmp}"
 
 # Download all the json to individual files, each file will be read sequentially
@@ -99,19 +100,22 @@ while {
     # Store the name and title for dmenu to display as the key in an associative
     # array where the url is the value.
     if [[ "$name" != http* ]]; then
-        streams["$name│$title"]="$url"
+        streams["$name $title"]="$url"
     fi
 done < <(parse_json)
 
 # Display the number of current streams in dmenu's prompt
 dmenu_opts+=(-p "Streams (${#streams[@]})")
 
-# Display the keys and store it as the selection
-selection="$(printf '%s\n' "${!streams[@]}" | column -ts '│' | dmenu "${dmenu_opts[@]}")"
+# Use awk to pretty print the user and title in a column
+awk='{ a = $1; $1 = ""; printf "%-20s %s\n", a, $0}'
 
-# Since column breaks up the returned value, 
+# Display the keys and store it as the selection
+selection="$(printf '%s\n' "${!streams[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
+
+# Rebuild the result without the column spacing awk added
 if [[ "$selection" =~ ([^ ]+)(.*) ]]; then
-    selection="${BASH_REMATCH[1]}│${BASH_REMATCH[2]##*( )}"
+    selection="${BASH_REMATCH[1]} ${BASH_REMATCH[2]##*( )}"
 fi
 
 # Check if the selection actually matches a stream, this will also exit if
