@@ -27,10 +27,6 @@ dmenu_opts=(-fn 'Dina Bold 8' -w -i -l 40
 
 TMPDIR="${TMPDIR:-/tmp}"
 
-# Make sure we remove the json once we're done so it doesn't interfere
-# with proceeding runs and doesn't clutter up /tmp
-trap 'rm -rf "$TMPDIR"/*.json' EXIT
-
 # Download all the json to individual files, each file will be read sequentially
 # later, but this allows me to background this function
 get_json() {
@@ -49,10 +45,13 @@ get_json() {
     elif [[ "$s" = s:* ]]; then
         curl -s "$v3"/streams?channel="${s#*:}" > "$data"
 
-        # Normalise the API with v2
-        # XXX Assumes that the matched tokens never appear elsewhere
+        # Use sed to normalise the API with v2
+        # XXX Assumes that the matched tokens never appear elsewhere.
+
+        # Note: If none of the streamers are online after this, jshon itself
+        #       will simply fail but the script ignores this and continues.
         sed -i '{
-            s/"streams":"/"channels":"/g;
+            s/"streams":/"channels":/g;
             s/"url":"/"link":"/g;
             s/"status":"/"title":"/g
         }' "$data"
@@ -76,6 +75,10 @@ parse_json() {
 
     for i in "$TMPDIR"/*.json; do
         jshon "${jshon_opts[@]}" < "$i"
+
+        # Make sure we remove the json once we're done so it doesn't interfere
+        # with proceeding runs and doesn't clutter up /tmp
+        rm -rf "$i"
     done
 }
 
@@ -106,7 +109,7 @@ selection="$(printf '%s\n' "${!streams[@]}" | dmenu "${dmenu_opts[@]}")"
 # Check if the selection actually matches a stream, this will also exit if
 # nothing was selected
 if [[ -z "$selection" || -z "${streams[$selection]}" ]]; then
-    exit 1
+    exit
 fi
 
 # Strip out any single quotes from the title, this is ugly though, very ugly.
