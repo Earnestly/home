@@ -65,6 +65,9 @@ bindkey -v
 # Initialise vimode to insert mode
 vimode=i
 
+# Remove the default 0.4s ESC delay, set it to 0.1s
+export KEYTIMEOUT=1
+
 # Shift-tab
 bindkey $terminfo[kcbt] reverse-menu-complete
 
