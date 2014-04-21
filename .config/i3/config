@@ -164,6 +164,9 @@ for_window [class="plugin-container"] floating enable
 for_window [class="Firefox"] floating enable
 for_window [class="Firefox" instance="Navigator"] floating disable
 
+# blender floating preferences
+for_window [class="Blender" title="Blender User Preferences"] floating enable
+
 # fontforge floating toolboxes
 for_window [class="fontforge" title="layers"] floating enable
 for_window [class="fontforge" title="Tools"] floating enable
