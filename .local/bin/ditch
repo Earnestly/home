@@ -33,8 +33,6 @@ dmenu_opts=(-fn 'Dina Bold 8' -w -i -l 40
 get_user_data() {
     local team list chunk nelem i
 
-    # Get the list of teams, prepend each element with t: so we can use it later
-    # to call the correct API
     if [[ -s "$data_dir"/teams ]]; then
         while read -r team; do
             printf '%s\n' "$team"
@@ -60,10 +58,10 @@ get_user_data() {
             while ((${#list[@]})); do
                 printf '%s,' "${list[@]::$chunk}"
 
-                tmp=(${list[@]::$chunk})
+                tmp=("${list[@]::$chunk}")
                 printf '&limit=%d\n' "${#tmp[@]}"
 
-                list=(${list[@]:$chunk})
+                list=("${list[@]:$chunk}")
             done
         fi
     fi
@@ -80,7 +78,7 @@ get_json() {
     local data="$TMPDIR"/"$s".json
 
     # streams always have a `&limit=` appended
-    if [[ "$s" == *'&limit=' ]]; then
+    if [[ "$s" =~ \&limit= ]]; then
         curl -s https://api.twitch.tv/kraken/streams?channel="${s#*:}" > "$data"
 
         # Use sed to normalise the API with v2
@@ -127,7 +125,7 @@ while {
     read -r name
     read -r url
     read -r title
-}; do
+} do
     # Manually de-quote the title and remove backslashes
     title="${title%\"*}" title="${title#\"}" title="${title//\\/}"
 
