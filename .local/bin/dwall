@@ -10,11 +10,13 @@ wall_sym="${XDG_DATA_HOME:-$HOME/.local/share}"/wall
 wall_list=("$wall_dir"/*)
 
 for w in "${wall_list[@]}"; do
-    # wallpaper.file=/path/to/wallpaper.file
     wallpapers["${w##*/}"]="$w"
 done
 
-dmenu_opts=(-ia top-gapless -l 10 -is 300 -fn 'Dina Bold 8' -w)
+dmenu_opts=(-ia top-gapless -l 10 -is 300 
+            -fn 'Dina Bold 8' -w
+            -nf '#a7a7a7' -nb '#1e1e1e'
+            -sf '#9b859d' -sb '#262626')
 
 # Build the dmenu according to the format "IMG:<img>\t<text>" to display the
 # image preview

@@ -15,7 +15,9 @@
 
 conf="$1"
 title="${title:-Title}"
-opts=(-fn "Dina Bold 8" -i -l 20 -w)
+opts=(-fn "Dina Bold 8" -i -l 20 -w
+      -nf '#a7a7a7' -nb '#1e1e1e'
+      -sf '#9b859d' -sb '#262626')
 
 declare -a cmd # Some commands might have arguments
 declare -A index
