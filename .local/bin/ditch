@@ -81,7 +81,7 @@ get_json() {
 
     # streams always have a `&limit=` appended
     if [[ "$s" =~ \&limit= ]]; then
-        curl -s https://api.twitch.tv/kraken/streams?channel="${s#*:}" > "$data"
+        curl -s https://api.twitch.tv/kraken/streams?channel="$s" > "$data"
 
         # Use sed to normalise the API with v2
         # XXX Assumes that the matched tokens never appear elsewhere.
@@ -91,7 +91,7 @@ get_json() {
             s/"status":"/"title":"/g
         }' "$data"
     else
-        curl -s http://api.twitch.tv/api/team/"${s#*:}"/live_channels.json > "$data"
+        curl -s http://api.twitch.tv/api/team/"$s"/live_channels.json > "$data"
     fi
 }
 
