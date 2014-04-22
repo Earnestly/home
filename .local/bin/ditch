@@ -7,9 +7,6 @@
 # ~/.config/ditch/teams         list of twitch teams
 # ~/.config/ditch/streamers     list of individual streamers
 
-# Options
-shopt -s extglob
-
 # Globals
 data_dir="${XDG_CONFIG_HOME:-$HOME/.config}"/ditch
 
@@ -31,7 +28,7 @@ dmenu_opts=(-fn 'Dina Bold 8' -w -i -l 40
             -sf '#9b859d' -sb '#262626')
 
 get_user_data() {
-    local team list chunk nelem i
+    local team list chunk nelem tmp i
 
     if [[ -s "$data_dir"/teams ]]; then
         while read -r team; do
@@ -40,34 +37,39 @@ get_user_data() {
     fi
 
     if [[ -s "$data_dir"/streamers ]]; then
+        mapfile -t list < "$data_dir"/streamers
+
         # Even though twitch lets us use up to chunks of 100, curl will fail
         # due to the argument being too long.  Setting this to 15 seems to be
         # reasonable but may cause problems if each streamer has a very long
         # username
-        mapfile -t list < "$data_dir"/streamers
-
         chunk=15
         nelem="${#list[@]}"
 
-        if ((nelem < 10)); then
+        if ((nelem < chunk)); then
             for ((i = 0; i < nelem; i++)); do
                 printf '%s,' "${list[$i]}"
             done
-            printf '&limit=%d\n' "${#list[@]}"
+            printf '&limit=%d\n' "$nelem"
         else
             while ((${#list[@]})); do
+                # Assuming chunks of 2, the following occurs on [1 2 3 4 5]
+                # 1st loop: [{ 1 2 } 3 4 5]  => 1,2,
+                # 2nd loop: [{ 3 4 } 5]      => 3,4,
+                # 3rd loop: [{ 5 }]          => 5,
                 printf '%s,' "${list[@]::$chunk}"
 
                 tmp=("${list[@]::$chunk}")
                 printf '&limit=%d\n' "${#tmp[@]}"
-
+               
+                # 1st loop: [ 1 2 { 3 4 5 }] => [3 4 5]
+                # 2nd loop: [ 3 4 { 5 }]     => [5]
+                # 3rd loop: [ 5 { }]         => done
                 list=("${list[@]:$chunk}")
             done
         fi
     fi
 }
-
-mapfile -t twitch_list < <(get_user_data)
 
 # Download all the json to individual files, each file will be read sequentially
 # later, but this allows me to background this function
@@ -117,6 +119,14 @@ parse_json() {
     done
 }
 
+mapfile -t twitch_list < <(get_user_data)
+
+# If no user data was found to generate anything from, just exit
+if [[ -z "${twitch_list[@]}" ]]; then
+    printf 'No configuration data found\n' >&2
+    exit 1
+fi
+
 declare -A stream
 
 # First line is always the streamer's name, followed by the url and then the
@@ -139,7 +149,7 @@ while {
 done < <(parse_json)
 
 # Display the number of current streams in dmenu's prompt
-dmenu_opts+=(-p "Streams (${#streams[@]})")
+dmenu_opts+=(-p "Stream ${#stream[@]}")
 
 # Use awk to pretty print the user and title in 2 columns
 awk='{ a = $1; $1 = ""; printf "%-20s %s\n", a, $0 }'
@@ -147,7 +157,8 @@ awk='{ a = $1; $1 = ""; printf "%-20s %s\n", a, $0 }'
 # Display the keys and store it as the selection
 selection="$(printf '%s\n' "${menu[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
 
-# Get the username from the result of dmenu
+# Get the username from the result of dmenu, this is the first word (usernames
+# cannot have spaces)
 if [[ "$selection" =~ ([^ ]+).* ]]; then
     selection="${BASH_REMATCH[1]}"
 fi
@@ -155,6 +166,7 @@ fi
 # Check if the selection actually matches a stream, this will also exit if
 # nothing was selected
 if [[ -z "${stream[$selection]}" ]]; then
+    printf '%s: Cannot find associated stream\n' "$selection" >&2
     exit
 fi
 
@@ -167,10 +179,11 @@ lstreamer_opts=(
     "$quality"
 )
 
-# Pass the value based on the key from selectionection to livestreamer
+# Run livestreamer and capture stderr so we can pass it to the nagbar or
+# notify-send
 if ! livestreamer "${lstreamer_opts[@]}"; then
     if hash i3-nagbar &> /dev/null; then
-        i3-nagbar -m "Failed to launch stream ${stream[$selection]}" -t error
+        i3-nagbar -m "${stream[$selection]}: Failed to open stream" -t error
     fi
     exit 1
 fi
