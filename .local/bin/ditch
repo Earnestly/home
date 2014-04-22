@@ -153,8 +153,6 @@ dmenu_opts+=(-p "Stream ${#stream[@]}")
 
 # Use awk to pretty print the user and title in 2 columns
 awk='{ a = $1; $1 = ""; printf "%-20s %s\n", a, $0 }'
-
-# Display the keys and store it as the selection
 selection="$(printf '%s\n' "${menu[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
 
 # Get the username from the result of dmenu, this is the first word (usernames
@@ -179,8 +177,6 @@ lstreamer_opts=(
     "$quality"
 )
 
-# Run livestreamer and capture stderr so we can pass it to the nagbar or
-# notify-send
 if ! livestreamer "${lstreamer_opts[@]}"; then
     if hash i3-nagbar &> /dev/null; then
         i3-nagbar -m "${stream[$selection]}: Failed to open stream" -t error
