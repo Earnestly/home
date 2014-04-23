@@ -81,7 +81,7 @@ get_json() {
 
     # streams always have a `&limit=` appended
     if [[ "$s" =~ \&limit= ]]; then
-        curl -s https://api.twitch.tv/kraken/streams?channel="$s" > "$data"
+        curl -s "https://api.twitch.tv/kraken/streams?channel=$s" > "$data"
 
         # Use sed to normalise the API with v2
         # XXX Assumes that the matched tokens never appear elsewhere.
@@ -91,7 +91,7 @@ get_json() {
             s/"status":"/"title":"/g
         }' "$data"
     else
-        curl -s http://api.twitch.tv/api/team/"$s"/live_channels.json > "$data"
+        curl -s "http://api.twitch.tv/api/team/$s/live_channels.json" > "$data"
     fi
 }
 
@@ -99,7 +99,7 @@ parse_json() {
     # Make sure to not (-u) 'unstring' the title as it may contain valid escapes
     # which break the strict ordering requirements for the while read loop.  We will
     # manually de-string the titles later.
-    local jshon_opts=(-e channels -a -e channel -e display_name -upe link -upe title)
+    local args=(-e channels -a -e channel -e display_name -upe link -upe title)
     local i json
 
     # Fire off all the curl calls as soon as possible
@@ -111,13 +111,16 @@ parse_json() {
     wait
 
     for i in "$TMPDIR"/*.json; do
-        jshon "${jshon_opts[@]}" < "$i"
+        jshon "${args[@]}" < "$i"
 
         # Make sure we remove the json once we're done so it doesn't interfere
         # with proceeding runs and doesn't clutter up /tmp
         rm -rf "$i"
     done
 }
+
+declare -A stream menu
+declare -a twitch_list
 
 mapfile -t twitch_list < <(get_user_data)
 
@@ -126,8 +129,6 @@ if [[ -z "${twitch_list[@]}" ]]; then
     printf 'No configuration data found\n' >&2
     exit 1
 fi
-
-declare -A stream
 
 # First line is always the streamer's name, followed by the url and then the
 # streamer's title
@@ -143,7 +144,7 @@ while {
         # `menu` is what we will use for displaying via dmenu, we will later
         # extract the first word from the result which is `$name` used as the
         # key for `streams`
-        menu+=("$name $title")
+        menu["$name $title"]=1 # Store only unique results using a "set"
         stream["$name"]="$url"
     fi
 done < <(parse_json)
@@ -153,16 +154,15 @@ dmenu_opts+=(-p "Stream ${#stream[@]}")
 
 # Use awk to pretty print the user and title in 2 columns
 awk='{ a = $1; $1 = ""; printf "%-20s %s\n", a, $0 }'
-selection="$(printf '%s\n' "${menu[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
+selection="$(printf '%s\n' "${!menu[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
 
 # Get the username from the result of dmenu, this is the first word (usernames
 # cannot have spaces)
-if [[ "$selection" =~ ([^ ]+).* ]]; then
+if [[ "$selection" =~ ([^ ]+) ]]; then
     selection="${BASH_REMATCH[1]}"
 fi
 
-# Check if the selection actually matches a stream, this will also exit if
-# nothing was selected
+# Check if the selection actually matches a stream
 if [[ -z "${stream[$selection]}" ]]; then
     printf '%s: Cannot find associated stream\n' "$selection" >&2
     exit
