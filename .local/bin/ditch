@@ -156,6 +156,11 @@ dmenu_opts+=(-p "Stream ${#stream[@]}")
 awk='{ a = $1; $1 = ""; printf "%-20s %s\n", a, $0 }'
 selection="$(printf '%s\n' "${!menu[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
 
+# Exit if nothing was selected
+if [[ -z "$selection" ]]; then
+    exit
+fi
+
 # Get the username from the result of dmenu, this is the first word (usernames
 # cannot have spaces)
 if [[ "$selection" =~ ([^ ]+) ]]; then
@@ -165,7 +170,7 @@ fi
 # Check if the selection actually matches a stream
 if [[ -z "${stream[$selection]}" ]]; then
     printf '%s: Cannot find associated stream\n' "$selection" >&2
-    exit
+    exit 1
 fi
 
 # Strip out any single quotes from the title, this is ugly though, very ugly.
