@@ -28,7 +28,7 @@ dmenu_opts=(-fn 'Dina Bold 8' -w -i -l 40
             -sf '#9b859d' -sb '#262626')
 
 get_user_data() {
-    local team list chunk nelem tmp i
+    local team list chunk nelem tmp
 
     if [[ -s "$data_dir"/teams ]]; then
         while read -r team; do
@@ -47,9 +47,7 @@ get_user_data() {
         nelem="${#list[@]}"
 
         if ((nelem < chunk)); then
-            for ((i = 0; i < nelem; i++)); do
-                printf '%s,' "${list[$i]}"
-            done
+            printf '%s,' "${list[@]}"
             printf '&limit=%d\n' "$nelem"
         else
             while ((${#list[@]})); do
@@ -84,7 +82,7 @@ get_json() {
         curl -s "https://api.twitch.tv/kraken/streams?channel=$s" > "$data"
 
         # Use sed to normalise the API with v2
-        # XXX Assumes that the matched tokens never appear elsewhere.
+        # XXX This assumes that the matched tokens never appear elsewhere.
         sed -i '{
             s/"streams":/"channels":/g;
             s/"url":"/"link":"/g;
@@ -97,8 +95,8 @@ get_json() {
 
 parse_json() {
     # Make sure to not (-u) 'unstring' the title as it may contain valid escapes
-    # which break the strict ordering requirements for the while read loop.  We will
-    # manually de-string the titles later.
+    # which break the strict ordering requirements for the while read loop.  We 
+    # will manually de-string the titles later.
     local args=(-e channels -a -e channel -e display_name -upe link -upe title)
     local i json
 
@@ -141,6 +139,7 @@ while {
     title="${title%\"*}" title="${title#\"}" title="${title//\\/}"
 
     if [[ "$name" != http* ]]; then
+
         # `menu` is what we will use for displaying via dmenu, we will later
         # extract the first word from the result which is `$name` used as the
         # key for `streams`
@@ -154,21 +153,29 @@ dmenu_opts+=(-p "Stream ${#stream[@]}")
 
 # Use awk to pretty print the user and title in 2 columns
 awk='{ a = $1; $1 = ""; printf "%-20s %s\n", a, $0 }'
-selection="$(printf '%s\n' "${!menu[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
+result="$(printf '%s\n' "${!menu[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
 
 # Exit if nothing was selected
-if [[ -z "$selection" ]]; then
+if [[ -z "$result" ]]; then
     exit
 fi
 
 # Get the username from the result of dmenu, this is the first word (usernames
-# cannot have spaces)
-if [[ "$selection" =~ ([^ ]+) ]]; then
-    selection="${BASH_REMATCH[1]}"
+# cannot have spaces) to index our `stream` array
+if [[ "$result" =~ ([^ ]+) ]]; then
+    streamer="${BASH_REMATCH[1]}"
+fi
+
+# Build the title which is always after the first set of spaces, then prefix it
+# with the streamer's name just because we can
+if [[ "$result" =~ \ +(.*) ]]; then
+    title="$streamer: ${BASH_REMATCH[1]}"
 fi
 
 # Check if the selection actually matches a stream
-if [[ -z "${stream[$selection]}" ]]; then
+if [[ -n "${stream[$streamer]}" ]]; then
+    url="${stream[$streamer]}"
+else
     printf '%s: Cannot find associated stream\n' "$selection" >&2
     exit 1
 fi
@@ -176,15 +183,15 @@ fi
 # Strip out any single quotes from the title, this is ugly though, very ugly.
 lstreamer_opts=(
     -Q
-    -p "mpv --really-quiet --title='${selection//\'/’}' --profile=live"
+    -p "mpv --really-quiet --title='${title//\'/’}' --profile=live"
     --ringbuffer-size 800000
-    "${stream[$selection]}"
+    "$url"
     "$quality"
 )
 
 if ! livestreamer "${lstreamer_opts[@]}"; then
     if hash i3-nagbar &> /dev/null; then
-        i3-nagbar -m "${stream[$selection]}: Failed to open stream" -t error
+        i3-nagbar -m "$url" -t error
     fi
     exit 1
 fi
