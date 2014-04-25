@@ -7,9 +7,14 @@ for f in "$@"; do
         curl_args+=(-F "files[]=@$f")
     else
         printf >&2 '%s: File does not exist\n' "$f"
-        exit 1
     fi
 done
+
+# Make sure we have something to upload
+if [[ -z "$curl_args" ]]; then
+    printf >&2 'Nothing found to upload\n'
+    exit 1
+fi
 
 upload=$(curl -#S "${curl_args[@]}" http://pomf.se/upload.php)
 geturls=$(jshon -e files -a -e name -upe url -u <<< "$upload")
@@ -17,6 +22,6 @@ geturls=$(jshon -e files -a -e name -upe url -u <<< "$upload")
 while {
     read -r name
     read -r url
-}; do
+} do
     printf '%s: %s/%s\n' "$name" "http://a.pomf.se" "$url"
 done <<< "$geturls"
