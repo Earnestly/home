@@ -35,16 +35,26 @@ HISTSIZE=10000
 SAVEHIST=$HISTSIZE
 
 # Style
-PROMPT='%m %n %#${vimode} %F{cyan}%~%f '
-
 zstyle ':completion:*' menu select
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' rehash yes
 
+PROMPT='%m %n %#${vimode}%F{green}${branch}%f%F{cyan}%~%f '
+
 # Functions
+# All I want is the git branch for now, vcs_info is way overkill to do this
+function get_git_branch {
+    if [[ -d .git ]]; then
+        branch=" $(git rev-parse --abbrev-ref HEAD) "
+    else
+        branch=" "
+    fi
+}
+
 # Print basic prompt to the window title
 function precmd {
     print -Pn '\e];%n %~\a'
+    get_git_branch
 }
 
 # Print the current running command's name to the window title
