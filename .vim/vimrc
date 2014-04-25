@@ -62,5 +62,8 @@ set viminfo+=n~/.cache/vim/viminfo
 let g:no_rust_conceal = 1
 let g:haskell_conceal = 0
 
+" Make bash the default for `sh` files
+let g:is_bash = 1
+
 " Use clang when checking C syntax
 let g:syntastic_c_compiler = 'clang'
