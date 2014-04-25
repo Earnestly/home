@@ -25,20 +25,20 @@ index=()
 
 # Read in the configuration file
 if [[ -f "$conf" ]]; then
-    while IFS='=' read key value; do
-        case $key in
+    while IFS='=' read k v; do
+        case "$k" in
             '') 
                 ;; # ignore blank lines
             '#'*) 
                 ;;
             'Title') 
-                title="$value"
+                title="$v"
                 ;;
             'Command') 
-                cmd=($value)
+                cmd=($v)
                 ;;
             *) 
-                index["$key"]="$value" 
+                index["$k"]="$v" 
                 ;;
         esac
     done < "$conf"
@@ -61,11 +61,11 @@ fi
 # Check that the command exists, we skip any prefixes such as `exec` to
 # avoid checking the wrong command and generating false positives
 for c in "${cmd[@]}"; do
-    if [[ "$c" == exec ]]; then
+    if [[ "$c" =~ exec|nohup ]]; then
         continue
     fi
 
-    if hash "$c"; then
+    if hash "$c" &> /dev/null; then
         exec "$c" "${index[$selection]}"
     else
         printf >&2 'No Command specified.\n'
