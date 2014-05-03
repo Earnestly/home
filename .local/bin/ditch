@@ -79,7 +79,7 @@ get_json() {
 
     # streams always have a `&limit=` appended
     if [[ "$s" =~ \&limit= ]]; then
-        curl -s "https://api.twitch.tv/kraken/streams?channel=$s" > "$data"
+        curl -sm 10 "https://api.twitch.tv/kraken/streams?channel=$s" > "$data"
 
         # Use sed to normalise the API with v2
         # XXX This assumes that the matched tokens never appear elsewhere.
@@ -89,7 +89,7 @@ get_json() {
             s/"status":"/"title":"/g
         }' "$data"
     else
-        curl -s "http://api.twitch.tv/api/team/$s/live_channels.json" > "$data"
+        curl -sm 10 "http://api.twitch.tv/api/team/$s/live_channels.json" > "$data"
     fi
 }
 
@@ -152,7 +152,7 @@ done < <(parse_json)
 dmenu_opts+=(-p "Stream ${#stream[@]}")
 
 # Use awk to pretty print the user and title in 2 columns
-awk='{ a = $1; $1 = ""; printf "%-20s %s\n", a, $0 }'
+awk='{ a = $1; $1 = ""; printf "%-25s %s\n", a, $0 }'
 result="$(printf '%s\n' "${!menu[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
 
 # Exit if nothing was selected
@@ -167,9 +167,14 @@ if [[ "$result" =~ ([^ ]+) ]]; then
 fi
 
 # Build the title which is always after the first set of spaces, then prefix it
-# with the streamer's name just because we can
+# with the streamer's name just because we can or just the streamer if there's
+# no title
 if [[ "$result" =~ \ +(.*) ]]; then
-    title="$streamer: ${BASH_REMATCH[1]}"
+    if [[ -n "${BASH_REMATCH[1]}" ]]; then
+        title="$streamer: ${BASH_REMATCH[1]}"
+    else
+        title="$streamer"
+    fi
 fi
 
 # Check if the selection actually matches a stream
@@ -191,7 +196,7 @@ lstreamer_opts=(
 
 if ! livestreamer "${lstreamer_opts[@]}"; then
     if hash i3-nagbar &> /dev/null; then
-        i3-nagbar -m "$url" -t error
+        i3-nagbar -m "$url: Failed to start stream" -t error
     fi
     exit 1
 fi
