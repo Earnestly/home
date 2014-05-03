@@ -32,6 +32,8 @@ nmap <S-d> -e :downloads
 nmap <C-j> <nop>
 nmap <C-k> <nop>
 
+nmap <A> <nop>
+
 " Open the current URL as an argument to yt-dl
 nmap <S-u> -e :launchv
 
@@ -58,9 +60,6 @@ set! plugin.default.state=1
 set! security.ssl.require_safe_negotiation=true
 set! security.ssl.treat_unsafe_negotiation_as_broken=true
 
-" Style
-colorscheme vimium_hints
-
 " Custom per-site CSS
 colorscheme justify
 colorscheme wikipedia.org
@@ -69,3 +68,6 @@ colorscheme azillionmonkeys.com
 colorscheme learnyouahaskell.com
 colorscheme realworldhaskell.org
 colorscheme haskell.org
+
+" Style
+colorscheme chrome
