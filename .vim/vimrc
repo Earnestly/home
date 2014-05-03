@@ -8,6 +8,7 @@ set cc=80
 set number
 set hidden
 set backup
+set ttyfast
 set showcmd
 set autoread
 set undofile
@@ -44,7 +45,7 @@ set ignorecase
 
 set cursorline
 set laststatus=2
-set statusline=%n.\ %F\ %M%=%y%w%r%h\ %{&fenc}\ (%l,%c)\ %p%%
+set statusline=%n.\ %F\ %M%=%y%w%r%h\ %{&fenc}\ (%l,%c)\ %L
 
 " Speed up ESC in msec
 set ttimeoutlen=50
