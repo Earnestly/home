@@ -23,5 +23,5 @@ while {
     read -r name
     read -r url
 } do
-    printf '%s: %s/%s\n' "$name" "http://a.pomf.se" "$url"
+    printf '%s: http://a.pomf.se/%s\n' "$name" "$url"
 done <<< "$geturls"
