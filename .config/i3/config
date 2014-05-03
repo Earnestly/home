@@ -184,7 +184,7 @@ bindsym $mod+u [urgent="latest"] focus
 bindsym XF86TouchpadToggle exec trackpad_toggle
 
 # toggle mic mute
-bindsym XF86AudioMicMute exec ponymix -t source -d 1 toggle
+bindsym XF86AudioMicMute exec ponymix -t source -d 7 toggle
 
 # global media keys
 # send SIGUSR1 to immediately refresh i3status
