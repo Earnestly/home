@@ -31,7 +31,7 @@ setopt autocd \
 READNULLCMD="$PAGER"
 HELPDIR="$XDG_CONFIG_HOME"/zsh/help
 HISTFILE="$XDG_CONFIG_HOME"/zsh/.zsh_history
-HISTSIZE=10000
+HISTSIZE=20000
 SAVEHIST=$HISTSIZE
 
 # Style
@@ -198,7 +198,9 @@ alias help='run-help'
 
 # Directory hashes
 for d in "$HOME"/dev/^temp*(/); do
-    hash -d "${d##*/}=$d"
+    if [[ -d "$d" ]]; then
+        hash -d "${d##*/}=$d"
+    fi
 done
 
 # Enable C-S-t in (vte) termite which opens a new terminal in the same working
