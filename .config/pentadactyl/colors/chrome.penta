@@ -21,6 +21,7 @@ hi HintImage  opacity:            0.5 !important;
 " A minimal userChrome style
 style -name=minimal chrome://* <<EOM
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+@namespace html url("http://www.w3.org/1999/xhtml");
 
 /* Get rid of the bottom border */
 #TabsToolbar:after {
@@ -29,7 +30,7 @@ style -name=minimal chrome://* <<EOM
 
 /* Hide the new curved tab edges */
 .tab-background {
-    visibility: hidden !important;
+    opacity: 0 !important;
 }
 
 /* Hide the little graphic seperator between inactive tabs */
