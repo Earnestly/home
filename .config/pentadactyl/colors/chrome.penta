@@ -1,0 +1,72 @@
+" ~/.config/pentadactyl/colors/chrome.penta
+
+" Vimium styled hints
+set hintkeys=fdsartgbvecwxqyiopmnhzuljk
+
+hi Hint       text-transform:     uppercase;
+hi Hint -a    font-family:        "Arial", "Sans";
+hi Hint -a    font-weight:        bold;
+hi Hint -a    font-size:          11px;
+hi Hint -a    text-shadow:        0 1px 0 rgba(255, 255, 255, 0.6);
+hi Hint -a    color:              #302505;
+hi Hint -a    padding:            1px 3px 0px 3px;
+hi Hint -a    background:         -moz-linear-gradient(top, #fff785, #ffc524);
+hi Hint -a    border:             1px #c38a22 solid;
+hi Hint -a    -moz-border-radius: 3px;
+hi Hint -a    -moz-box-shadow:    0 3px 7px 0px rgba(0, 0, 0, 0.3);
+hi HintElem   background-color:   inherit !important;
+hi HintActive background-color:   inherit !important;
+hi HintImage  opacity:            0.5 !important;
+
+" A minimal userChrome style
+style -name=minimal chrome://* <<EOM
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+/* Get rid of the bottom border */
+#TabsToolbar:after {
+    border-bottom: 0px !important;
+}
+
+/* Hide the new curved tab edges */
+.tab-background {
+    visibility: hidden !important;
+}
+
+/* Hide the little graphic seperator between inactive tabs */
+.tabbrowser-tab:before,
+.tabbrowser-tab:after {
+    visibility: hidden !important;
+}
+
+/* Reduce the padding around the contents of a tab */
+.tabbrowser-tab .tab-content,
+.tabbrowser-tab[selected] .tab-content {
+    padding: 0 3px 7px 5px !important;
+}
+
+#TabsToolbar {
+    -moz-appearance: none !important;
+    background: #dedede !important;
+    height: 22px !important;
+}
+
+/* Mostly hacks to try deal with tab overflow, it's not pretty */
+#tabbrowser-tabs {
+    margin-left: -15px !important;
+    margin-right: -15px !important;
+}
+
+#tabbrowser-tabs ~ #alltabs-button {
+    padding-left: 15px !important;
+}
+
+/* Make the tab expand to fill the maximum width */
+.tabbrowser-tab {
+    max-width: 100% !important;
+}
+
+.tabbrowser-tab[selected] {
+    background: #787777 !important;
+    color: #efefef !important;
+}
+EOM
