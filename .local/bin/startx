@@ -12,7 +12,7 @@ xinitrc="${XDG_CONFIG_HOME:-$HOME/.config}"/xinitrc
 log="$XDG_CACHE_HOME"/xsession.log
 
 if [[ -n "$XAUTHORITY" ]]; then
-    export "$XAUTHORITY"
+    export XAUTHORITY
 else
     export XAUTHORITY="$XDG_RUNTIME_DIR"/X11-authority
 fi
