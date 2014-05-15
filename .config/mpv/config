@@ -1,29 +1,34 @@
 # ~/.mpv
 
-# style
+# Style
 title="mpv: ${filename}"
 
-# video
+# Video
 vo=opengl
 #vo=vaapi,opengl
 force-window
 
-# audio
+# Audio
 ao=pulse
-#softvol=yes
 
-# lang
+# Use with flat-volumes in daemon.conf
+volume=40
+softvol=yes
+softvol-max=400
+
+# Lang
 slang=en,eng
 alang=en,eng
 
-# use cache for network streams
+# Use cache for network streams
 cache=auto
 cache-default=4096
 
-# profiles
+# Profiles
 [live]
 profile-desc="Prevent A/V desync during live streams"
 mc=0
 autosync=30
-# make sure to cache even if we're consuming a file stream
+
+# Make sure to cache even if we're consuming a file stream
 cache=4096
