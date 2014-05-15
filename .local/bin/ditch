@@ -190,6 +190,7 @@ lstreamer_opts=(
     -Q
     -p "mpv --really-quiet --title='${title//\'/’}' --profile=live"
     --ringbuffer-size 800000
+    --retry-open 2
     "$url"
     "$quality"
 )
