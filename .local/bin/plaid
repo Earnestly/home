@@ -40,7 +40,6 @@ Command=exec plaid
 EOF
 fi
 
-
 case "$1" in
     "$playlist_dir"/*)
         if [[ -e "$1" ]]; then
@@ -49,13 +48,13 @@ case "$1" in
             printf >&2 '%s: Does not exist.\n' "$1"
             exit 1
         fi
-    ;;
+        ;;
     *youtube.com*)
         handle_youtube "$1"
-    ;;
+        ;;
     *speeddemosarchive.com*)
         handle_sda "$1"
-    ;;
+        ;;
     *)
         printf >&2 '%s: Unknown URI\n' "$1"
         exit 1
