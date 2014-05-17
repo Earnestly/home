@@ -1,0 +1,33 @@
+#!/bin/bash
+
+dir="${XDG_DATA_HOME:-$HOME/.local/share}"/plaid/playlists
+
+in_array() {
+    local i
+
+    for i in "${@:2}"; do
+        if [[ $1 == "$i" ]]; then
+            return 0
+        fi
+    done
+    # No match
+    return 1
+}
+
+# Build an array of playlists found in the actual dmenu menu
+while IFS='=' read -r k v; do
+    if ! [[ "$k" =~ ^Title|^Command ]]; then
+        playlists+=("$v")
+    fi
+done < plaid_dmenu
+
+
+files=("$dir"/*)
+
+# Check if any of the files that exist are also in the menu, remove those which
+# aren't
+for i in "${files[@]}"; do
+    if ! in_array "$i" "${playlists[@]}"; then
+        rm -vf -- "$i"
+    fi
+done
