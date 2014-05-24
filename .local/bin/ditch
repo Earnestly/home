@@ -18,9 +18,6 @@ fi
 # Used to collect downloaded json
 TMPDIR="${TMPDIR:-/tmp}"
 
-# Stream quality, each will be attempted in order and falls back to the next
-quality='medium,high,best,source'
-
 # Options passed to dmenu, the `-p` prompt is passed later, remove `-w` if you
 # use plain old dmenu
 dmenu_opts=(-fn 'Dina Bold 8' -w -i -l 40
@@ -117,6 +114,31 @@ parse_json() {
     done
 }
 
+play_stream() {
+    local url="$1"
+    local title="$2"
+
+    # Stream quality, each will be attempted in order and falls back to the next
+    local quality='medium,high,best,source'
+
+    # Strip out any single quotes from the title, this is ugly though, very ugly.
+    lstreamer_opts=(
+        -Q
+        -p "mpv --really-quiet --title='${title//\'/’}' --profile=live"
+        --ringbuffer-size 800000
+        --retry-open 2
+        "$url"
+        "$quality"
+    )
+
+    if ! livestreamer "${lstreamer_opts[@]}"; then
+        if hash i3-nagbar &> /dev/null; then
+            i3-nagbar -m "$url: Failed to start stream" -t error
+        fi
+        exit 1
+    fi
+}
+
 declare -A stream menu
 declare -a twitch_list
 
@@ -160,44 +182,32 @@ if [[ -z "$result" ]]; then
     exit
 fi
 
-# Get the username from the result of dmenu, this is the first word (usernames
-# cannot have spaces) to index our `stream` array
-if [[ "$result" =~ ([^ ]+) ]]; then
-    streamer="${BASH_REMATCH[1]}"
-fi
+while read -r result; do
+    # Get the username from the result of dmenu, this is the first word (usernames
+    # cannot have spaces) to index our `stream` array
+    if [[ "$result" =~ ([^ ]+) ]]; then
+        streamer="${BASH_REMATCH[1]}"
+    fi
 
-# Build the title which is always after the first set of spaces, then prefix it
-# with the streamer's name just because we can or just the streamer if there's
-# no title
-if [[ "$result" =~ \ +(.*) ]]; then
-    if [[ -n "${BASH_REMATCH[1]}" ]]; then
-        title="$streamer: ${BASH_REMATCH[1]}"
+    # Build the title which is always after the first set of spaces, then prefix it
+    # with the streamer's name just because we can or just the streamer if there's
+    # no title
+    if [[ "$result" =~ \ +(.*) ]]; then
+        if [[ -n "${BASH_REMATCH[1]}" ]]; then
+            title="$streamer: ${BASH_REMATCH[1]}"
+        else
+            title="$streamer"
+        fi
+    fi
+
+    # Check if the selection actually matches a stream
+    if [[ -n "${stream[$streamer]}" ]]; then
+        url="${stream[$streamer]}"
     else
-        title="$streamer"
+        printf '%s: Cannot find associated stream\n' "$streamer" >&2
+        exit 1
     fi
-fi
 
-# Check if the selection actually matches a stream
-if [[ -n "${stream[$streamer]}" ]]; then
-    url="${stream[$streamer]}"
-else
-    printf '%s: Cannot find associated stream\n' "$selection" >&2
-    exit 1
-fi
-
-# Strip out any single quotes from the title, this is ugly though, very ugly.
-lstreamer_opts=(
-    -Q
-    -p "mpv --really-quiet --title='${title//\'/’}' --profile=live"
-    --ringbuffer-size 800000
-    --retry-open 2
-    "$url"
-    "$quality"
-)
-
-if ! livestreamer "${lstreamer_opts[@]}"; then
-    if hash i3-nagbar &> /dev/null; then
-        i3-nagbar -m "$url: Failed to start stream" -t error
-    fi
-    exit 1
-fi
+    # Fire off all in the background, this will still warn on failure
+    play_stream "$url" "$title" &
+done <<< "$result"
