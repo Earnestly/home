@@ -6,7 +6,9 @@ set runtimepath=~/.config/pentadactyl
 loadplugins '\.(js|penta)$'
 group user
 
-" ui
+" UI
+source ~/.config/pentadactyl/chrome.css
+
 set guioptions=Csn
 set hlfind
 
@@ -32,13 +34,8 @@ nmap <S-d> -e :downloads
 nmap <C-j> <nop>
 nmap <C-k> <nop>
 
-nmap <A> <nop>
-
 " Open the current URL as an argument to yt-dl
 nmap <S-u> -e :launchv
-
-" Same above but with quvi
-nmap <S-q> -e :launchvq
 
 " Use vim instead of gvim for now
 set editor='termite -e "vim +<line> <file>"'
@@ -49,9 +46,8 @@ au fullscreen off set go+=s
 
 " Change some default about:configs
 set! extensions.checkCompatibility.nightly=false
-set! browser.tabs.onTop=false
 set! noscript.keys.tempAllowPage="alt z"
-set! noscript.keys.revokeTemp="alt c"
+set! noscript.keys.revokeTemp="alt x"
 set! noscript.notify=false
 set! plugins.click_to_play=true
 set! plugin.default.state=1
@@ -60,14 +56,5 @@ set! plugin.default.state=1
 set! security.ssl.require_safe_negotiation=true
 set! security.ssl.treat_unsafe_negotiation_as_broken=true
 
-" Custom per-site CSS
-colorscheme justify
-colorscheme wikipedia.org
-colorscheme htdp.org
-colorscheme azillionmonkeys.com
-colorscheme learnyouahaskell.com
-colorscheme realworldhaskell.org
-colorscheme haskell.org
-
 " Style
-colorscheme chrome
+colorscheme hints
