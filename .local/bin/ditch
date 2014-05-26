@@ -20,7 +20,7 @@ TMPDIR="${TMPDIR:-/tmp}"
 
 # Options passed to dmenu, the `-p` prompt is passed later, remove `-w` if you
 # use plain old dmenu
-dmenu_opts=(-fn 'Dina Bold 8' -w -i -l 40
+dmenu_opts=(-fn 'Dina Bold 8' -w -i -l 50
             -nf '#a7a7a7' -nb '#1e1e1e'
             -sf '#9b859d' -sb '#262626')
 
@@ -175,10 +175,10 @@ dmenu_opts+=(-p "Stream ${#stream[@]}")
 
 # Use awk to pretty print the user and title in 2 columns
 awk='{ a = $1; $1 = ""; printf "%-25s %s\n", a, $0 }'
-result="$(printf '%s\n' "${!menu[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
+results="$(printf '%s\n' "${!menu[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
 
 # Exit if nothing was selected
-if [[ -z "$result" ]]; then
+if [[ -z "$results" ]]; then
     exit
 fi
 
@@ -210,4 +210,4 @@ while read -r result; do
 
     # Fire off all in the background, this will still warn on failure
     play_stream "$url" "$title" &
-done <<< "$result"
+done <<< "$results"
