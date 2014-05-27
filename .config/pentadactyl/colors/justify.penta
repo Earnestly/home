@@ -1,6 +1,6 @@
 " Web designers apparently suck at design
 
-style -append * <<EOF
+style -name=justify -append * <<EOF
 p { 
     text-align: justify !important;
     text-rendering: optimizeLegibility !important;
