@@ -181,8 +181,9 @@ alias la='ls --color=auto --group-directories-first -AhXF'
 alias ll='ls --color=auto --group-directories-first -lhXF'
 
 alias dmesg='dmesg -exL'
-alias weechat="exec dtach -A $XDG_RUNTIME_DIR/weechat /usr/bin/weechat"
-alias mutt="exec dtach -A $XDG_RUNTIME_DIR/mutt /usr/bin/mutt -F ~/.config/mutt/muttrc"
+alias weechat="exec dtach -A $XDG_RUNTIME_DIR/weechat weechat"
+alias mutt="exec dtach -A $XDG_RUNTIME_DIR/mutt mutt -F $XDG_CONFIG_HOME/mutt/muttrc"
+alias newsbeuter="exec dtach -A $XDG_RUNTIME_DIR/newsbeuter newsbeuter"
 
 alias ix="curl -F 'f:1=<-' ix.io"
 alias sprunge="curl -F 'sprunge=<-' sprunge.us"
