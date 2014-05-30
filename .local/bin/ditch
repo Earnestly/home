@@ -135,7 +135,6 @@ play_stream() {
         if hash i3-nagbar &> /dev/null; then
             i3-nagbar -m "$url: Failed to start stream" -t error
         fi
-        exit 1
     fi
 }
 
