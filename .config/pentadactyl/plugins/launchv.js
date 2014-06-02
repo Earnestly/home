@@ -5,11 +5,9 @@
 
     Adds two new commands and two new hint modes:
     * :launchv  - Opens the current buffer url prefering yt-dl
-    * :launchvq - Same as above but prefers quvi
 
     Hints:
-    * ;u - launches the current hint prefering yt-dl
-    * ;q - Same but prefers quvi
+    * ;u - launches the current hint with yt-dl
 
     Note: If the url contains a youtube playlist it will return the playlist's
           url rather than the direct youtube video.
@@ -18,14 +16,18 @@
     * Remove the duplication between quvi and yt-dl and unify the keys/hints
 */
 
-function launchv(target, quvi=false){
+function launchv(target){
 
     /* Escape anything which could be used to inject shell commands before
      * passing it to the commands */
     var uri = target.replace(/([$`"\\])/g, "\\$1");
 
     function exec(launcher, uri){
-        dactyl.echomsg("Launching: " + launcher + " " + uri);
+
+        /* If we're using dactyl then echo the action as io.system won't */
+        if(typeof dactyl !== "undefined")
+            dactyl.echomsg("Launching: " + launcher + " " + uri);
+
         return io.system(launcher + ' "' + uri + '" &');
     }
 
@@ -41,36 +43,25 @@ function launchv(target, quvi=false){
         exec("lstream", uri);
 
     /* Open youtube playlists of any kind directly with mpv */
-    else if(uri.match(/youtube.*[?&]list=PL/))
+    else if(uri.match(/youtube.*[?&]list=PL/)){
 
         /* Check if the url is part of a playlist but a direct video (watch?v=)
          * url is provided and return the real playlist url */
         if(uri.match(/watch\?v=/)){
             var uri = uri.replace(/watch\?v.+?\&/, "playlist\?")
-            exec("mpv --really-quiet --cache=4096", uri);
+            exec("mpv --no-terminal --cache=4096", uri);
         }else
-            exec("mpv --really-quiet --cache=4096", uri);
+            exec("mpv --no-terminal --cache=4096", uri);
 
     /* For everything else */
-    else if(quvi)
-        exec("quvi dump -b mute", uri);
-    else
+    }else
         exec("yt-dl", uri);
 }
 
-/* Ugly duplication :( */
-hints.addMode("q", "Launch video from hint (quvi)",
-    function (elem, loc) launchv(loc));
+hints.addMode("q", "Launch video from hint", function (elem, loc) launchv(loc));
 
-hints.addMode("u", "Launch video from hint (yt-dl)",
-    function (elem, loc) launchv(loc, quvi=false));
-
-group.commands.add(["launchv", "lv"], "Launches current buffer video (yt-dl).",
-    function(args){ var uri = buffer.URL;
-        launchv(uri, quvi=false);
-    });
-
-group.commands.add(["launchvq", "lvq"], "Launches current buffer video (quvi).",
+commands.add(["launchv", "lv"], "Launches current buffer video",
     function(args){ var uri = buffer.URL;
         launchv(uri);
-    });
+    }
+);
