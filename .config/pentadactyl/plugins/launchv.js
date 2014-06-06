@@ -36,11 +36,11 @@ function launchv(target){
     if(uri.match(/twitch\.tv\/.*\/[bc]\/[0-9]+/))
 
         /* XXX Currently youtube-dl will only fetch the first 30 minutes of the
-         *     stream.  Replacing this with lstream until fixed. */
+         *     stream.  Replacing this with livestreamer until fixed. */
         //exec("yt-dl", uri);
-        exec("lstream", uri);
+        exec("livestreamer", uri);
     else if(uri.match(/twitch\.tv/))
-        exec("lstream", uri);
+        exec("livestreamer", uri);
 
     /* Open youtube playlists of any kind directly with mpv */
     else if(uri.match(/youtube.*[?&]list=PL/)){
