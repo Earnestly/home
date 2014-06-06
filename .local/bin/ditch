@@ -125,10 +125,10 @@ play_stream() {
     lstreamer_opts=(
         -Q
         -p "mpv --really-quiet --title='${title//\'/’}' --profile=live"
+        --default-stream "$quality"
         --ringbuffer-size 800000
         --retry-open 2
         "$url"
-        "$quality"
     )
 
     if ! livestreamer "${lstreamer_opts[@]}"; then
