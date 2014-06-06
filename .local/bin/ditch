@@ -57,8 +57,8 @@ get_user_data() {
                 tmp=("${list[@]::$chunk}")
                 printf '&limit=%d\n' "${#tmp[@]}"
                
-                # 1st loop: [ 1 2 { 3 4 5 }] => [3 4 5]
-                # 2nd loop: [ 3 4 { 5 }]     => [5]
+                # 1st loop: [ 1 2 { 3 4 5 }] => list = [3 4 5]
+                # 2nd loop: [ 3 4 { 5 }]     => list = [5]
                 # 3rd loop: [ 5 { }]         => done
                 list=("${list[@]:$chunk}")
             done
@@ -118,16 +118,10 @@ play_stream() {
     local url="$1"
     local title="$2"
 
-    # Stream quality, each will be attempted in order and falls back to the next
-    local quality='medium,high,best,source'
-
-    # Strip out any single quotes from the title, this is ugly though, very ugly.
+    # Strip out any single quotes from the title, not very elegant
     lstreamer_opts=(
-        -Q
-        -p "mpv --really-quiet --title='${title//\'/’}' --profile=live"
-        --default-stream "$quality"
-        --ringbuffer-size 800000
-        --retry-open 2
+        --player "mpv --no-terminal --title='${title//\'/’}' --profile=live"
+        --quiet
         "$url"
     )
 
