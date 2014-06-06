@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ~/.local/bin/ditch
 # Create a dmenu using the twitch team and stream api
 # Requires jshon, dmenu-imlib-pango
@@ -8,7 +8,7 @@
 # ~/.config/ditch/streamers     list of individual streamers
 
 # Globals
-data_dir="${XDG_CONFIG_HOME:-$HOME/.config}"/ditch
+readonly data_dir="${XDG_CONFIG_HOME:-$HOME/.config}"/ditch
 
 # Make sure it exists
 if ! [[ -d "$data_dir" ]]; then
@@ -16,7 +16,7 @@ if ! [[ -d "$data_dir" ]]; then
 fi
 
 # Used to collect downloaded json
-TMPDIR="${TMPDIR:-/tmp}"
+readonly TMPDIR="${TMPDIR:-/tmp}"
 
 # Options passed to dmenu, the `-p` prompt is passed later, remove `-w` if you
 # use plain old dmenu
@@ -166,7 +166,7 @@ done < <(parse_json)
 # Display the number of current streams in dmenu's prompt
 dmenu_opts+=(-p "Stream ${#stream[@]}")
 
-# Use awk to pretty print the user and title in 2 columns
+# Use awk to pretty-print the user and title in 2 columns
 awk='{ a = $1; $1 = ""; printf "%-25s %s\n", a, $0 }'
 results="$(printf '%s\n' "${!menu[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
 
