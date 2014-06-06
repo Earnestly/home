@@ -52,6 +52,9 @@ set! noscript.notify=false
 set! plugins.click_to_play=true
 set! plugin.default.state=1
 
+" Disable iframes
+set! browser.frames.enabled=false
+
 " Require websites preform safe ssl negotiation
 set! security.ssl.require_safe_negotiation=true
 set! security.ssl.treat_unsafe_negotiation_as_broken=true
