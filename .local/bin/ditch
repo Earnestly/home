@@ -117,6 +117,7 @@ parse_json() {
 play_stream() {
     local url="$1"
     local title="$2"
+    local err
 
     # Strip out any single quotes from the title, not very elegant
     lstreamer_opts=(
@@ -125,9 +126,12 @@ play_stream() {
         "$url"
     )
 
-    if ! livestreamer "${lstreamer_opts[@]}"; then
+    # Capture the error so we can display it elsewhere
+    if ! err="$(livestreamer "${lstreamer_opts[@]}")"; then
         if hash i3-nagbar &> /dev/null; then
-            i3-nagbar -m "$url: Failed to start stream" -t error
+            i3-nagbar -m "$url: $err" -t error
+        else
+            printf '%s: %s\n' "$url" "$err" >&2
         fi
     fi
 }
