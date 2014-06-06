@@ -1,0 +1,4 @@
+player=mpv --no-terminal --profile=live
+default-stream=high,medium,best,source
+ringbuffer-size=800000
+retry-open=2
