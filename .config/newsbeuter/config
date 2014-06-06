@@ -18,3 +18,5 @@ macro q set browser "quvi dump -b mute %u &" ; open-in-browser ; set browser "fi
 macro i open ; four ; quit
 
 # colors
+color listfocus color7 color8
+color info color4 color0 bold
