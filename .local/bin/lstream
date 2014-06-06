@@ -5,8 +5,8 @@
 opts=(
     -p "mpv --profile=live"
     --ringbuffer-size 800000
+    --default-stream medium,high,best,source,mobile
     "$1"
-    "${2:-medium,high,best,source,mobile}"
 )
 
 exec livestreamer "${opts[@]}"
