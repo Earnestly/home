@@ -36,11 +36,8 @@ get_user_data() {
     if [[ -s "$data_dir"/streamers ]]; then
         mapfile -t list < "$data_dir"/streamers
 
-        # Even though twitch lets us use up to chunks of 100, curl will fail
-        # due to the argument being too long.  Setting this to 15 seems to be
-        # reasonable but may cause problems if each streamer has a very long
-        # username
-        chunk=15
+        # Twitch lets us use a maximum of 100 streamers per query
+        chunk=100
         nelem="${#list[@]}"
 
         if ((nelem < chunk)); then
@@ -56,7 +53,7 @@ get_user_data() {
 
                 tmp=("${list[@]::$chunk}")
                 printf '&limit=%d\n' "${#tmp[@]}"
-               
+
                 # 1st loop: [ 1 2 { 3 4 5 }] => list = [3 4 5]
                 # 2nd loop: [ 3 4 { 5 }]     => list = [5]
                 # 3rd loop: [ 5 { }]         => done
@@ -70,13 +67,13 @@ get_user_data() {
 # later, but this allows me to background this function
 get_json() {
     local s="$1"
-    local stream
+    local stream data
 
-    local data="$TMPDIR"/"$s".json
+    data="$(mktemp -t ditch-XXX.json)"
 
     # streams always have a `&limit=` appended
     if [[ "$s" =~ \&limit= ]]; then
-        curl -sm 10 "https://api.twitch.tv/kraken/streams?channel=$s" > "$data"
+        curl -sLG "https://api.twitch.tv/kraken/streams?channel=$s" > "$data"
 
         # Use sed to normalise the API with v2
         # XXX This assumes that the matched tokens never appear elsewhere.
@@ -86,13 +83,13 @@ get_json() {
             s/"status":"/"title":"/g
         }' "$data"
     else
-        curl -sm 10 "http://api.twitch.tv/api/team/$s/live_channels.json" > "$data"
+        curl -sLG "http://api.twitch.tv/api/team/$s/live_channels.json" > "$data"
     fi
 }
 
 parse_json() {
     # Make sure to not (-u) 'unstring' the title as it may contain valid escapes
-    # which break the strict ordering requirements for the while read loop.  We 
+    # which break the strict ordering requirements for the while read loop.  We
     # will manually de-string the titles later.
     local args=(-e channels -a -e channel -e display_name -upe link -upe title)
     local i json
