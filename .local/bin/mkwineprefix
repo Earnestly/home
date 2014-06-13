@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+# mkwineprefix
+# Creates a sane prefix, unlinking all directories pointing at the users home
+# and remaps z: to /mnt instead of /
+
+usage() {
+    cat <<EOF
+By default mkwineprefix will create a 32bit prefix without mono and gecko
+
+usage: mkwineprefix [options] name
+
+    options:
+        -a <arch>       Architecture, 32 or 64
+        -m              Enable Mono installation
+        -g              Enable Gecko installation
+        -h              This help message
+
+    name:
+        The name of the prefix, can't already exist
+EOF
+}
+
+# We need at least one argument
+if (( $# == 0 )); then
+    usage
+    exit 1
+fi
+
+while (( $# )); do
+    case "$1" in
+        -a) shift; arch="$1" ;;
+        -m) with_mono=1 ;;
+        -g) with_gecko=1 ;;
+        -h) usage
+            exit
+            ;;
+
+        *)  prefix="$1"
+            ;;
+    esac
+    shift
+done
+
+
+# Make sure we get a valid architecture, if we don't assume 32
+if [[ -z "$arch" ]]; then
+    arch=32
+fi
+
+# If arch was set to something make sure it's valid for our needs
+if [[ "$arch" != @(32|64) ]]; then
+    printf 'No valid architectures found, can only be 32 or 64\n'
+    exit 1
+fi
+
+# Check that we got something for the prefix
+if [[ -n "$prefix" ]]; then
+
+    # If we got a prefix, make sure it's an absolute path by prepending PWD
+    if [[ "${prefix:0:1}" != "/" ]]; then
+        export WINEPREFIX="$PWD"/"$prefix"
+    else
+        export WINEPREFIX="$prefix"
+    fi
+else
+    printf 'No prefix was found, bailing\n'
+    exit 1
+fi
+
+# Check if the prefix already exists, is this even necessary?
+if [[ -d "$WINEPREFIX"/dosdevices ]]; then
+    printf 'Found a dosdevices directory\n'
+    printf 'The prefix probably already exists\n'
+    exit 1
+fi
+
+# Enable both if set by unsetting overrides
+if ((with_mono & with_gecko)); then
+    export WINEDLLOVERRIDES=""
+
+# Just enable mono
+elif ((with_mono)); then
+    export WINEDLLOVERRIDES="mshtml=d"
+
+# Just enable gecko
+elif ((with_gecko)); then
+    export WINEDLLOVERRIDES="mscoree=d"
+
+# Default disable both
+else
+    export WINEDLLOVERRIDES="mscoree,mshtml=d"
+fi
+
+if ((arch == 32)); then
+    export WINEARCH=win32
+else
+    export WINEARCH=win64
+fi
+
+# Initialise the prefix
+wineboot -i
+
+# Unmap Z
+if [[ -d "$WINEPREFIX"/dosdevices/z: ]]; then
+    rm -r "$WINEPREFIX"/dosdevices/z:
+
+    # Recreate it and point to /mnt instead of /
+    ln -sf /mnt "$WINEPREFIX"/dosdevices/z:
+fi
+
+# Remove all the symlinks pointing at the user home directory
+for dir in Desktop 'My Documents' 'My Music' 'My Pictures' 'My Videos'; do
+    rm  "$WINEPREFIX"/drive_c/users/"$USER"/"$dir"
+    mkdir -p "$WINEPREFIX"/drive_c/users/"$USER"/"$dir"
+done
