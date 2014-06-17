@@ -53,7 +53,7 @@ function get_git_branch {
 
 # Print basic prompt to the window title
 function precmd {
-    print -Pn '\e];%n %~\a'
+    print -Pn "\e];%n %~\a"
     get_git_branch
 }
 
@@ -180,8 +180,8 @@ alias ls='ls --color=auto --group-directories-first -hXF'
 alias la='ls --color=auto --group-directories-first -AhXF'
 alias ll='ls --color=auto --group-directories-first -lhXF'
 
-alias dmesg='dmesg -exL'
-alias weechat="exec dtach -A $XDG_RUNTIME_DIR/weechat weechat"
+alias dmesg=dmesg -exL
+alias weechat="exec dtach -A $XDG_RUNTIME_DIR/weechat env LD_PRELOAD=$HOME/.local/lib/libwcwidth.so weechat"
 alias mutt="exec dtach -A $XDG_RUNTIME_DIR/mutt mutt -F $XDG_CONFIG_HOME/mutt/muttrc"
 alias newsbeuter="exec dtach -A $XDG_RUNTIME_DIR/newsbeuter newsbeuter"
 
@@ -190,8 +190,8 @@ alias sprunge="curl -F 'sprunge=<-' sprunge.us"
 alias xc='xclip -o | sprunge'
 
 # XXX force XDG_CONFIG_HOME where possible
-alias ncmpcpp='ncmpcpp -c ~/.config/ncmpcpp/ncmpcpp.conf'
-alias aria2c='aria2c --dht-file-path ~/.config/aria2/dht.dat'
+alias ncmpcpp=ncmpcpp -c "$XDG_CONFIG_HOME"/ncmpcpp/ncmpcpp.conf
+alias aria2c=aria2c --dht-file-path "$XDG_CACHE_HOME"/aria2/dht.dat
 
 # Bash-like help
 unalias run-help
