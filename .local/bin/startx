@@ -1,7 +1,7 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
 # startx
-# Alternative, simpler startx which makes use of the XDG specification
+# Alternative, simpler startx which makes use of the XDG specification and
+# systemd
 
 # Make sure we aren't running in an xserver
 if [[ -n "$DISPLAY" ]]; then
@@ -9,7 +9,7 @@ if [[ -n "$DISPLAY" ]]; then
 fi
 
 xinitrc="${XDG_CONFIG_HOME:-$HOME/.config}"/xinitrc
-log="$XDG_CACHE_HOME"/xsession.log
+log="${XDG_CACHE_HOME:-$HOME/.cache}"/xsession.log
 
 if [[ -n "$XAUTHORITY" ]]; then
     export XAUTHORITY
@@ -26,6 +26,14 @@ export DISPLAY=:"$XDG_VTNR"
 # I can blindly add a new entry with xauth because this is stored in a tmpfs
 xauth -q add "$DISPLAY" . "$(mcookie)" &> /dev/null
 
+# # If using systemd --user with dbus.service
+# sysdopts=(
+#     --user
+#     --scope
+#     --unit="xinit-$DISPLAY.scope"
+#     --description="Simple xinit wrapper"
+# )
+
 serveropts=(
     vt"$XDG_VTNR" 
     -noreset
@@ -34,13 +42,4 @@ serveropts=(
 )
 
 exec xinit "${1:-$xinitrc}" -- "$DISPLAY" "${serveropts[@]}" "$@" &> "$log"
-
-# If using systemd --user with dbus.service
-#sysdopts=(
-#    --user
-#    --scope
-#    --unit="xinit-$DISPLAY.scope"
-#    --description="Simple xinit wrapper"
-#)
-
-#exec systemd-run "${sysdopts[@]}" xinit "${1:-$xinitrc}" -- "$DISPLAY" "${serveropts[@]}" "$@"
+# exec systemd-run "${sysdopts[@]}" xinit "${1:-$xinitrc}" -- "$DISPLAY" "${serveropts[@]}" "$@"
