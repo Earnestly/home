@@ -32,5 +32,5 @@ if [[ -n "$wall_sel" ]]; then
     # Get the first match and exit, meh
     resolution=$(xrandr | awk '/ connected/ { print $3; exit }')
     ln -sf "$wall_dir"/"$wall_sel" "$wall_sym"
-    gm display -window root -size $resolution\! "$wall_sym"
+    display -window root -size $resolution\! "$wall_sym"
 fi
