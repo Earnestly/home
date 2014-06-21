@@ -24,6 +24,18 @@ dmenu_opts=(-fn 'Dina Bold 8' -w -i -l 50
             -nf '#a7a7a7' -nb '#1e1e1e'
             -sf '#9b859d' -sb '#262626')
 
+fail() {
+    local prefix="$1"
+    shift
+
+    # Use notify-send if it exists and we're not running from a terminal
+    if [[ ! -t 0 ]] && hash notify-send &> /dev/null; then
+        notify-send -u critical "$prefix" "$@"
+    else
+        printf '[ERROR] %s: %s\n' "$prefix" "$@" >&2
+    fi
+}
+
 get_user_data() {
     local team list chunk nelem tmp
 
@@ -119,17 +131,14 @@ play_stream() {
     # Strip out any single quotes from the title, not very elegant
     lstreamer_opts=(
         --player "mpv --no-terminal --title='${title//\'/’}' --profile=live"
+        --player-continuous-http
         --quiet
         "$url"
     )
 
     # Capture the error so we can display it elsewhere
     if ! err="$(livestreamer "${lstreamer_opts[@]}")"; then
-        if hash i3-nagbar &> /dev/null; then
-            i3-nagbar -m "$url: $err" -t error
-        else
-            printf '%s: %s\n' "$url" "$err" >&2
-        fi
+        fail "$url" "$err"
     fi
 }
 
@@ -140,7 +149,7 @@ mapfile -t twitch_list < <(get_user_data)
 
 # If no user data was found to generate anything from, just exit
 if [[ -z "${twitch_list[@]}" ]]; then
-    printf 'No configuration data found\n' >&2
+    fail "ditch" "No configuration data found"
     exit 1
 fi
 
@@ -177,15 +186,15 @@ if [[ -z "$results" ]]; then
 fi
 
 while read -r result; do
-    # Get the username from the result of dmenu, this is the first word (usernames
-    # cannot have spaces) to index our `stream` array
+    # Get the username from the result of dmenu, this is the first word
+    # (usernames cannot have spaces) to index our `stream` array
     if [[ "$result" =~ ([^ ]+) ]]; then
         streamer="${BASH_REMATCH[1]}"
     fi
 
-    # Build the title which is always after the first set of spaces, then prefix it
-    # with the streamer's name just because we can or just the streamer if there's
-    # no title
+    # Build the title which is always after the first set of spaces, then
+    # prefix it with the streamer's name just because we can or just the
+    # streamer if there's no title
     if [[ "$result" =~ \ +(.*) ]]; then
         if [[ -n "${BASH_REMATCH[1]}" ]]; then
             title="$streamer: ${BASH_REMATCH[1]}"
@@ -198,7 +207,7 @@ while read -r result; do
     if [[ -n "${stream[$streamer]}" ]]; then
         url="${stream[$streamer]}"
     else
-        printf '%s: Cannot find associated stream\n' "$streamer" >&2
+        fail "$streamer" "Cannot find associated stream"
         exit 1
     fi
 
