@@ -190,8 +190,8 @@ alias sprunge="curl -F 'sprunge=<-' sprunge.us"
 alias xc='xclip -o | sprunge'
 
 # XXX force XDG_CONFIG_HOME where possible
-alias ncmpcpp=ncmpcpp -c "$XDG_CONFIG_HOME"/ncmpcpp/ncmpcpp.conf
-alias aria2c=aria2c --dht-file-path "$XDG_CACHE_HOME"/aria2/dht.dat
+alias ncmpcpp="ncmpcpp -c $XDG_CONFIG_HOME/ncmpcpp/ncmpcpp.conf"
+alias aria2c="aria2c --dht-file-path $XDG_CACHE_HOME/aria2/dht.dat"
 
 # Bash-like help
 unalias run-help
