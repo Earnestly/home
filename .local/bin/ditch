@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ~/.local/bin/ditch
 # Create a dmenu using the twitch team and stream api
-# Requires jshon, dmenu-imlib-pango
+# Requires jshon, dmenu-imlib-pango (for -w), livestreamer
 
 # Files
 # ~/.config/ditch/teams         list of twitch teams
@@ -75,8 +75,8 @@ get_user_data() {
     fi
 }
 
-# Download all the json to individual files, each file will be read sequentially
-# later, but this allows me to background this function
+# Download all the json chunks to individual files, each file will be read
+# sequentially later but this allows me to (fork) background this function
 get_json() {
     local s="$1"
     local stream data
@@ -131,14 +131,13 @@ play_stream() {
     # Strip out any single quotes from the title, not very elegant
     lstreamer_opts=(
         --player "mpv --no-terminal --title='${title//\'/’}' --profile=live"
-        --player-continuous-http
         --quiet
         "$url"
     )
 
     # Capture the error so we can display it elsewhere
     if ! err="$(livestreamer "${lstreamer_opts[@]}")"; then
-        fail "$url" "$err"
+        fail "ditch" "$err"
     fi
 }
 
