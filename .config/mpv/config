@@ -12,8 +12,8 @@ force-window
 # Audio
 ao=pulse
 
-# Use with flat-volumes in daemon.conf
-volume=40
+# Use with flat-volumes in /etc/pulse/daemon.conf
+volume=25
 softvol=yes
 softvol-max=400
 
