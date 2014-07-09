@@ -90,9 +90,9 @@ get_json() {
         # Use sed to normalise the API with v2
         # XXX This assumes that the matched tokens never appear elsewhere.
         sed -i '{
-            s/"streams":/"channels":/g;
-            s/"url":"/"link":"/g;
-            s/"status":"/"title":"/g
+            /"streams":/ s/"streams":/"channels":/g;
+            /"url":"/ s/"url":"/"link":"/g;
+            /"status":"/ s/"status":"/"title":"/g
         }' "$data"
     else
         curl -sLG "http://api.twitch.tv/api/team/$s/live_channels.json" > "$data"
