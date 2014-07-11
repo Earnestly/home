@@ -11,9 +11,6 @@
 
     Note: If the url contains a youtube playlist it will return the playlist's
           url rather than the direct youtube video.
-
-    Todo:
-    * Remove the duplication between quvi and yt-dl and unify the keys/hints
 */
 
 function launchv(target){
@@ -39,7 +36,11 @@ function launchv(target){
          *     stream.  Replacing this with livestreamer until fixed. */
         //exec("yt-dl", uri);
         exec("livestreamer", uri);
-    else if(uri.match(/twitch\.tv/))
+
+    /* Currently youtube-dl's support is buggy but adding for future */
+    else if(uri.match(/hitbox\.tv\/video\/[0-9]+/))
+        exec("yt-dl", uri);
+    else if(uri.match(/twitch\.tv/) || uri.match(/hitbox\.tv/))
         exec("livestreamer", uri);
 
     /* Open youtube playlists of any kind directly with mpv */
