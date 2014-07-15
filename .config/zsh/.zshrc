@@ -22,6 +22,7 @@ setopt autocd \
     printexitvalue \
     histsavenodups \
     completealiases \
+    histignorespace \
     numericglobsort \
     histignorespace \
     histreduceblanks \
@@ -65,7 +66,7 @@ function preexec {
 
 # Replace vimode indicators
 function zle-line-init zle-keymap-select {
-    vimode="${${KEYMAP/vicmd/c}/(main|viins)/i}"
+    vimode=${${KEYMAP/vicmd/c}/(main|viins)/i}
     zle reset-prompt
 }
 
@@ -163,8 +164,8 @@ function nmv {
 compdef "_files -W $HOME/docs/notes -/" nmv
 
 # aliases
-alias ...='cd ../..'
-alias ....='cd ../../..'
+alias -g ...='../..'
+alias -g ....='../../..'
 alias rr='rm -rvI'
 alias rm='rm -vI'
 alias cp='cp -vi'
@@ -198,10 +199,8 @@ unalias run-help
 alias help='run-help'
 
 # Directory hashes
-for d in "$HOME"/dev/^temp*(/); do
-    if [[ -d "$d" ]]; then
-        hash -d "${d##*/}=$d"
-    fi
+for d in "$HOME"/dev/*(/); do
+    hash -d "${d##*/}=$d"
 done
 
 # Enable C-S-t in (vte) termite which opens a new terminal in the same working
