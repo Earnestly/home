@@ -21,7 +21,13 @@ fi
 unset DBUS_SESSION_BUS_ADDRESS
 
 unset SESSION_MANAGER
-export DISPLAY=:"$XDG_VTNR"
+
+if [[ -n "$XDG_VTNR" ]]; then
+    export DISPLAY=:"$XDG_VTNR"
+else
+    printf 'Apparently XDG_VTNR is not set, bailing out.\n' >&2
+    exit 1
+fi
 
 # I can blindly add a new entry with xauth because this is stored in a tmpfs
 xauth -q add "$DISPLAY" . "$(mcookie)" &> /dev/null
