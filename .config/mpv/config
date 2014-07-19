@@ -4,7 +4,7 @@
 title="mpv: ${filename}"
 
 # Video
-vo=vaapi,opengl
+vo=opengl
 hwdec=vaapi
 
 force-window
