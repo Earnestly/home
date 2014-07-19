@@ -8,6 +8,7 @@ vo=opengl
 hwdec=vaapi
 
 force-window
+demuxer-thread=yes
 
 # Audio
 ao=pulse
