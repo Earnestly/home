@@ -8,7 +8,9 @@ After=sound.target
 Type=forking
 Environment=PULSE_PROP=application.icon_name=sound
 PIDFile=%t/mpd.pid
-ExecStart=/usr/bin/mpd %h/.config/mpd/mpd.conf
+ExecStart=/usr/bin/mpd
+ExecStop=/usr/bin/mpd --kill
+
 
 [Install]
 WantedBy=default.target
