@@ -4,6 +4,11 @@
 # and remaps z: to /mnt instead of / and disables the winemenubuilder to
 # prevent .desktop/mime pollution
 
+# Issues
+# * Currently mapping z: to /mnt prevents wine from looking through the entire
+#   filesystem meaning anything run from, for example, your home, will not be
+#   found
+
 usage() {
     cat <<EOF
 Usage: mkwineprefix [options] NAME
@@ -112,5 +117,3 @@ for dir in Desktop 'My Documents' 'My Music' 'My Pictures' 'My Videos'; do
     rm  "$WINEPREFIX"/drive_c/users/"$USER"/"$dir"
     mkdir -p "$WINEPREFIX"/drive_c/users/"$USER"/"$dir"
 done
-
-printf 'Prefix is: %s\n' "$WINEPREFIX"
