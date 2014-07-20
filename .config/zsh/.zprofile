@@ -6,7 +6,6 @@ export XDG_CACHE_HOME="$HOME"/.cache
 export XDG_CONFIG_HOME="$HOME"/.config
 export XDG_DATA_HOME="$HOME"/.local/share
 
-#export MPV_HOME="$XDG_CONFIG_HOME"/mpv
 export SLRNHOME="$XDG_CONFIG_HOME"/slrn
 export GNUPGHOME="$XDG_CONFIG_HOME"/gnupg
 export INPUTRC="$XDG_CONFIG_HOME"/inputrc
@@ -40,7 +39,7 @@ export BROWSER=firefox
 export TERMINAL=termite
 
 # LS_COLORS is now required for `ls` to use colour
-eval "$(dircolors -b ~/.config/dircolors)"
+eval $(dircolors -b "$XDG_CONFIG_HOME"/dircolors)
 
 # Disable Mono and Gecko installation and .desktop creation
 export WINEDLLOVERRIDES="winemenubuilder.exe,mscoree,mshtml=d"
