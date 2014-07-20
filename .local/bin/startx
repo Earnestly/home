@@ -47,5 +47,5 @@ serveropts=(
     -auth "$XAUTHORITY"
 )
 
-exec xinit "${1:-$xinitrc}" -- "$DISPLAY" "${serveropts[@]}" "$@" &> "$log"
+exec xinit "${1:-$xinitrc}" -- "$DISPLAY" "${serveropts[@]}" "$@"
 # exec systemd-run "${sysdopts[@]}" xinit "${1:-$xinitrc}" -- "$DISPLAY" "${serveropts[@]}" "$@"
