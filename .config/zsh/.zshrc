@@ -177,9 +177,8 @@ alias chmod='chmod -c --preserve-root'
 alias chown='chown -c --preserve-root'
 alias chgrp='chgrp -c --preserve-root'
 
-alias ls='ls --color=auto --group-directories-first -hXF'
-alias la='ls --color=auto --group-directories-first -AhXF'
-alias ll='ls --color=auto --group-directories-first -lhXF'
+alias ls='ls --color=auto --group-directories-first -AhXF'
+alias ll='ls --color=auto --group-directories-first -AlhXF'
 
 alias dmesg=dmesg -exL
 alias weechat="exec dtach -A $XDG_RUNTIME_DIR/weechat env LD_PRELOAD=$HOME/.local/lib/libwcwidth.so weechat"
