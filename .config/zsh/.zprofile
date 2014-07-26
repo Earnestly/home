@@ -38,8 +38,8 @@ export LESSHISTFILE="$XDG_CACHE_HOME"/lesshist
 export BROWSER=firefox
 export TERMINAL=termite
 
-# LS_COLORS is now required for `ls` to use colour
-eval $(dircolors -b "$XDG_CONFIG_HOME"/dircolors)
+# LS_COLORS (or a valid TERM, which I don't have) is now required for `ls` to use colour
+source <(dircolors "$XDG_CONFIG_HOME"/dircolors)
 
 # Disable Mono and Gecko installation and .desktop creation
 export WINEDLLOVERRIDES="winemenubuilder.exe,mscoree,mshtml=d"
