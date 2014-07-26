@@ -4,11 +4,11 @@
 title="mpv: ${filename}"
 
 # Video
-vo=opengl
+vo=vaapi,opengl
 hwdec=vaapi
 
 force-window
-demuxer-thread=yes
+#demuxer-thread=yes
 
 # Audio
 ao=pulse
