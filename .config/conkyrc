@@ -8,7 +8,7 @@ own_window no
 # My locale is already UTF-8
 override_utf8_locale no
 
-# Don't add  spaces anywhere
+# Don't add spaces anywhere
 pad_percents 0
 use_spacer none
 
