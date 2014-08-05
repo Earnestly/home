@@ -20,7 +20,7 @@ readonly TMPDIR="${TMPDIR:-/tmp}"
 
 # Options passed to dmenu, the `-p` prompt is passed later, remove `-w` if you
 # use plain old dmenu
-dmenu_opts=(-fn 'Dina Bold 8' -w -i -l 50
+dmenu_opts=(-fn 'Dina Bold 8' -w -i -l 40
             -nf '#a7a7a7' -nb '#1e1e1e'
             -sf '#9b859d' -sb '#262626')
 
