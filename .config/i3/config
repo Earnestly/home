@@ -110,6 +110,7 @@ bindsym $mod+r mode "RESIZE MODE"
 mode "DMENU MODE" {
     bindsym d exec --no-startup-id ditch; mode "default"
     bindsym w exec --no-startup-id dwall; mode "default"
+    bindsym y exec --no-startup-id dclip; mode "default"
     bindsym p exec --no-startup-id dmenu_run; mode "default"
     bindsym u exec --no-startup-id dmenu_loader ~/.local/share/plaid/plaid_dmenu; mode "default"
     bindsym o exec --no-startup-id dmenu_loader ~/.local/share/dmenu/dmenu_pdf; mode "default"
@@ -123,12 +124,12 @@ bindsym $mod+p mode "DMENU MODE"
 
 # control music
 mode "MPD CONTROL" {
-    bindsym s exec mpc stop
-    bindsym p exec mpc toggle
-    bindsym l exec mpc next
-    bindsym h exec mpc prev
-    bindsym equal exec mpc volume +3
-    bindsym minus exec mpc volume -3
+    bindsym s exec --no-startup-id mpc stop
+    bindsym p exec --no-startup-id mpc toggle
+    bindsym l exec --no-startup-id mpc next
+    bindsym h exec --no-startup-id mpc prev
+    bindsym equal exec --no-startup-id mpc volume +3
+    bindsym minus exec --no-startup-id mpc volume -3
 
     bindsym q mode "default"
     bindsym Escape mode "default"
