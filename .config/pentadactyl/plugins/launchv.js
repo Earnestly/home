@@ -46,6 +46,9 @@ function launchv(target){
     else if(uri.match(/youtube.*[?&]list=RD/))
             exec("mpv --no-terminal", uri);
 
+    else if(uri.match(/youtube.*[?&]list=UU/))
+            exec("mpv --no-terminal", uri);
+
     /* Open youtube playlists of any kind directly with mpv */
     else if(uri.match(/youtube.*[?&]list=PL/)){
 
