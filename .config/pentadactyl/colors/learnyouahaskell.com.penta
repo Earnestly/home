@@ -1,7 +1,7 @@
-style -append learnyouahaskell.com/* <<EOF
+style -name=lyah -append learnyouahaskell.com/* <<EOF
 body {
     text-align: justify !important;
-    font-family: "TeX Gyre Bonum" !important;
+    font-family: "Linux Libertine O" !important;
     color: #444448 !important;
     background: #EEEEDD !important;
     text-rendering: optimizeLegibility !important;
@@ -22,17 +22,17 @@ p {
 }
 
 .fixed {
-    font-family: "CMU Typewriter Text" !important;
+    font-family: "Inconsolatazi4" !important;
     font-size: 1.2em !important;
 }
 
 .label {
-    font-family: "CMU Typewriter Text" !important;
+    font-family: "Inconsolatazi4" !important;
     font-size: 0.9em !important;
 }
 
 li {
-    font-family: "CMU Typewriter Text" !important;
+    font-family: "Inconsolatazi4" !important;
     font-size: 1.3em !important;
 }
 
