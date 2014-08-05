@@ -4,7 +4,8 @@ scroll_on_output = false
 scroll_on_keystroke = true
 audible_bell = false
 visible_bell = false
-mouse_autohide = false
+modify_other_keys = true
+mouse_autohide = true
 allow_bold = true
 dynamic_title = true
 urgent_on_bell = true
@@ -12,13 +13,24 @@ clickable_url = true
 
 #font = Audimat Mono Regular 12.5
 #font = CMU Typewriter Text 12
-#font = Droid Sans Mono 12
-#font = LetterGothic 12.5
+#font = Droid Sans Mono 10.8
+#font = DejaVu Sans Mono 10.5
+#font = LetterGothic 12.2
+#font = PT Mono 11
+#font = CamingoCode 11
 font = Inconsolatazi4 12
-#font = Dash 8
+#font = Meslo LG S 10.5
+#font = PragmataPro 13
+#font = Monaco 10.2
 #font = CentSchbook Mono BT 12.5
 #font = Fira Mono 10.5
-#font = Source Code Pro Earnest 11.2
+#font = Source Code Pro Earnest 12
+
+#allow_bold = false
+#font = Dash 10
+#font = fixed 12
+#font = Dina 8
+#font = Terminus 8
 
 scrollback_lines = 10000
 search_wrap = true
@@ -26,7 +38,7 @@ search_wrap = true
 #geometry = 640x480
 
 # 0.0: opaque, 1.0: transparent
-transparency = 0.0
+transparency = 0.7
 
 # "system", "on" or "off"
 cursor_blink = system
@@ -42,41 +54,60 @@ browser = firefox
 #word_chars = -A-Za-z0-9,./?%&#:_=+@~
 
 [colors]
-#foreground = #dcdccc
-#foreground_bold = #ffffff
-##foreground_dim = #888888
-#background = #3f3f3f
-#cursor = #dcdccc
+#foreground = #000000
+#background = #ede8ed
+#
+#color0  = #000000
+#color1  = #000000
+#color2  = #ff2600
+#color3  = #ff2600
+#color4  = #000000
+#color5  = #000000
+#color6  = #bfbbb3
+#color7  = #000000
+#color8  = #000000
+#color9  = #000000
+#color10 = #000000
+#color11 = #000000
+#color12 = #ff2600
+#color13 = #000000
+#color14 = #ff2600
+#color15 = #000000
 
-# if unset, will reverse foreground and background
-#highlight = #2f2f2f
+[colors]
+# Base16 Twilight
+# Scheme: David Hart (http://hart-dev.com)
 
-foreground = #bbbdbb
-foreground_bold = #ffffff
-#foreground_dim = #888888
-background = #121212
-#cursor = #dcdccc
+foreground      = #a7a7a7
+foreground_bold = #a7a7a7
+cursor          = #a7a7a7
+background      = #1e1e1e
 
-# if unset, will reverse foreground and background
-highlight = #2f2f3f
+# 16 color space
+color0  = #1e1e1e
+color1  = #cf6a4c
+color2  = #8f9d6a
+color3  = #f9ee98
+color4  = #7587a6
+color5  = #9b859d
+color6  = #afc4db
+color7  = #a7a7a7
+color8  = #5f5a60
+color9  = #cf6a4c
+color10 = #8f9d6a
+color11 = #f9ee98
+color12 = #7587a6
+color13 = #9b859d
+color14 = #afc4db
+color15 = #ffffff
 
-# colors from color0 to color254 can be set
-color0 = #282a2e
-color1 = #af3a3a
-color2 = #96a034
-color3 = #e2935b
-color4 = #5581a7
-color5 = #855d99
-color6 = #56958d
-color7 = #bbbdbb
-color8 = #373b41
-color9 = #e06666
-color10 = #c2cc66
-color11 = #facb70
-color12 = #84aed3
-color13 = #c69bdd
-color14 = #91cfc6
-color15 = #d5d9d6
+# 256 color space
+color16 = #cda869
+color17 = #9b703f
+color18 = #323537
+color19 = #464b50
+color20 = #838184
+color21 = #c3c3c3
 
 [hints]
 #font = Monospace 12
