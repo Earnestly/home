@@ -43,10 +43,7 @@ function launchv(target){
     else if(uri.match(/twitch\.tv/) || uri.match(/hitbox\.tv/))
         exec("livestreamer", uri);
 
-    else if(uri.match(/youtube.*[?&]list=RD/))
-            exec("mpv --no-terminal", uri);
-
-    else if(uri.match(/youtube.*[?&]list=UU/))
+    else if(uri.match(/youtube.*[?&]list=(?:RD|UU)/))
             exec("mpv --no-terminal", uri);
 
     /* Open youtube playlists of any kind directly with mpv */
@@ -67,7 +64,7 @@ function launchv(target){
 
 hints.addMode("q", "Launch video from hint", function (elem, loc) launchv(loc));
 
-commands.add(["launchv", "lv"], "Launches current buffer video",
+group.commands.add(["launchv", "lv"], "Launches current buffer video",
     function(args){ var uri = buffer.URL;
         launchv(uri);
     }
