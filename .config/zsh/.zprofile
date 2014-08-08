@@ -31,6 +31,7 @@ export XAUTHORITY="$XDG_RUNTIME_DIR"/X11-authority
 
 export EDITOR=vim
 export VISUAL=vim
+export SUDO_EDITOR=rvim
 
 export PAGER=less
 export LESSHISTFILE="$XDG_CACHE_HOME"/lesshist
