@@ -187,7 +187,7 @@ alias newsbeuter="exec dtach -A $XDG_RUNTIME_DIR/newsbeuter newsbeuter"
 
 alias ix="curl -F 'f:1=<-' ix.io"
 alias sprunge="curl -F 'sprunge=<-' sprunge.us"
-alias xc='xclip -o | ix'
+alias xc='xclip -o | sprunge'
 
 # XXX force XDG_CONFIG_HOME where possible
 alias ncmpcpp="ncmpcpp -c $XDG_CONFIG_HOME/ncmpcpp/ncmpcpp.conf"
