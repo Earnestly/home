@@ -181,7 +181,7 @@ assign [class="Wine"] 5
 bindsym $mod+u [urgent="latest"] focus
 
 # toggle trackpad
-bindsym XF86TouchpadToggle exec trackpad_toggle
+bindsym XF86TouchpadToggle exec trackpad-toggle
 
 # toggle mic mute
 bindsym XF86AudioMicMute exec --no-startup-id ponymix -t source -d alsa_input.pci-0000_00_1b.0.analog-stereo toggle

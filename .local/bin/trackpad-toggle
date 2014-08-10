@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+synclient TouchpadOff=$(synclient -l | awk '/TouchpadOff/ { print !$3 }')
