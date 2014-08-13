@@ -46,7 +46,8 @@ PROMPT='%m %n %#${vimode}%F{green}${branch}%f%F{cyan}%~%f '
 # All I want is the git branch for now, vcs_info is way overkill to do this
 function get_git_branch {
     if [[ -d .git ]]; then
-        branch=" $(git rev-parse --abbrev-ref HEAD) "
+        branch="$(< .git/HEAD)"
+        branch=" ${branch##*/} "
     else
         branch=" "
     fi
