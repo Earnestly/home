@@ -130,7 +130,7 @@ play_stream() {
 
     # Strip out any single quotes from the title, not very elegant
     lstreamer_opts=(
-        --player "mpv --no-terminal --title='${title//\'/’}' --profile=live"
+        --player "mpv  --title='${title//\'/’}' --profile=live"
         --quiet
         "$url"
     )
