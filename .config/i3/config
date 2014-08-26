@@ -109,6 +109,7 @@ bindsym $mod+r mode "RESIZE MODE"
 
 mode "DMENU MODE" {
     bindsym d exec --no-startup-id ditch; mode "default"
+    bindsym s exec --no-startup-id switch; mode "default"
     bindsym w exec --no-startup-id dwall; mode "default"
     bindsym y exec --no-startup-id dclip; mode "default"
     bindsym p exec --no-startup-id dmenu_run; mode "default"
