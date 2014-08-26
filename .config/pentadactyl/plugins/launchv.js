@@ -44,7 +44,7 @@ function launchv(target){
         exec("livestreamer", uri);
 
     else if(uri.match(/youtube.*[?&]list=(?:RD|UU)/))
-            exec("mpv --no-terminal", uri);
+            exec("mpv", uri);
 
     /* Open youtube playlists of any kind directly with mpv */
     else if(uri.match(/youtube.*[?&]list=PL/)){
@@ -53,9 +53,9 @@ function launchv(target){
          * url is provided and return the real playlist url */
         if(uri.match(/watch\?v=/)){
             var uri = uri.replace(/watch\?v.+?\&/, "playlist\?")
-            exec("mpv --no-terminal", uri);
+            exec("mpv", uri);
         }else
-            exec("mpv --no-terminal", uri);
+            exec("mpv", uri);
 
     /* For everything else */
     }else
