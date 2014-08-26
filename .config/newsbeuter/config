@@ -12,7 +12,7 @@ bind-key j down
 bind-key l right
 
 # macros
-macro q set browser "quvi dump -b mute %u &" ; open-in-browser ; set browser "firefox %u &> /dev/null &"
+macro q set browser "yt-dl %u &" ; open-in-browser ; set browser "firefox %u &> /dev/null &"
 
 # open 4th url in an article
 macro i open ; four ; quit
