@@ -14,7 +14,7 @@ usage() {
     cat >&2 <<EOF
 Usage: ghostly [options] [pdf, dir]
        ghostly add [options] <pdf>
-       ghostly list <pdf>
+       ghostly info <pdf>
 
 Options:
     -g      Generate a dmenu_loader compatible menu
