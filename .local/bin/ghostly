@@ -103,7 +103,7 @@ is_valid_dir() {
     fi
 }
 
-size_of() {
+fsize() {
     local input="$1"
     
     size="$(stat -c '%s' "$input")" 
@@ -172,7 +172,7 @@ add() {
     fi
 
     # Store for a nice comparison report at the end
-    original_size="$(size_of "$input")"
+    original_size="$(fsize "$input")"
 
     pdf_file="${input##*/}"
     pdf_parent_path="${input%/*}"
@@ -188,7 +188,7 @@ add() {
 
     run_ghostscript "$input" "$version" "$pdfmark" "$target_output"
 
-    output_size="$(size_of "$target_output")"
+    output_size="$(fsize "$target_output")"
     size_difference="$(cmp_size "$original_size" "$output_size")"
 
     printf -- >&2 'Size difference %s\n' "$size_difference"
