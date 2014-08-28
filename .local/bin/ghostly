@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # ghostly - Uses ghostscript to fix pdf files and generate dmenu_loader menus
 
+# TODO
+#   * Cover image thumbnail generated, rewrite dmenu_loader to support it
+#   * Flesh out info subcommand to generate a list of pdfs in need of attention
+
 # Requires ghostscript (gs)
 # Requires poppler (pdfinfo)
 # Requires xdg-utils (xdg-mime)
@@ -14,21 +18,22 @@ usage() {
     cat >&2 <<EOF
 Usage: ghostly [options] [pdf, dir]
        ghostly add [options] <pdf>
-       ghostly info <pdf>
+       ghostly info [pdf, dir]
 
 Options:
-    -g      Generate a dmenu_loader compatible menu
-    -h      This help message
+    -h      This help message.
 
     add:
-        -n      Noclobber, avoid overwriting original document if output matches
-                input locations.  Generates a .new file instead
-        -o      Output directory (Default: HOME/docs/pdf)
+        -n      Noclobber, avoid overwriting original document. Generate a .new 
+                file instead.
+        -o      Output directory (Default: HOME/docs/pdf).
         -t      Insert a title or overrides any current title if the input is
-                the same file as the output
+                the same file as the output.
 
     info:
-        Display metadata with pdfinfo
+        <pdf>   Display metadata with pdfinfo.
+        -g      Generate a dmenu_loader compatible menu.
+        -t      Find pdf documents with missing titles.
 
 EOF
 }
@@ -41,47 +46,6 @@ is_valid_pdf() {
     else
         return 1
     fi
-}
-
-info() {
-    while (($#)); do
-        case "$1" in
-            *) pdf="$1"
-        esac
-        shift
-    done
-
-    if is_valid_pdf "$pdf"; then
-        pdfinfo "$pdf"
-    fi
-}
-
-run_ghostscript() {
-    # WooOOooOoo
-
-    local input="$1"
-    local version="$2"
-    local pdfmark="$3"
-    local output="$4"
-    local -a options
-
-    options=(-sDEVICE=pdfwrite -dBATCH -dNOPAUSE
-             -dCompatibilityLevel="$version"
-             -sOutputFile="$output"
-             -dAutoRotatePages=/None
-             -dAutoFilterGrayImages=false
-             -dAutoFilterColorImages=false
-             -dGrayImageFilter=/FlateEncode
-             -dMonoImageFilter=/FlateEncode
-             -dColorImageFilter=/FlateEncode)
-
-    if ! gs "${options[@]}" "$input" "$pdfmark"; then
-        printf >&2 'gs failure (%d).\n' "$?"
-        rm -f "$pdfmark" "$output"
-    else
-        rm -f "$pdfmark"
-    fi
-
 }
 
 pdf_version() {
@@ -130,6 +94,79 @@ cmp_size() {
     }'
 }
 
+# Attempts to find all pdf documents
+find_pdf_files() {
+    local input="${1%/}"
+
+    # If we didn't get a directory just assume the file's parent directory
+    if [[ ! -d "$input" ]]; then
+        input="${input%/*}"
+    fi
+
+    # If we got nothing assume the current working directory
+    if [[ ! -e "$input" ]]; then
+        input="$PWD"
+    fi
+
+    # Always return absolute paths
+    if [[ "${input:0:1}" != / ]]; then
+        input="$PWD"/"$input"
+    fi
+
+    shopt -s globstar
+
+    for p in "$input"/**/*.pdf; do
+        if is_valid_pdf "$p"; then
+            printf '%s\n' "$p"
+        fi
+    done
+
+    shopt -s globstar
+}
+
+info() {
+    while (($#)); do
+        case "$1" in
+            -t) test=1 ;;
+            -g) generate=1 ;;
+            -h) usage; exit ;;
+            *) input="$1"
+        esac
+        shift
+    done
+
+    pdf_file="${input##*/}"
+    pdf_parent_path="${input%/*}"
+
+    if ((generate)); then
+        if [[ -d "$pdf_file" ]]; then
+            generate "$pdf_file"
+        else
+            generate "$pdf_parent_path"
+        fi
+        exit
+    fi
+
+    if ((test)); then
+        if [[ -d "$pdf_file" ]]; then
+            check_for_titles "$pdf_file"
+        else
+            check_for_titles "$pdf_parent_path"
+        fi
+        exit
+    fi
+
+    if [[ -n "$input" ]]; then
+        if is_valid_pdf "$input"; then
+            pdfinfo "$input"
+        fi
+    else
+        usage
+        exit 1
+    fi
+
+}
+
 add() {
     local title output input pdf_path
 
@@ -156,7 +193,7 @@ add() {
     fi
 
     # If it's not set then fallback
-    output="${output:-$HOME/docs/pdf}"
+    output="${output:-$library}"
 
     if [[ -n "$title" ]]; then
         printf '[ /Title (%s) /DOCINFO pdfmark\n' "$title" > "$TMPDIR"/pdfmark
@@ -201,7 +238,7 @@ add() {
 }
 
 generate() {
-    local target="$1"
+    local input="$1"
     local title
     local reader
 
@@ -212,20 +249,7 @@ generate() {
     printf 'Title=%s\n' "${title:-Library}"
     printf 'Command=exec %s\n\n' "${reader:-llpp}"
 
-    # If we didn't get a directory just assume the current-working-directory
-    if [[ ! -d "$target" ]]; then
-        target=.
-    fi
-
-    shopt -s globstar
-
-    for p in "$target"/**/*.pdf; do
-        if is_valid_pdf "$p"; then
-            pdf_files+=("$p")
-        fi
-    done
-
-    shopt -u globstar
+    mapfile -t pdf_files < <(find_pdf_files "$input")
 
     for pdf in "${pdf_files[@]}"; do
         read -r _ title < <(pdfinfo "$pdf")
@@ -236,6 +260,48 @@ generate() {
 
         printf '%s=%s\n' "$title" "$pdf"
     done
+}
+
+check_for_titles() {
+    local input="${1%/}"
+
+    mapfile -t pdf_files < <(find_pdf_files "$input")
+
+    for pdf in "${pdf_files[@]}"; do
+        read -r _ title < <(pdfinfo "$pdf")
+
+        if [[ -z "$title" ]]; then
+            printf '%s\n' "$pdf"
+        fi
+    done
+}
+
+run_ghostscript() {
+    # WooOOooOoo
+
+    local input="$1"
+    local version="$2"
+    local pdfmark="$3"
+    local output="$4"
+    local -a options
+
+    options=(-sDEVICE=pdfwrite -dBATCH -dNOPAUSE
+             -dCompatibilityLevel="$version"
+             -sOutputFile="$output"
+             -dAutoRotatePages=/None
+             -dAutoFilterGrayImages=false
+             -dAutoFilterColorImages=false
+             -dGrayImageFilter=/FlateEncode
+             -dMonoImageFilter=/FlateEncode
+             -dColorImageFilter=/FlateEncode)
+
+    if ! gs "${options[@]}" "$input" "$pdfmark"; then
+        printf >&2 'gs failure (%d).\n' "$?"
+        rm -f "$pdfmark" "$output"
+    else
+        rm -f "$pdfmark"
+    fi
+
 }
 
 if (($# == 0)); then
@@ -251,10 +317,6 @@ case "$@" in
         ;;
     info*)
         shift; info "$@"
-        exit
-        ;;
-    -g*)
-        shift; generate "$@"
         exit
         ;;
     -h*)
