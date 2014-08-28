@@ -3,7 +3,6 @@
 
 # TODO
 #   * Cover image thumbnail generated, rewrite dmenu_loader to support it
-#   * Flesh out info subcommand to generate a list of pdfs in need of attention
 
 # Requires ghostscript (gs)
 # Requires poppler (pdfinfo)
@@ -21,19 +20,18 @@ Usage: ghostly [options] [pdf, dir]
        ghostly info [pdf, dir]
 
 Options:
-    -h      This help message.
+  -h     This help message.
 
-    add:
-        -n      Noclobber, avoid overwriting original document. Generate a .new 
-                file instead.
-        -o      Output directory (Default: HOME/docs/pdf).
-        -t      Insert a title or overrides any current title if the input is
-                the same file as the output.
+add:
+  -n     Noclobber, avoid overwriting original document. Generate a .new file instead.
+  -o     Output directory (Default: HOME/docs/pdf).
+  -t     Insert a title or overrides any current title if the input is the same 
+           file as the output.
 
-    info:
-        <pdf>   Display metadata with pdfinfo.
-        -g      Generate a dmenu_loader compatible menu.
-        -t      Find pdf documents with missing titles.
+info:
+  <pdf>  Display metadata with pdfinfo.
+  -g     Generate a dmenu_loader compatible menu.
+  -t     Find pdf documents with missing titles.
 
 EOF
 }
