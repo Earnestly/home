@@ -25,8 +25,8 @@ Options:
 add:
   -n     Noclobber, avoid overwriting original document. Generate a .new file instead.
   -o     Output directory (Default: HOME/docs/pdf).
-  -t     Insert a title or overrides any current title if the input is the same 
-           file as the output.
+  -t     Insert a title or overrides any current title if the input is the same
+         file as the output.
 
 info:
   <pdf>  Display metadata with pdfinfo.
@@ -51,7 +51,7 @@ pdf_version() {
 
     while IFS=: read -r k v; do
         if [[ "$k" == "PDF version" ]]; then
-            printf '%1.1f\n' "$v"
+            printf -- '%1.1f\n' "$v"
         fi
     done < <(pdfinfo "$input")
 }
@@ -67,11 +67,11 @@ is_valid_dir() {
 
 fsize() {
     local input="$1"
-    
-    size="$(stat -c '%s' "$input")" 
 
-    awk -v size=$size 'BEGIN { 
-            printf "%1.1f", size / 1024 / 1024 
+    size="$(stat -c '%s' "$input")"
+
+    awk -v size=$size 'BEGIN {
+            printf "%1.1f", size / 1024 / 1024
     }'
 }
 
@@ -79,7 +79,7 @@ cmp_size() {
     local rhs="$1"
     local lhs="$2"
 
-    awk -v rhs="$rhs" -v lhs="$lhs" 'BEGIN { 
+    awk -v rhs="$rhs" -v lhs="$lhs" 'BEGIN {
             average = (rhs + lhs) / 2
             difference = lhs - rhs
 
@@ -115,11 +115,11 @@ find_pdf_files() {
 
     for p in "$input"/**/*.pdf; do
         if is_valid_pdf "$p"; then
-            printf '%s\n' "$p"
+            printf -- '%s\n' "$p"
         fi
     done
 
-    shopt -s globstar
+    shopt -u globstar
 }
 
 info() {
@@ -137,8 +137,8 @@ info() {
     pdf_parent_path="${input%/*}"
 
     if ((generate)); then
-        if [[ -d "$pdf_file" ]]; then
-            generate "$pdf_file"
+        if [[ -d "$input" ]]; then
+            generate "$input"
         else
             generate "$pdf_parent_path"
         fi
@@ -180,13 +180,13 @@ add() {
     done
 
     if ! is_valid_pdf "$input"; then
-        printf >&2 '%s: Not a valid pdf document\n' "$input"
+        printf -- >&2 '%s: Not a valid pdf document\n' "$input"
         exit 1
     fi
 
     # Make sure user-supplied directory is valid
     if ! is_valid_dir "$output"; then
-        printf >&2 '%s: Cannot find directory\n' "$output"
+        printf -- >&2 '%s: Cannot find directory\n' "$output"
         exit 1
     fi
 
@@ -194,15 +194,15 @@ add() {
     output="${output:-$library}"
 
     if [[ -n "$title" ]]; then
-        printf '[ /Title (%s) /DOCINFO pdfmark\n' "$title" > "$TMPDIR"/pdfmark
+        printf -- '[ /Title (%s) /DOCINFO pdfmark\n' "$title" > "$TMPDIR"/pdfmark
         pdfmark="$TMPDIR"/pdfmark
     fi
 
     version="$(pdf_version "$input")"
 
     if [[ -z "$version" ]]; then
-        printf >&2 'Unable to determine pdf version\n'
-        printf >&2 'Assuming latest version (%1.1f)\n' "$current_pdf_version"
+        printf -- >&2 'Unable to determine pdf version\n'
+        printf -- >&2 'Assuming latest version (%1.1f)\n' "$current_pdf_version"
         version=$current_pdf_version
     fi
 
@@ -212,9 +212,9 @@ add() {
     pdf_file="${input##*/}"
     pdf_parent_path="${input%/*}"
 
-    # If the output matches the parent of the real document, use a new filename
+    # If the pdf file matches the parent of the real document, use a new filename
     # instead of letting ghostscript clobber the original
-    if [[ "$pdf_parent_path" == "$output" ]]; then
+    if [[ "$pdf_file" == "$pdf_parent_path" ]]; then
         forced=1
         target_output="$output/$pdf_file".tmp
     else
@@ -228,9 +228,9 @@ add() {
 
     printf -- >&2 'Size difference %s\n' "$size_difference"
 
-    if ((forced & noclobber)); then
+    if ((noclobber)); then
         mv -v -- "$target_output" "$input".new
-    elif ((forced ^ noclobber)); then
+    else
         mv -v -- "$target_output" "$input"
     fi
 }
@@ -244,8 +244,8 @@ generate() {
     reader="$(xdg-mime query default application/pdf)"
     reader="${reader%.*}"
 
-    printf 'Title=%s\n' "${title:-Library}"
-    printf 'Command=exec %s\n\n' "${reader:-llpp}"
+    printf -- 'Title=%s\n' "${title:-Library}"
+    printf -- 'Command=exec %s\n\n' "${reader:-llpp}"
 
     mapfile -t pdf_files < <(find_pdf_files "$input")
 
@@ -256,7 +256,7 @@ generate() {
             title="Warning: No title set for ${pdf##*/}"
         fi
 
-        printf '%s=%s\n' "$title" "$pdf"
+        printf -- '%s=%s\n' "$title" "$pdf"
     done
 }
 
@@ -283,27 +283,36 @@ run_ghostscript() {
     local output="$4"
     local -a options
 
+    # These options do their best to retain the original quality of the input
+    # pdf while trying to save space where it doesn't compromise the original
     options=(-sDEVICE=pdfwrite -dBATCH -dNOPAUSE
              -dCompatibilityLevel="$version"
              -sOutputFile="$output"
              -dAutoRotatePages=/None
+             -dSubsetFonts=true
+             -dCompressFonts=true
              -dAutoFilterGrayImages=false
              -dAutoFilterColorImages=false
              -dGrayImageFilter=/FlateEncode
              -dMonoImageFilter=/FlateEncode
-             -dColorImageFilter=/FlateEncode)
+             -dColorImageFilter=/FlateEncode
+             "$input")
 
-    if ! gs "${options[@]}" "$input" "$pdfmark"; then
-        printf >&2 'gs failure (%d).\n' "$?"
-        rm -f "$pdfmark" "$output"
+    if [[ -n "$pdfmark" ]]; then
+        options+=("$pdfmark")
+    fi
+
+    if ! command gs "${options[@]}"; then
+        printf -- >&2 'gs failure (%d).\n' "$?"
+        rm -f -- "$pdfmark" "$output"
     else
-        rm -f "$pdfmark"
+        rm -f -- "$pdfmark"
     fi
 
 }
 
 if (($# == 0)); then
-    printf >&2 'At least one argument is required\n'
+    printf -- >&2 'At least one argument is required\n'
     usage
     exit 1
 fi
@@ -322,7 +331,7 @@ case "$@" in
         exit
         ;;
     *)
-        printf >&2 'Unexpected option\n'
+        printf -- >&2 'Unexpected option\n'
         usage
         exit 1
         ;;
