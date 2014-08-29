@@ -21,10 +21,11 @@ Options:
   -h     This help message.
 
 add:
+  -m     Include a custom pdfmark file. (Cannot be used with -t)
   -n     Noclobber, avoid overwriting original document. Generate a .new file instead.
   -o     Output directory (Default: HOME/docs/pdf).
   -t     Insert a title or overrides any current title if the input is the same
-         file as the output.
+         file as the output. (Cannot be used with -m)
 
 info:
   <pdf>  Display metadata with pdfinfo.
@@ -133,7 +134,7 @@ find_pdf_files() {
 info() {
     while (($#)); do
         case "$1" in
-            -t) test=1 ;;
+            -t) check=1 ;;
             -g) generate=1 ;;
             -h) usage; exit ;;
             *) input="$1"
@@ -141,23 +142,22 @@ info() {
         shift
     done
 
-    pdf_file="${input##*/}"
-    pdf_parent_path="${input%/*}"
+    input_parent_path="${input%/*}"
 
     if ((generate)); then
         if [[ -d "$input" ]]; then
             generate "$input"
         else
-            generate "$pdf_parent_path"
+            generate "$input_parent_path"
         fi
         exit
     fi
 
-    if ((test)); then
-        if [[ -d "$pdf_file" ]]; then
-            check_for_titles "$pdf_file"
+    if ((check)); then
+        if [[ -d "$input" ]]; then
+            check_for_titles "$input"
         else
-            check_for_titles "$pdf_parent_path"
+            check_for_titles "$input_parent_path"
         fi
         exit
     fi
@@ -180,6 +180,7 @@ add() {
         case "$1" in
             -t) shift; title="$1" ;;
             -o) shift; output="$1" ;;
+            -m) shift; pdfmark="$1" ;;
             -n) noclobber=1 ;;
             -h) usage; exit ;;
             *) input="$1"
@@ -200,6 +201,15 @@ add() {
 
     # If it's not set then fallback
     output="${output:-$library}"
+
+    if [[ -n "$title" && -n "$pdfmark" ]]; then
+        err "Cannot include both a title and pdfmark"
+        exit
+    fi
+
+    if [[ -n "$pdfmark" ]]; then
+        pdfmark="$pdfmark"
+    fi
 
     if [[ -n "$title" ]]; then
         puts '[ /Title (%s) /DOCINFO pdfmark' "$title" > "$TMPDIR"/pdfmark
