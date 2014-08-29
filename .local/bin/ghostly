@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 # ghostly - Uses ghostscript to fix pdf files and generate dmenu_loader menus
 
-# TODO
-#   * Cover image thumbnail generated, rewrite dmenu_loader to support it
-
 # Requires ghostscript (gs)
 # Requires poppler (pdfinfo)
 # Requires xdg-utils (xdg-mime)
@@ -36,6 +33,18 @@ info:
 EOF
 }
 
+err() {
+    local fmt="$1"; shift
+
+    printf -- "$fmt\n" "$@" >&2 
+}
+
+puts() {
+    local fmt="$1"; shift
+
+    printf -- "$fmt\n" "$@"
+}
+
 is_valid_pdf() {
     local pdf="$1"
 
@@ -51,7 +60,7 @@ pdf_version() {
 
     while IFS=: read -r k v; do
         if [[ "$k" == "PDF version" ]]; then
-            printf -- '%1.1f\n' "$v"
+            puts '%1.1f' "$v"
         fi
     done < <(pdfinfo "$input")
 }
@@ -115,7 +124,7 @@ find_pdf_files() {
 
     for p in "$input"/**/*.pdf; do
         if is_valid_pdf "$p"; then
-            printf -- '%s\n' "$p"
+            puts '%s' "$p"
         fi
     done
 
@@ -180,13 +189,13 @@ add() {
     done
 
     if ! is_valid_pdf "$input"; then
-        printf -- >&2 '%s: Not a valid pdf document\n' "$input"
+        err '%s: Not a valid pdf document' "$input"
         exit 1
     fi
 
     # Make sure user-supplied directory is valid
     if ! is_valid_dir "$output"; then
-        printf -- >&2 '%s: Cannot find directory\n' "$output"
+        err '%s: Cannot find directory' "$output"
         exit 1
     fi
 
@@ -194,15 +203,15 @@ add() {
     output="${output:-$library}"
 
     if [[ -n "$title" ]]; then
-        printf -- '[ /Title (%s) /DOCINFO pdfmark\n' "$title" > "$TMPDIR"/pdfmark
+        puts '[ /Title (%s) /DOCINFO pdfmark' "$title" > "$TMPDIR"/pdfmark
         pdfmark="$TMPDIR"/pdfmark
     fi
 
     version="$(pdf_version "$input")"
 
     if [[ -z "$version" ]]; then
-        printf -- >&2 'Unable to determine pdf version\n'
-        printf -- >&2 'Assuming latest version (%1.1f)\n' "$current_pdf_version"
+        err 'Unable to determine pdf version'
+        err 'Assuming latest version (%1.1f)' "$current_pdf_version"
         version=$current_pdf_version
     fi
 
@@ -226,7 +235,7 @@ add() {
     output_size="$(fsize "$target_output")"
     size_difference="$(cmp_size "$original_size" "$output_size")"
 
-    printf -- >&2 'Size difference %s\n' "$size_difference"
+    puts 'Size difference %s' "$size_difference"
 
     if ((noclobber)); then
         mv -v -- "$target_output" "$input".new
@@ -244,8 +253,8 @@ generate() {
     reader="$(xdg-mime query default application/pdf)"
     reader="${reader%.*}"
 
-    printf -- 'Title=%s\n' "${title:-Library}"
-    printf -- 'Command=exec %s\n\n' "${reader:-llpp}"
+    puts 'Title=%s' "${title:-Library}"
+    puts 'Command=exec %s\n' "${reader:-llpp}"
 
     mapfile -t pdf_files < <(find_pdf_files "$input")
 
@@ -256,7 +265,7 @@ generate() {
             title="Warning: No title set for ${pdf##*/}"
         fi
 
-        printf -- '%s=%s\n' "$title" "$pdf"
+        puts '%s=%s' "$title" "$pdf"
     done
 }
 
@@ -269,7 +278,7 @@ check_for_titles() {
         read -r _ title < <(pdfinfo "$pdf")
 
         if [[ -z "$title" ]]; then
-            printf '%s\n' "$pdf"
+            puts '%s' "$pdf"
         fi
     done
 }
@@ -303,8 +312,11 @@ run_ghostscript() {
     fi
 
     if ! command gs "${options[@]}"; then
-        printf -- >&2 'gs failure (%d).\n' "$?"
+        err 'gs failure (%d)' "$?"
+        
+        # Clean up
         rm -f -- "$pdfmark" "$output"
+        exit 1
     else
         rm -f -- "$pdfmark"
     fi
@@ -312,7 +324,7 @@ run_ghostscript() {
 }
 
 if (($# == 0)); then
-    printf -- >&2 'At least one argument is required\n'
+    err 'At least one argument is required'
     usage
     exit 1
 fi
@@ -331,7 +343,7 @@ case "$@" in
         exit
         ;;
     *)
-        printf -- >&2 'Unexpected option\n'
+        err '%s: Unexpected option' "$1"
         usage
         exit 1
         ;;
