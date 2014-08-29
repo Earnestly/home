@@ -6,9 +6,10 @@
 # Requires xdg-utils (xdg-mime)
 
 # Globals
-readonly TMPDIR=/tmp
+readonly progn="ghostly"
 readonly current_pdf_version=1.7
 readonly library="$HOME"/docs/pdf
+readonly TMPDIR=/tmp
 
 usage() {
     cat >&2 <<EOF
@@ -33,16 +34,14 @@ info:
 EOF
 }
 
-err() {
-    local fmt="$1"; shift
-
-    printf -- "$fmt\n" "$@" >&2 
-}
-
 puts() {
     local fmt="$1"; shift
 
     printf -- "$fmt\n" "$@"
+}
+
+err() {
+    puts "$progn: $@" >&2 
 }
 
 is_valid_pdf() {
