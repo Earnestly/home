@@ -230,14 +230,7 @@ add() {
     pdf_file="${input##*/}"
     pdf_parent_path="${input%/*}"
 
-    # If the pdf file matches the parent of the real document, use a new filename
-    # instead of letting ghostscript clobber the original
-    if [[ "$pdf_file" == "$pdf_parent_path" ]]; then
-        forced=1
-        target_output="$output/$pdf_file".tmp
-    else
-        target_output="$output/$pdf_file"
-    fi
+    target_output="$output/$pdf_file".tmp
 
     run_ghostscript "$input" "$version" "$pdfmark" "$target_output"
 
@@ -321,15 +314,19 @@ run_ghostscript() {
     fi
 
     if ! command gs "${options[@]}"; then
-        err 'gs failure (%d)' "$?"
-        
-        # Clean up
-        rm -f -- "$pdfmark" "$output"
+        err 'gs failure'
+
+        if [[ "$pdfmark" == "$TMPDIR"/pdfmark ]]; then
+            rm -f -- "$pdfmark" "$output"
+        else
+            rm -f -- "$output"
+        fi
         exit 1
-    else
-        rm -f -- "$pdfmark"
     fi
 
+    if [[ "$pdfmark" == "$TMPDIR"/pdfmark ]]; then
+        rm -f -- "$pdfmark"
+    fi
 }
 
 if (($# == 0)); then
