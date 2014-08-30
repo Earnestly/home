@@ -1,22 +1,23 @@
 # ~/.config/newsbeuter/config
+
 auto-reload yes 
 confirm-exit yes
 mark-as-read-on-hover yes
 notify-beep yes
 browser "firefox %u &> /dev/null &"
 
-# key binds
+# Key binds
 bind-key h left
 bind-key k up
 bind-key j down
 bind-key l right
 
-# macros
-macro q set browser "yt-dl %u &" ; open-in-browser ; set browser "firefox %u &> /dev/null &"
+# Macros
+macro q set browser "yt-dl %u &> /dev/null &" ; open-in-browser ; set browser "firefox %u &> /dev/null &"
 
-# open 4th url in an article
+# Open 4th url in an article
 macro i open ; four ; quit
 
-# colors
+# Colours
 color listfocus color7 color8
 color info color4 color0 bold
