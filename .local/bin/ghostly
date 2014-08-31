@@ -212,7 +212,7 @@ add() {
     fi
 
     if [[ -n "$title" ]]; then
-        puts '[ /Title (%s) /DOCINFO pdfmark' "$title" > "$TMPDIR"/pdfmark
+        puts '[/Title (%s) /DOCINFO pdfmark' "$title" > "$TMPDIR"/pdfmark
         pdfmark="$TMPDIR"/pdfmark
     fi
 
@@ -240,9 +240,9 @@ add() {
     puts 'Size difference %s' "$size_difference"
 
     if ((noclobber)); then
-        mv -v -- "$target_output" "$input".new
+        mv -v -- "$target_output" "$output"/"$pdf_file".new
     else
-        mv -v -- "$target_output" "$input"
+        mv -v -- "$target_output" "$output"/"$pdf_file"
     fi
 }
 
