@@ -16,6 +16,10 @@ floating_modifier $mod
 # start a terminal
 bindsym $mod+Return exec termite
 
+# brightness control
+#bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 2
+#bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 2
+
 # kill focused window
 bindsym $mod+Shift+q kill
 
