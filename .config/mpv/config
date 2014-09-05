@@ -3,13 +3,14 @@
 # Style
 title="mpv: ${filename}"
 osd-status-msg="${time-pos} ${?length:/ ${length}} ${?cache: ${cache}%} ${speed} ${avsync}"
+sub-text-font="Fontin"
 
 # Video
 vo=opengl
 hwdec=vaapi
 
 force-window
-#demuxer-thread=yes
+demuxer-thread=yes
 
 # Audio
 ao=pulse
@@ -32,6 +33,4 @@ cache-default=4096
 profile-desc="Prevent A/V desync during live streams"
 mc=0
 autosync=30
-
-# Make sure to cache even if we're consuming a file stream
-cache=4096
+cache=4096 # Make sure to cache even if we're consuming a file stream
