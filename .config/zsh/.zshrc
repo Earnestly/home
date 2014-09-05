@@ -199,9 +199,11 @@ unalias run-help
 alias help='run-help'
 
 # Directory hashes
-for d in "$HOME"/dev/*(/); do
-    hash -d "${d##*/}=$d"
-done
+if [[ "$HOME"/dev ]]; then
+    for d in "$HOME"/dev/*(/); do
+        hash -d "${d##*/}=$d"
+    done
+fi
 
 # Enable C-S-t in (vte) termite which opens a new terminal in the same working
 # directory.
