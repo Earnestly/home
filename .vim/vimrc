@@ -14,12 +14,13 @@ set autoread
 set undofile
 set wildmenu
 set linebreak
+set scrolloff=1
 set backspace=indent,eol,start
 
 syntax on
 filetype indent plugin on
 
-runtime macros/matchit.vim
+runtime! macros/matchit.vim
 
 " 4 spaced expanded tabs by default
 set tabstop=4
