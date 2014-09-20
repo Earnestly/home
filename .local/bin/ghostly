@@ -6,7 +6,7 @@
 # Requires xdg-utils (xdg-mime)
 
 # Globals
-readonly progn="ghostly"
+readonly progn=ghostly
 readonly current_pdf_version=1.7
 readonly library="$HOME"/docs/pdf
 readonly TMPDIR=/tmp
