@@ -46,11 +46,9 @@ err() {
 }
 
 is_valid_pdf() {
-    local pdf="$1"
+    local input="$1"
 
-    if [[ -n "$pdf" && $(file -biL -- "$pdf") == application/pdf* ]]; then
-        return 0
-    else
+    if ! [[ -n "$input" && $(file -biL -- "$input") == application/pdf* ]]; then
         return 1
     fi
 }
