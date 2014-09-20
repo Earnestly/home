@@ -29,9 +29,9 @@ setopt autocd \
     histignorealldups \
     interactivecomments \
 
-READNULLCMD="$PAGER"
-HELPDIR="$XDG_CONFIG_HOME"/zsh/help
-HISTFILE="$XDG_CONFIG_HOME"/zsh/.zsh_history
+READNULLCMD=$PAGER
+HELPDIR=$XDG_CONFIG_HOME/zsh/help
+HISTFILE=$XDG_CONFIG_HOME/zsh/.zsh_history
 HISTSIZE=20000
 SAVEHIST=$HISTSIZE
 
@@ -39,6 +39,7 @@ SAVEHIST=$HISTSIZE
 zstyle ':completion:*' menu select
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' rehash yes
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 PROMPT='%m %n %#${vimode}%F{green}${branch}%f%F{cyan}%~%f '
 
@@ -46,7 +47,7 @@ PROMPT='%m %n %#${vimode}%F{green}${branch}%f%F{cyan}%~%f '
 # All I want is the git branch for now, vcs_info is way overkill to do this
 function get_git_branch {
     if [[ -d .git ]]; then
-        branch="$(< .git/HEAD)"
+        branch=$(< .git/HEAD)
         branch=" ${branch##*/} "
     else
         branch=" "
@@ -199,15 +200,15 @@ unalias run-help
 alias help='run-help'
 
 # Directory hashes
-if [[ "$HOME"/dev ]]; then
-    for d in "$HOME"/dev/*(/); do
-        hash -d "${d##*/}=$d"
+if [[ -d $HOME/dev ]]; then
+    for d in $HOME/dev/*(/); do
+        hash -d ${d##*/}=$d
     done
 fi
 
 # Enable C-S-t in (vte) termite which opens a new terminal in the same working
 # directory.
-if [[ -n "$VTE_VERSION" ]]; then
+if [[ -n $VTE_VERSION ]]; then
     source /etc/profile.d/vte.sh
     __vte_prompt_command
 fi
