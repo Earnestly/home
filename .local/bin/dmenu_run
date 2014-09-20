@@ -1,0 +1,7 @@
+#!/bin/zsh
+
+opts=(-fn "Dina Bold 8" -p "Run"
+      -nf '#a7a7a7' -nb '#1e1e1e'
+      -sf '#9b859d' -sb '#262626')
+
+print -lo ${(k)commands} | dmenu $opts $@ | /bin/dash
