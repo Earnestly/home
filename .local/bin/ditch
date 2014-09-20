@@ -128,7 +128,8 @@ play_stream() {
     local title="$2"
     local err
 
-    # Strip out any single quotes from the title, not very elegant
+    # Strip out any single quotes from the title, not very elegant but bash
+    # offers no other way to embed variables in literal strings
     lstreamer_opts=(
         --player "mpv  --title='${title//\'/’}' --profile=live"
         --quiet
