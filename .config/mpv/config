@@ -1,9 +1,11 @@
-# ~/.mpv
+# ~/.config/mpv/config
 
 # Style
 title="mpv: ${filename}"
 osd-status-msg="${time-pos} ${?length:/ ${length}} ${?cache: ${cache}%} ${speed} ${avsync}"
+
 sub-text-font="Fontin"
+osd-font="Fontin"
 
 # Video
 vo=opengl
@@ -15,7 +17,7 @@ demuxer-thread=yes
 # Audio
 ao=pulse
 
-# Use with flat-volumes in /etc/pulse/daemon.conf
+# Use with disabled flat-volumes in /etc/pulse/daemon.conf
 volume=25
 softvol=yes
 softvol-max=400
