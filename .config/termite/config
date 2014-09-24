@@ -3,7 +3,6 @@ resize_grip = false
 scroll_on_output = false
 scroll_on_keystroke = true
 audible_bell = false
-visible_bell = false
 modify_other_keys = true
 mouse_autohide = true
 allow_bold = true
@@ -11,26 +10,17 @@ dynamic_title = true
 urgent_on_bell = true
 clickable_url = true
 
-#font = Audimat Mono Regular 12.5
-#font = CMU Typewriter Text 12
+#font = CMU Typewriter Text 12.2
 #font = Droid Sans Mono 10.8
 #font = DejaVu Sans Mono 10.5
 #font = LetterGothic 12.2
-#font = PT Mono 11
-#font = CamingoCode 11
+#font = PT Mono 10.2
 font = Inconsolatazi4 12
-#font = Meslo LG S 10.5
+#font = Meslo LG S 9.8
 #font = PragmataPro 13
 #font = Monaco 10.2
-#font = CentSchbook Mono BT 12.5
-#font = Fira Mono 10.5
-#font = Source Code Pro Earnest 12
-
-#allow_bold = false
-#font = Dash 10
-#font = fixed 12
-#font = Dina 8
-#font = Terminus 8
+#font = Fira Mono 11
+#font = Source Code Pro Earnest 9.9
 
 scrollback_lines = 10000
 search_wrap = true
@@ -38,7 +28,7 @@ search_wrap = true
 #geometry = 640x480
 
 # 0.0: opaque, 1.0: transparent
-transparency = 0.7
+#transparency = 0.0
 
 # "system", "on" or "off"
 cursor_blink = system
@@ -49,14 +39,10 @@ cursor_shape = block
 # $BROWSER is used by default
 browser = firefox
 
-# word characters used for word selection
-# (default if unset: all graphic non-punctuation/space characters)
-#word_chars = -A-Za-z0-9,./?%&#:_=+@~
-
 [colors]
 #foreground = #000000
 #background = #ede8ed
-#
+
 #color0  = #000000
 #color1  = #000000
 #color2  = #ff2600
@@ -117,5 +103,3 @@ color21 = #c3c3c3
 #border = #3f3f3f
 #border_width = 0.5
 #roundness = 2.0
-
-# vim: ft=dosini
