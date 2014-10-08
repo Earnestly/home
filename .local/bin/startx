@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # startx
 # Alternative, simpler startx which makes use of the XDG specification and
-# eventually systemd
+# eventually systemd.
 
 # Make sure we aren't running in an xserver.
 if [[ -n "$DISPLAY" ]]; then
     exit 1
 fi
 
-readonly confdir="${XDG_CONFIG_HOME:-$HOME/.config/X11}"
-#readonly cachedir="${XDG_CACHE_HOME:-$HOME/.cache/X11}"
+readonly confdir="${XDG_CONFIG_HOME:-$HOME/.config}"/X11
+#readonly cachedir="${XDG_CACHE_HOME:-$HOME/.cache}"/X11
 readonly rundir="$XDG_RUNTIME_DIR"/X11
 
 # Make any necessary directories, bail if any fail.
