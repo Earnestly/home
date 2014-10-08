@@ -1,38 +1,39 @@
 #!/usr/bin/env bash
 # ~/.local/bin/ditch
-# Create a dmenu using the twitch team and stream api
+# Create a dmenu using the twitch team and stream APIs.
 # Requires jshon, dmenu-imlib-pango (for -w), livestreamer
 
 # Files
-# ~/.config/ditch/teams         list of twitch teams
-# ~/.config/ditch/streamers     list of individual streamers
+# ~/.config/ditch/teams      List of twitch teams.
+# ~/.config/ditch/streamers  List of individual streamers.
 
-# Globals
+readonly progn=ditch
 readonly data_dir="${XDG_CONFIG_HOME:-$HOME/.config}"/ditch
 
-# Make sure it exists
-if ! [[ -d "$data_dir" ]]; then
-    mkdir -p "$data_dir"
-fi
-
-# Used to collect downloaded json
+# Used to store downloaded json.
 readonly TMPDIR="${TMPDIR:-/tmp}"
 
 # Options passed to dmenu, the `-p` prompt is passed later, remove `-w` if you
-# use plain old dmenu
+# use plain old dmenu.
 dmenu_opts=(-fn 'Dina Bold 8' -w -i -l 40
             -nf '#a7a7a7' -nb '#1e1e1e'
             -sf '#9b859d' -sb '#262626')
 
-fail() {
-    local prefix="$1"
-    shift
+puts() {
+    local fmt="$1"; shift
 
-    # Use notify-send if it exists and we're not running from a terminal
+    printf -- "$fmt\n" "$@"
+}
+
+err() {
+    local msg
+
+    # Use notify-send if it exists and we're not running from a terminal.
     if [[ ! -t 0 ]] && hash notify-send &> /dev/null; then
-        notify-send -u critical "$prefix" "$@"
+        msg="$(puts "$@")"
+        notify-send -u critical "$progn" "$msg"
     else
-        printf '[ERROR] %s: %s\n' "$prefix" "$@" >&2
+        puts "$progn: $@" >&2 
     fi
 }
 
@@ -41,30 +42,30 @@ get_user_data() {
 
     if [[ -s "$data_dir"/teams ]]; then
         while read -r team; do
-            printf '%s\n' "$team"
+            puts '%s' "$team"
         done < "$data_dir"/teams
     fi
 
     if [[ -s "$data_dir"/streamers ]]; then
         mapfile -t list < "$data_dir"/streamers
 
-        # Twitch lets us use a maximum of 100 streamers per query
+        # Twitch lets us use a maximum of 100 streamers per query.
         chunk=100
-        nelem="${#list[@]}"
+        nelem=${#list[@]}
 
         if ((nelem < chunk)); then
-            printf '%s,' "${list[@]}"
-            printf '&limit=%d\n' "$nelem"
+            printf -- '%s,' "${list[@]}"
+            puts '&limit=%d' $nelem
         else
             while ((${#list[@]})); do
-                # Assuming chunks of 2, the following occurs on [1 2 3 4 5]
+                # Assuming chunks of 2, the following occurs on [1 2 3 4 5]:
                 # 1st loop: [{ 1 2 } 3 4 5]  => 1,2,
                 # 2nd loop: [{ 3 4 } 5]      => 3,4,
                 # 3rd loop: [{ 5 }]          => 5,
-                printf '%s,' "${list[@]::$chunk}"
+                printf -- '%s,' "${list[@]::$chunk}"
 
                 tmp=("${list[@]::$chunk}")
-                printf '&limit=%d\n' "${#tmp[@]}"
+                puts'&limit=%d' ${#tmp[@]}
 
                 # 1st loop: [ 1 2 { 3 4 5 }] => list = [3 4 5]
                 # 2nd loop: [ 3 4 { 5 }]     => list = [5]
@@ -76,18 +77,18 @@ get_user_data() {
 }
 
 # Download all the json chunks to individual files, each file will be read
-# sequentially later but this allows me to (fork) background this function
+# sequentially later but this allows me to (fork) background this function.
 get_json() {
     local s="$1"
     local stream data
 
     data="$(mktemp -t ditch-XXX.json)"
 
-    # streams always have a `&limit=` appended
+    # Streams always have a `&limit=` appended.
     if [[ "$s" =~ \&limit= ]]; then
         curl -sLG "https://api.twitch.tv/kraken/streams?channel=$s" > "$data"
 
-        # Use sed to normalise the API with v2
+        # Use sed to normalise the API with v2.
         # XXX This assumes that the matched tokens never appear elsewhere.
         sed -i '{
             /"streams":/ s/"streams":/"channels":/g;
@@ -101,9 +102,9 @@ get_json() {
 
 parse_json() {
     # Make sure to not (-u) 'unstring' the title as it may contain valid escapes
-    # which break the strict ordering requirements for the while read loop.  We
-    # will manually de-string the titles later.
-    local args=(-e channels -a -e channel -e display_name -upe link -upe title)
+    # such as '\r' and '\n' which break the strict ordering requirements for
+    # the while read loop.  We will manually de-string the titles later.
+    local args=(-e channels -a -e channel -e name -upe link -upe title)
     local i json
 
     # Fire off all the curl calls as soon as possible
@@ -118,8 +119,8 @@ parse_json() {
         jshon "${args[@]}" < "$i"
 
         # Make sure we remove the json once we're done so it doesn't interfere
-        # with proceeding runs and doesn't clutter up /tmp
-        rm -rf "$i"
+        # with proceeding runs and doesn't clutter up `$TMPDIR`.
+        rm -rf -- "$i"
     done
 }
 
@@ -129,88 +130,83 @@ play_stream() {
     local err
 
     # Strip out any single quotes from the title, not very elegant but bash
-    # offers no other way to embed variables in literal strings
+    # offers no other way to embed variables in literal strings.
     lstreamer_opts=(
         --player "mpv  --title='${title//\'/’}' --profile=live"
         --quiet
         "$url"
     )
 
-    # Capture the error so we can display it elsewhere
+    # Capture the error so we can display it elsewhere.
     if ! err="$(livestreamer "${lstreamer_opts[@]}")"; then
-        fail "ditch" "$err"
+        err '%s\n' "$err"
     fi
 }
+
+# Unconditionally create the data directory.  If it already exists `mkdir` is a
+# no-op.
+mkdir -p "$data_dir"
 
 declare -A stream menu
 declare -a twitch_list
 
 mapfile -t twitch_list < <(get_user_data)
 
-# If no user data was found to generate anything from, just exit
+# If no user data was found to generate anything from, just exit.
 if [[ -z "${twitch_list[@]}" ]]; then
-    fail "ditch" "No configuration data found"
+    err 'No configuration data found.'
     exit 1
 fi
 
 # First line is always the streamer's name, followed by the url and then the
-# streamer's title
+# streamer's title.
 while {
     read -r name
     read -r url
     read -r title
 } do
-    # Manually de-json the title
+    # Manually de-json the title.
     title="${title%\"*}" title="${title#\"}" title="${title//\\/}"
 
     if [[ "$name" != http* ]]; then
 
         # `menu` is what we will use for displaying via dmenu, we will later
         # extract the first word from the result which is `$name` used as the
-        # key for `streams`
-        menu["$name $title"]=1 # Store only unique results using a "set"
+        # key for `streams`.
+        menu["$name $title"]=1 # Store only unique results using a "set".
         stream["$name"]="$url"
     fi
 done < <(parse_json)
 
-# Display the number of current streams in dmenu's prompt
+# Display the number of current streams in dmenu's prompt.
 dmenu_opts+=(-p "Stream ${#stream[@]}")
 
-# Use awk to pretty-print the user and title in 2 columns
+# Use awk to pretty-print the user and title in 2 columns.
+# XXX This doesn't work so well for non-proportional fonts.
 awk='{ a = $1; $1 = ""; printf "%-25s %s\n", a, $0 }'
-results="$(printf '%s\n' "${!menu[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
+results="$(puts '%s' "${!menu[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
 
-# Exit if nothing was selected
+# Exit if nothing was selected.
 if [[ -z "$results" ]]; then
     exit
 fi
 
-while read -r result; do
-    # Get the username from the result of dmenu, this is the first word
-    # (usernames cannot have spaces) to index our `stream` array
-    if [[ "$result" =~ ([^ ]+) ]]; then
-        streamer="${BASH_REMATCH[1]}"
+# The first element is always the streamer, followed by the title.
+while read -r streamer title; do
+
+    # If the title is unset just use the streamer's name instead.
+    if [[ -z "$title" ]]; then
+        title="$streamer"
     fi
 
-    # Build the title which is always after the first set of spaces, then
-    # prefix it with the streamer's name just because we can or just the
-    # streamer if there's no title
-    if [[ "$result" =~ \ +(.*) ]]; then
-        if [[ -n "${BASH_REMATCH[1]}" ]]; then
-            title="$streamer: ${BASH_REMATCH[1]}"
-        else
-            title="$streamer"
-        fi
-    fi
-
-    # Check if the selection actually matches a stream
+    # Check if the selection actually matches a stream.
     if [[ -n "${stream[$streamer]}" ]]; then
         url="${stream[$streamer]}"
     else
-        fail "$streamer" "Cannot find associated stream"
+        err '%s: Cannot find associated stream.' "$streamer"
         exit 1
     fi
 
-    # Fire off all in the background, this will still warn on failure
+    # Fire off all in the background, this will still warn on failure.
     play_stream "$url" "$title" &
 done <<< "$results"
