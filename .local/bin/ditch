@@ -31,7 +31,7 @@ err() {
     # Use notify-send if it exists and we're not running from a terminal.
     if [[ ! -t 0 ]] && hash notify-send &> /dev/null; then
         msg="$(puts "$@")"
-        notify-send -u critical "$progn" "$msg"
+        notify-send -u critical -- "$progn" "$msg"
     else
         puts "$progn: $@" >&2 
     fi
@@ -82,7 +82,7 @@ get_json() {
     local s="$1"
     local stream data
 
-    data="$(mktemp -t ditch-XXX.json)"
+    data="$(mktemp -t "$progn"-XXX.json)"
 
     # Streams always have a `&limit=` appended.
     if [[ "$s" =~ \&limit= ]]; then
@@ -112,7 +112,7 @@ parse_json() {
         get_json "$i" &
     done
 
-    # Wait for all the get_json jobs to finish before continuing
+    # Wait for all the get_json jobs to finish before continuing.
     wait
 
     for i in "$TMPDIR"/*.json; do
@@ -168,14 +168,11 @@ while {
     # Manually de-json the title.
     title="${title%\"*}" title="${title#\"}" title="${title//\\/}"
 
-    if [[ "$name" != http* ]]; then
-
-        # `menu` is what we will use for displaying via dmenu, we will later
-        # extract the first word from the result which is `$name` used as the
-        # key for `streams`.
-        menu["$name $title"]=1 # Store only unique results using a "set".
-        stream["$name"]="$url"
-    fi
+    # `menu` is what we will use for displaying via dmenu, we will later
+    # extract the first word from the result which is `$name` used as the
+    # key for `streams`.
+    menu["$name $title"]=1 # Store only unique results using a "set".
+    stream["$name"]="$url"
 done < <(parse_json)
 
 # Display the number of current streams in dmenu's prompt.
