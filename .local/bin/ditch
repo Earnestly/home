@@ -87,24 +87,16 @@ get_json() {
     # Streams always have a `&limit=` appended.
     if [[ "$s" =~ \&limit= ]]; then
         curl -sLG "https://api.twitch.tv/kraken/streams?channel=$s" > "$data"
-
-        # Use sed to normalise the API with v2.
-        # XXX This assumes that the matched tokens never appear elsewhere.
-        sed -i '{
-            /"streams":/ s/"streams":/"channels":/g;
-            /"url":"/ s/"url":"/"link":"/g;
-            /"status":"/ s/"status":"/"title":"/g
-        }' "$data"
     else
         curl -sLG "http://api.twitch.tv/api/team/$s/live_channels.json" > "$data"
     fi
 }
 
 parse_json() {
-    # Make sure to not (-u) 'unstring' the title as it may contain valid escapes
-    # such as '\r' and '\n' which break the strict ordering requirements for
-    # the while read loop.  We will manually de-string the titles later.
-    local args=(-e channels -a -e channel -e name -upe link -upe title)
+    # Try both API versions at the same time using '-C'ontinue, if the first (v2)
+    # path fails, pop everything off (-ppp) and try the other (v3).
+    local args=(-QC  -e channels -a -e channel -e name -upe link -upe title  -j
+                -ppp -e streams  -a -e channel -e name -upe url  -upe status -j)
     local i json
 
     # Fire off all the curl calls as soon as possible
@@ -174,6 +166,12 @@ while {
     menu["$name $title"]=1 # Store only unique results using a "set".
     stream["$name"]="$url"
 done < <(parse_json)
+
+# This is necessary to remove the key "null null" from the menu set we are
+# likely to have collected at least one during the forced json extraction.
+# XXX This assumes the user 'null' doesn't stream with the title 'null', if
+#     they do then they will simply be excluded from the results.
+unset -v menu["null null"]
 
 # Display the number of current streams in dmenu's prompt.
 dmenu_opts+=(-p "Stream ${#stream[@]}")
