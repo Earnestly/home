@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 # ~/.local/bin/ditch
 # Create a dmenu using the twitch team and stream APIs.
-# Requires jshon, dmenu-imlib-pango (for -w), livestreamer
+
+# Requires: jshon, dmenu-imlib-pango (for -w), livestreamer
+# Optional: notify-send
 
 # Files
 # ~/.config/ditch/teams      List of twitch teams.
 # ~/.config/ditch/streamers  List of individual streamers.
 
 readonly progn=ditch
-readonly data_dir="${XDG_CONFIG_HOME:-$HOME/.config}"/ditch
+readonly data_dir="${XDG_CONFIG_HOME:-$HOME/.config}/$progn"
 
 # Used to store downloaded json.
 readonly TMPDIR="${TMPDIR:-/tmp}"
@@ -19,16 +21,15 @@ dmenu_opts=(-fn 'Dina Bold 8' -w -i -l 40
             -nf '#a7a7a7' -nb '#1e1e1e'
             -sf '#9b859d' -sb '#262626')
 
-puts() {
+puts() { # string string -> stdout
     local fmt="$1"; shift
 
     printf -- "$fmt\n" "$@"
 }
 
-err() {
+err() { # string string -> stderr
     local msg
 
-    # Use notify-send if it exists and we're not running from a terminal.
     if [[ ! -t 0 ]] && hash notify-send &> /dev/null; then
         msg="$(puts "$@")"
         notify-send -u critical -- "$progn" "$msg"
@@ -37,7 +38,7 @@ err() {
     fi
 }
 
-get_user_data() {
+get_user_data() { # disk -> stdout
     local team list chunk nelem tmp
 
     if [[ -s "$data_dir"/teams ]]; then
@@ -78,28 +79,26 @@ get_user_data() {
 
 # Download all the json chunks to individual files, each file will be read
 # sequentially later but this allows me to (fork) background this function.
-get_json() {
+get_json() { # string -> stdout 
     local s="$1"
     local stream data
 
-    data="$(mktemp -t "$progn"-XXX.json)"
-
-    # Streams always have a `&limit=` appended.
+    # We assume streams always have `&limit=` appended.
     if [[ "$s" =~ \&limit= ]]; then
+        data="$(mktemp -t "$progn"-channels-XXX.json)"
         curl -sLG "https://api.twitch.tv/kraken/streams?channel=$s" > "$data"
     else
+        data="$(mktemp -t "$progn"-teams-XXX.json)"
         curl -sLG "http://api.twitch.tv/api/team/$s/live_channels.json" > "$data"
     fi
 }
 
-parse_json() {
-    # Try both API versions at the same time using '-C'ontinue, if the first (v2)
-    # path fails, pop everything off (-ppp) and try the other (v3).
-    local args=(-QC  -e channels -a -e channel -e name -upe link -upe title  -j
-                -ppp -e streams  -a -e channel -e name -upe url  -upe status -j)
-    local i json
+# Parsed json is printed in series of three lines, the first is the username,
+# then the url to their stream and finally the title.
+parse_json() { # disk -> stdout
+    local i json args
 
-    # Fire off all the curl calls as soon as possible
+    # Fire off all the curl calls as soon as possible.
     for i in "${twitch_list[@]}"; do
         get_json "$i" &
     done
@@ -108,7 +107,16 @@ parse_json() {
     wait
 
     for i in "$TMPDIR"/*.json; do
-        jshon "${args[@]}" < "$i"
+        # Around 50-70% of time is spent here.
+        if [[ "$i" == *$progn-channels-* ]]; then
+            local args=(-Q -e streams -a -e channel -e name -upe url -upe status)
+            jshon "${args[@]}" < "$i"
+        fi
+        
+        if [[ "$i" == *$progn-teams-* ]]; then
+            local args=(-Q -e channels -a -e channel -e name -upe link -upe title)
+            jshon "${args[@]}" < "$i"
+        fi
 
         # Make sure we remove the json once we're done so it doesn't interfere
         # with proceeding runs and doesn't clutter up `$TMPDIR`.
@@ -116,7 +124,24 @@ parse_json() {
     done
 }
 
-play_stream() {
+get_user_picks() { # globals(streams, menu, dmenu_opts) -> stdout
+    local fmt max i
+
+    # Display the number of current streams in dmenu's prompt.
+    dmenu_opts+=(-p "Stream ${#stream[@]}")
+
+    # Use awk to pretty-print the user and title in 2 columns.
+    # Calculate the required spacing by finding the longest streamer name.
+    for i in "${!stream[@]}"; do
+        ((${#i} > max)) && max=${#i}
+    done
+
+    # XXX This doesn't work so well for non-proportional fonts.
+    fmt='{ a = $1; $1 = ""; printf "%-'$max's %s\n", a, $0 }'
+    puts '%s' "${!menu[@]}" | awk "$fmt" | dmenu "${dmenu_opts[@]}"
+}
+
+play_stream() { # string string -> command | stderr
     local url="$1"
     local title="$2"
     local err
@@ -129,29 +154,25 @@ play_stream() {
         "$url"
     )
 
-    # Capture the error so we can display it elsewhere.
     if ! err="$(livestreamer "${lstreamer_opts[@]}")"; then
         err '%s\n' "$err"
     fi
 }
 
-# Unconditionally create the data directory.  If it already exists `mkdir` is a
-# no-op.
-mkdir -p "$data_dir"
+typeset -A stream menu
 
-declare -A stream menu
-declare -a twitch_list
+if ! mkdir -p "$data_dir"; then
+    err '%s: Error in data directory creation.' "$data_dir"
+    exit 1
+fi
 
 mapfile -t twitch_list < <(get_user_data)
 
-# If no user data was found to generate anything from, just exit.
 if [[ -z "${twitch_list[@]}" ]]; then
     err 'No configuration data found.'
     exit 1
 fi
 
-# First line is always the streamer's name, followed by the url and then the
-# streamer's title.
 while {
     read -r name
     read -r url
@@ -160,39 +181,20 @@ while {
     # Manually de-json the title.
     title="${title%\"*}" title="${title#\"}" title="${title//\\/}"
 
-    # `menu` is what we will use for displaying via dmenu, we will later
-    # extract the first word from the result which is `$name` used as the
-    # key for `streams`.
+    # The `menu` is what we will use for displaying via dmenu, we will later
+    # extract the first word from the result which is `$name` used as the key
+    # in `streams` to access the `$url`.
     menu["$name $title"]=1 # Store only unique results using a "set".
     stream["$name"]="$url"
 done < <(parse_json)
 
-# This is necessary to remove the key "null null" from the menu set we are
-# likely to have collected at least one during the forced json extraction.
-# XXX This assumes the user 'null' doesn't stream with the title 'null', if
-#     they do then they will simply be excluded from the results.
-unset -v menu["null null"]
-
-# Display the number of current streams in dmenu's prompt.
-dmenu_opts+=(-p "Stream ${#stream[@]}")
-
-# Use awk to pretty-print the user and title in 2 columns.
-# XXX This doesn't work so well for non-proportional fonts.
-awk='{ a = $1; $1 = ""; printf "%-25s %s\n", a, $0 }'
-results="$(puts '%s' "${!menu[@]}" | awk "$awk" | dmenu "${dmenu_opts[@]}")"
+results="$(get_user_picks)"
 
 # Exit if nothing was selected.
-if [[ -z "$results" ]]; then
-    exit
-fi
+[[ -z "$results" ]] && exit
 
-# The first element is always the streamer, followed by the title.
 while read -r streamer title; do
-
-    # If the title is unset just use the streamer's name instead.
-    if [[ -z "$title" ]]; then
-        title="$streamer"
-    fi
+    [[ -z "$title" ]] && title="$streamer"
 
     # Check if the selection actually matches a stream.
     if [[ -n "${stream[$streamer]}" ]]; then
