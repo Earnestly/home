@@ -9,21 +9,17 @@ if [[ -n "$DISPLAY" ]]; then
 fi
 
 readonly confdir="${XDG_CONFIG_HOME:-$HOME/.config}"/X11
-#readonly cachedir="${XDG_CACHE_HOME:-$HOME/.cache}"/X11
+readonly cachedir="${XDG_CACHE_HOME:-$HOME/.cache}"/X11
 readonly rundir="$XDG_RUNTIME_DIR"/X11
 
-# Make any necessary directories, bail if any fail.
+xinitrc="${XINITRC:-$confdir/xinitrc}"
+#log="$cachedir"/X11/xsession.log
+
 if ! mkdir -p "$confdir" "$rundir"; then
     exit 1
 fi
 
-xinitrc="${XINITRC:-$confdir}"/xinitrc
-#log="$cachedir"/X11/xsession.log
-
 export XAUTHORITY="$rundir"/xauthority
-
-# Delete this when using systemd and dbus.socket/service.
-unset DBUS_SESSION_BUS_ADDRESS
 
 # E.g. ICE Authority stuff.
 unset SESSION_MANAGER
