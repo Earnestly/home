@@ -1,11 +1,11 @@
-# XDG_CONFIG_HOME/X11/xcompose 
+# XDG_CONFIG_HOME/X11/xcompose
 
 include "%S/en_US.UTF-8/Compose"
 
 # Prefix 'm': Mathematical symbols
 <Multi_key> <m> <d> : "Δ"
 <Multi_key> <m> <e> : "ϵ"
-<Multi_key> <m> <E> : "∃" 
+<Multi_key> <m> <E> : "∃"
 <Multi_key> <m> <F> : "∀"
 <Multi_key> <m> <l> : "λ"
 <Multi_key> <m> <N> : "ℕ"
@@ -46,16 +46,19 @@ include "%S/en_US.UTF-8/Compose"
 <Multi_key> <v> <i> : "$EDITOR"
 
 # Fun with Paleotypography
-<Multi_key> <T> <H> : "Ð" # 'Th'e
-<Multi_key> <t> <h> : "ð" 
+<Multi_key> <T> <H> : "Þ" # 'Th'e
+<Multi_key> <t> <h> : "þ"
+
+<Multi_key> <D> <H> : "Ð"
+<Multi_key> <d> <h> : "ð"
 
 <Multi_key> <W> <W> : "Ƿ" # 'W'hen
-<Multi_key> <w> <w> : "ƿ" 
+<Multi_key> <w> <w> : "ƿ"
 
 <Multi_key> <s> <s> : "ſ" # 'S'ee
 
-<Multi_key> <Y> <Y> : "Ȝ" # 'Y'ell
-<Multi_key> <y> <y> : "ȝ" 
+<Multi_key> <Y> <Y> : "Ȝ" # 'Plo'ugh'
+<Multi_key> <y> <y> : "ȝ"
 
-<Multi_key> <N> <G> : "Ŋ" # Ni'gh't
-<Multi_key> <n> <g> : "ŋ" 
+<Multi_key> <N> <G> : "Ŋ" # Si'ng'
+<Multi_key> <n> <g> : "ŋ"
