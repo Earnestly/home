@@ -17,9 +17,11 @@ readonly TMPDIR="${TMPDIR:-/tmp}"
 
 # Options passed to dmenu, the `-p` prompt is passed later, remove `-w` if you
 # use plain old dmenu.
-dmenu_opts=(-fn 'Dina Bold 8' -w -i -l 40
-            -nf '#a7a7a7' -nb '#1e1e1e'
-            -sf '#9b859d' -sb '#262626')
+dmenu_opts=(
+    -fn 'Dina Bold 8' -w -i -l 40
+    -nf '#a7a7a7' -nb '#1e1e1e'
+    -sf '#9b859d' -sb '#262626'
+)
 
 puts() { # string string -> stdout
     local fmt="$1"; shift
@@ -124,7 +126,7 @@ parse_json() { # disk -> stdout
     done
 }
 
-get_user_picks() { # globals(streams, menu, dmenu_opts) -> stdout
+get_user_picks() { # globals(streams, menu, dmenu_opts) -> command -> stdout
     local fmt max i
 
     # Display the number of current streams in dmenu's prompt.
@@ -141,21 +143,19 @@ get_user_picks() { # globals(streams, menu, dmenu_opts) -> stdout
     puts '%s' "${!menu[@]}" | awk "$fmt" | dmenu "${dmenu_opts[@]}"
 }
 
-play_stream() { # string string -> command | stderr
+play_stream() { # string string -> either(command, stderr)
     local url="$1"
     local title="$2"
     local err
 
-    # Strip out any single quotes from the title, not very elegant but bash
-    # offers no other way to embed variables in literal strings.
     lstreamer_opts=(
-        --player "mpv  --title='${title//\'/’}' --profile=live"
+        --player "mpv --title='$title' --profile=live"
         --quiet
         "$url"
     )
 
     if ! err="$(livestreamer "${lstreamer_opts[@]}")"; then
-        err '%s\n' "$err"
+        err '%s' "$err"
     fi
 }
 
