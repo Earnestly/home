@@ -30,6 +30,8 @@ set expandtab
 
 if &t_Co > 255 || has ('gui_running')
     set background=dark
+    "colorscheme gotham
+
     let base16colorspace=256
     colorscheme base16-twilight
 
