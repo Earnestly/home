@@ -1,0 +1,82 @@
+#!/bin/bash
+# ~/bin/bemenu_loader
+
+# bemenu_loader <file>
+
+# A simple script which loads a key value pair into an associative array where
+# the key is displayed by bemenu and the value is acted upon given the
+# corresponding key
+
+# Configuration example:
+# Title=[optional: title for bemenu]
+# # Comments
+# Command=<required: program used to act on result from bemenu>
+# Key Display=Value Executed
+
+readonly progn=bemenu_loader
+readonly input="$1"
+
+# Number of entries to display at once.
+readonly lines=40
+readonly font='Dina Bold 8'
+
+# Options passed to bemenu, the `-p` prompt is passed later.
+bemenu_opts=(
+    --fn "$font" -w -i -l $lines
+    --nf '#a7a7a7' --nb '#1e1e1e'
+    --sf '#9b859d' --sb '#262626'
+)
+
+typeset -a cmd # Some commands might have arguments.
+typeset -A index
+
+title="${title:-Title}"
+
+# Read in the configuration file
+if [[ -f "$input" ]]; then
+    while IFS='=' read k v; do
+        case "$k" in
+            '') 
+                ;; # ignore blank lines
+            '#'*) 
+                ;;
+            'Title') 
+                title="$v"
+                ;;
+            'Command') 
+                cmd=($v)
+                ;;
+            *) 
+                index["$k"]="$v" 
+                ;;
+        esac
+    done < "$input"
+else
+    printf -- 'No configuration specified.\n' >&2 
+    exit 1
+fi
+
+# Append the number of elements to the title.
+bemenu_opts+=(-p "$title ${#index[@]}")
+
+# Print the keys for bemenu consumption.
+selection="$(printf '%s\n' "${!index[@]}" | bemenu "${bemenu_opts[@]}")"
+
+# Make sure we get a selection before continuing
+[[ -z "$selection" ]] && exit 0
+
+# Check that the command exists, we skip any prefixes such as `exec` to
+# avoid checking the wrong command and generating false positives.  This is
+# pretty fragile though.
+for c in "${cmd[@]}"; do
+    if [[ "$c" =~ exec|nohup ]]; then
+        continue
+    fi
+
+    if hash "$c" &> /dev/null; then
+        exec "$c" "${index[$selection]}"
+    else
+        printf -- 'No Command specified.\n' >&2
+        exit 1
+    fi
+done
