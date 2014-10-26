@@ -2,8 +2,14 @@
 
 auto-reload yes 
 confirm-exit yes
+
 mark-as-read-on-hover yes
+
 notify-beep yes
+notify-always yes
+notify-xterm yes
+notify-format "newsbeuter: %f/%n"
+
 browser "firefox %u &> /dev/null &"
 
 # Key binds
@@ -12,12 +18,15 @@ bind-key k up
 bind-key j down
 bind-key l right
 
+bind-key f pageup
+bind-key b pagedown
+
+# Colours
+color listfocus color7 color8
+color info color4 color0 bold
+
 # Macros
 macro q set browser "yt-dl %u &> /dev/null &" ; open-in-browser ; set browser "firefox %u &> /dev/null &"
 
 # Open 4th url in an article
 macro i open ; four ; quit
-
-# Colours
-color listfocus color7 color8
-color info color4 color0 bold
