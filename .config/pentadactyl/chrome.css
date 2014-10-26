@@ -47,9 +47,10 @@
 /* Make the tab expand to fill the maximum width */
 .tabbrowser-tab {
     max-width: 100% !important;
+    color: #676666 !important;
 }
 
 .tabbrowser-tab[selected] {
-    background: #787777 !important;
+    background: #676666 !important;
     color: #efefef !important;
 }
