@@ -119,7 +119,6 @@ mode "DMENU MODE" {
     bindsym p exec --no-startup-id dmenu_run; mode "default"
     bindsym u exec --no-startup-id dmenu_loader ~/.local/share/plaid/plaid_dmenu; mode "default"
     bindsym o exec --no-startup-id dmenu_loader ~/.local/share/dmenu/dmenu_pdf; mode "default"
-    bindsym l exec --no-startup-id dmenu_loader ~/.local/share/dmenu/dmenu_pls; mode "default"
 
     bindsym q mode "default"
     bindsym Escape mode "default"
