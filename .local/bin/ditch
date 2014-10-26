@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ~/.local/bin/ditch
-# Create a dmenu using the twitch team and stream APIs.
+# Create a menu using the twitch team and stream APIs.
 
-# Requires: jshon, dmenu-imlib-pango (for -w), livestreamer
+# Requires: jshon, bemenu, livestreamer
 # Optional: notify-send
 
 # Files
@@ -15,18 +15,19 @@ readonly data_dir="${XDG_CONFIG_HOME:-$HOME/.config}/$progn"
 # Used to store downloaded json.
 readonly TMPDIR="${TMPDIR:-/tmp}"
 
-# Options passed to dmenu, the `-p` prompt is passed later, remove `-w` if you
-# use plain old dmenu.
-dmenu_opts=(
-    -fn 'Dina Bold 8' -w -i -l 40
-    -nf '#a7a7a7' -nb '#1e1e1e'
-    -sf '#9b859d' -sb '#262626'
+# Number of entries to display at once.
+readonly lines=40
+readonly font='Dina Bold 8'
+
+# Options passed to dmenu, the `-p` prompt is passed later.
+bemenu_opts=(
+    --fn "$font" -w -i -l "$lines"
+    --nf '#a7a7a7' --nb '#1e1e1e'
+    --sf '#9b859d' --sb '#262626'
 )
 
 puts() { # string string -> stdout
-    local fmt="$1"; shift
-
-    printf -- "$fmt\n" "$@"
+    printf -- "$1\n" "${@:2}"
 }
 
 err() { # string string -> stderr
@@ -65,9 +66,9 @@ get_user_data() { # disk -> stdout
                 # 1st loop: [{ 1 2 } 3 4 5]  => 1,2,
                 # 2nd loop: [{ 3 4 } 5]      => 3,4,
                 # 3rd loop: [{ 5 }]          => 5,
-                printf -- '%s,' "${list[@]::$chunk}"
+                printf -- '%s,' "${list[@]:0:$chunk}"
 
-                tmp=("${list[@]::$chunk}")
+                tmp=("${list[@]:0:$chunk}")
                 puts'&limit=%d' ${#tmp[@]}
 
                 # 1st loop: [ 1 2 { 3 4 5 }] => list = [3 4 5]
@@ -108,8 +109,8 @@ parse_json() { # disk -> stdout
     # Wait for all the get_json jobs to finish before continuing.
     wait
 
+    # Around 50-70% of time is spent here.
     for i in "$TMPDIR"/*.json; do
-        # Around 50-70% of time is spent here.
         if [[ "$i" == *$progn-channels-* ]]; then
             local args=(-Q -e streams -a -e channel -e name -upe url -upe status)
             jshon "${args[@]}" < "$i"
@@ -126,39 +127,39 @@ parse_json() { # disk -> stdout
     done
 }
 
-get_user_picks() { # globals(streams, menu, dmenu_opts) -> command -> stdout
+get_user_picks() { # globals(streams, menu, bemenu_opts) -> command -> stdout
     local fmt max i
 
-    # Display the number of current streams in dmenu's prompt.
-    dmenu_opts+=(-p "Stream ${#stream[@]}")
+    # Display the number of current streams in bemenu's prompt.
+    bemenu_opts+=(-p "Stream ${#stream[@]}/$lines")
 
-    # Use awk to pretty-print the user and title in 2 columns.
     # Calculate the required spacing by finding the longest streamer name.
     for i in "${!stream[@]}"; do
         ((${#i} > max)) && max=${#i}
     done
 
-    # XXX This doesn't work so well for non-proportional fonts.
+    # Use awk to pretty-print the user and title in 2 columns.
     fmt='{ a = $1; $1 = ""; printf "%-'$max's %s\n", a, $0 }'
-    puts '%s' "${!menu[@]}" | awk "$fmt" | dmenu "${dmenu_opts[@]}"
+    puts '%s' "${!menu[@]}" | awk "$fmt" | bemenu "${bemenu_opts[@]}"
 }
 
 play_stream() { # string string -> either(command, stderr)
     local url="$1"
     local title="$2"
-    local err
+    local err lstreamer_opts
 
-    lstreamer_opts=(
-        --player "mpv --title='$title' --profile=live"
+    streamer_opts=(
+        --player "mpv --title='${title//\'/’}' --profile=live"
         --quiet
         "$url"
     )
 
-    if ! err="$(livestreamer "${lstreamer_opts[@]}")"; then
-        err '%s' "$err"
+    if ! err="$(livestreamer "${streamer_opts[@]}")"; then
+        err '%s' "${err:-livestreamer}"
     fi
 }
 
+# Main.
 typeset -A stream menu
 
 if ! mkdir -p "$data_dir"; then
@@ -178,10 +179,10 @@ while {
     read -r url
     read -r title
 } do
-    # Manually de-json the title.
+    # Manually de-json the title.  XXX This doesn't handle all json escapes.
     title="${title%\"*}" title="${title#\"}" title="${title//\\/}"
 
-    # The `menu` is what we will use for displaying via dmenu, we will later
+    # The `menu` is what we will use for displaying via bemenu, we will later
     # extract the first word from the result which is `$name` used as the key
     # in `streams` to access the `$url`.
     menu["$name $title"]=1 # Store only unique results using a "set".
