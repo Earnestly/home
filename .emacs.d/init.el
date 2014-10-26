@@ -1,9 +1,7 @@
 ;; ~/.emacs.d/init.el
 
 (package-initialize)
-(add-to-list 'package-archives 
-             '("melpa" . "http://melpa.milkbox.net/packages/")
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
 ;; Annoyances
 (menu-bar-mode -1)
