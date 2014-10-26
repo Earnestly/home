@@ -25,8 +25,8 @@ done
 
 # Fail if we've gone through the array elements without success
 if ((!status)); then
-    printf >&2 '%s: cannot locate package.\n' "$pkgname"
-    printf >&2 'Make sure the pkgname is not from a split-package\n'
+    printf -- '%s: cannot locate package.\n' "$pkgname" >&2
+    printf -- 'Make sure the pkgname is not from a split-package\n' >&2
     exit 1
 fi
 
@@ -36,6 +36,6 @@ if [[ -d "$pkgname" ]]; then
     git checkout HEAD:trunk -- .
 else
     # This should never happen
-    printf >&2 'Directory does not exist.\n'
+    printf -- 'Directory does not exist.\n' >&2
     exit 1
 fi
