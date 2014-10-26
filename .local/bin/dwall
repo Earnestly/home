@@ -1,8 +1,42 @@
 #!/bin/bash
 # ~/.local/bin/dwall
-# Simple wallpaper setter using dmenu
+# Simple wallpaper setter using dmenu.
 
-declare -A wallpapers
+dmenu_opts=(
+    -ia top-gapless -l 10 -is 300
+    -fn 'Dina Bold 8' -w
+    -nf '#a7a7a7' -nb '#1e1e1e'
+    -sf '#9b859d' -sb '#262626'
+)
+
+collect_connected() {
+    local c state
+
+    for c in /sys/class/drm/card?/card?-*; do
+        read -r state < "$c"/status
+
+        if [[ "$state" == connected ]]; then
+            printf -- '%s\n' "$c"
+        fi
+    done
+}
+
+collect_resolutions() {
+    typeset -A uniques
+    local c connected resolution uniques
+
+    mapfile -t connected < <(collect_connected)
+
+    for c in "${connected[@]}"; do
+        if read -r resolution < "$c"/modes; then
+            uniques["$resolution"]=1
+        fi
+    done
+
+    printf -- '%s\n' "${!uniques[@]}"
+}
+
+typeset  -A wallpapers
 
 wall_dir="${XDG_DATA_HOME:-$HOME/.local/share}"/walls
 wall_sym="${XDG_DATA_HOME:-$HOME/.local/share}"/wall
@@ -13,24 +47,18 @@ for w in "${wall_list[@]}"; do
     wallpapers["${w##*/}"]="$w"
 done
 
-dmenu_opts=(-ia top-gapless -l 10 -is 300 
-            -fn 'Dina Bold 8' -w
-            -nf '#a7a7a7' -nb '#1e1e1e'
-            -sf '#9b859d' -sb '#262626')
-
 # Build the dmenu according to the format "IMG:<img>\t<text>" to display the
-# image preview
+# image preview.
 wall_sel=$(
     for p in "${!wallpapers[@]}"; do
-        printf "IMG:%s\t%s\n" "${wallpapers[$p]}" "$p" 
-    done | dmenu  "${dmenu_opts[@]}"
+        printf "IMG:%s\t%s\n" "${wallpapers[$p]}" "$p"
+    done | dmenu "${dmenu_opts[@]}"
 )
 
 # Link the chosen wallpaper to the target symlink and then set the wallpaper via
-# said symlink
+# said symlink.
 if [[ -n "$wall_sel" ]]; then
-    # Get the first match and exit, meh
-    resolution=$(xrandr | awk '/ connected/ { print $3; exit }')
+    read -r resolution < <(collect_resolutions | sort -nr)
     ln -sf "$wall_dir"/"$wall_sel" "$wall_sym"
     display -window root -resize $resolution\! "$wall_sym"
 fi
