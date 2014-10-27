@@ -25,21 +25,30 @@ handle_local() {
 
 handle_youtube() {
     local url="$1"
-    local json playlist
+    local json playlist host jshon_opts ids output
 
-    json=$(quvi dump -p json "$url")
+    host="${url%/*}"
 
-    title=$(jshon -e quvi -e playlist -e QUVI_PLAYLIST_PROPERTY_TITLE <<< "$json")
+    jshon_opts=(-e title -upe entries -a -e url -u)
 
-    # Strip %20s and quotes, ಠ_ಠ
-    title="${title//\"/}"; title="${title//\'/}"; title="${title//\%20/ }"
+    json="$(youtube-dl --flat-playlist -J "$url")"
 
-    playlist=$(jshon -e quvi -e playlist -e media -a -e QUVI_PLAYLIST_MEDIA_PROPERTY_URL -u <<< "$json")
+    output="$(jshon "${jshon_opts[@]}" <<< "$json")"
+
+    read -r title <<< "$output"
+
+    mapfile -s 1 -t ids <<< "$output"
+
+    playlist="$(
+        for i in "${ids[@]}"; do
+            printf '%s/watch?v=%s\n' "$host" "$i"
+        done
+    )"
 
     playlist_file="$playlist_dir"/"$title"
 
-    # Unconditionally remove the playlist and recreate it, this is also going to
-    # create a lot of code duplication, sigh
+    # Unconditionally remove the playlist and recreate it, this is also going
+    # to create a lot of code duplication, sigh
     if [[ -e "$playlist_file" ]]; then
         rm -- "$playlist_file"
         printf "%s\n" "$playlist" >> "$playlist_file"
