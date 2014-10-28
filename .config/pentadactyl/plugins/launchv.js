@@ -41,11 +41,11 @@ function launchv(target){
     /* Currently youtube-dl's support for hitbox VOD is buggy but adding for
      * future. */
     else if(uri.match(/hitbox\.tv\/video\/[0-9]+/))
-        exec("mpv", uri);
+        exec("mpv --loop=inf", uri);
     else if(uri.match(/twitch\.tv/) || uri.match(/hitbox\.tv/))
         exec("livestreamer", uri);
     else if(uri.match(/youtube.*[?&]list=(?:RD|UU)/))
-            exec("mpv", uri);
+            exec("mpv --loop=inf", uri);
 
     /* Open youtube playlists of any kind directly with mpv. */
     else if(uri.match(/youtube.*[?&]list=PL/)){
@@ -59,7 +59,7 @@ function launchv(target){
 
     /* For everything else */
     }else
-        exec("mpv", uri);
+        exec("mpv --loop=inf", uri);
 }
 
 hints.addMode("q", "Launch video from hint", function (elem, loc) launchv(loc));
