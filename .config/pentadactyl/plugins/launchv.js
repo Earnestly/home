@@ -41,7 +41,7 @@ function launchv(target){
     /* Currently youtube-dl's support for hitbox VOD is buggy but adding for
      * future. */
     else if(uri.match(/hitbox\.tv\/video\/[0-9]+/))
-        exec("yt-dl", uri);
+        exec("mpv", uri);
     else if(uri.match(/twitch\.tv/) || uri.match(/hitbox\.tv/))
         exec("livestreamer", uri);
     else if(uri.match(/youtube.*[?&]list=(?:RD|UU)/))
@@ -55,12 +55,11 @@ function launchv(target){
         if(uri.match(/watch\?v=/)){
             var uri = uri.replace(/watch\?v.+?\&/, "playlist\?")
             exec("mpv", uri);
-        }else
-            exec("mpv", uri);
+        }
 
     /* For everything else */
     }else
-        exec("yt-dl", uri);
+        exec("mpv", uri);
 }
 
 hints.addMode("q", "Launch video from hint", function (elem, loc) launchv(loc));
