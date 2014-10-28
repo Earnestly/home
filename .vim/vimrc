@@ -3,6 +3,9 @@
 set nocompatible
 execute pathogen#infect()
 
+" Keys
+map Q q:
+
 " Settings
 set cc=80
 set number
