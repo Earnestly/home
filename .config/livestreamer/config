@@ -1,4 +1,3 @@
 player=mpv --profile=live
 default-stream=high,medium,best,source
 retry-open=2
-player-http
