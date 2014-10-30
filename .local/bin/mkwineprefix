@@ -28,7 +28,7 @@ if (( $# == 0 )); then
     exit 1
 fi
 
-while (( $# )); do
+while (($#)); do
     case "$1" in
         -a) shift; arch="$1" ;;
         -m) with_mono=1 ;;

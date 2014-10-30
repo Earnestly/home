@@ -5,9 +5,10 @@ Description=Music Player Daemon
 After=sound.target
 
 [Service]
-Type=simple
+Type=forking
 Environment=PULSE_PROP=application.icon_name=sound
-ExecStart=/usr/bin/mpd --no-daemon
+PIDFile=%h/.config/mpd/mpd.pid
+ExecStart=/usr/bin/mpd
 ExecStop=/usr/bin/mpd --kill
 
 

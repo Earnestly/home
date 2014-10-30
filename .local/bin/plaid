@@ -77,7 +77,6 @@ fi
 if [[ -n "$title" && -n "$playlist_file" ]]; then
     mpv_opts=(
         --save-position-on-quit
-        --no-terminal
         --playlist="$playlist_file"
         --title="$title"
     )
