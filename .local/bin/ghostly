@@ -1,17 +1,14 @@
 #!/usr/bin/env bash
-# ghostly - Uses ghostscript to fix pdf files and generate dmenu_loader menus
+# ghostly - Uses ghostscript to fix pdf files and generate bemenu_loader
+#           compatible menus.
+# Requires ghostscript (gs), poppler (pdfinfo), xdg-utils (xdg-mime)
 
-# Requires ghostscript (gs)
-# Requires poppler (pdfinfo)
-# Requires xdg-utils (xdg-mime)
-
-# Globals
 readonly progn=ghostly
 readonly current_pdf_version=1.7
 readonly library="$HOME"/docs/pdf
 readonly TMPDIR=/tmp
 
-usage() {
+usage() { # -> stderr
     cat >&2 <<EOF
 Usage: ghostly [options] [pdf, dir]
        ghostly add [options] <pdf>
@@ -22,7 +19,8 @@ Options:
 
 add:
   -m     Include a custom pdfmark file. (Cannot be used with -t)
-  -n     Noclobber, avoid overwriting original document. Generate a .new file instead.
+  -n     Noclobber, avoid overwriting original document. Generate a .new file
+         instead.
   -o     Output directory (Default: HOME/docs/pdf).
   -t     Insert a title or overrides any current title if the input is the same
          file as the output. (Cannot be used with -m)
@@ -35,17 +33,15 @@ info:
 EOF
 }
 
-puts() {
-    local fmt="$1"; shift
-
-    printf -- "$fmt\n" "$@"
+puts() { # string(s) -> stdout
+    printf -- "$1\n" "${@:2}"
 }
 
-err() {
+err() { # string(s) -> stderr
     puts "$progn: $@" >&2 
 }
 
-is_valid_pdf() {
+is_valid_pdf() { # file -> bool
     local input="$1"
 
     if ! [[ -n "$input" && $(file -biL -- "$input") == application/pdf* ]]; then
@@ -53,7 +49,7 @@ is_valid_pdf() {
     fi
 }
 
-pdf_version() {
+pdf_version() { # file -> float
     local input="$1"
 
     while IFS=: read -r k v; do
@@ -63,16 +59,15 @@ pdf_version() {
     done < <(pdfinfo "$input")
 }
 
-is_valid_dir() {
+is_valid_dir() { # string -> bool
     local input="$1"
 
-    # Make sure that what the user sets is valid
     if [[ -n "$input" && ! -d "$input" ]]; then
         return 1
     fi
 }
 
-fsize() {
+fsize() { # file -> string
     local input="$1"
 
     size="$(stat -c '%s' "$input")"
@@ -82,7 +77,7 @@ fsize() {
     }'
 }
 
-cmp_size() {
+cmp_size() { # number number -> string
     local rhs="$1"
     local lhs="$2"
 
@@ -99,21 +94,20 @@ cmp_size() {
     }'
 }
 
-# Attempts to find all pdf documents
-find_pdf_files() {
+find_pdf_files() { # string -> string
     local input="${1%/}"
 
-    # If we didn't get a directory just assume the file's parent directory
-    if [[ ! -d "$input" ]]; then
+    # If we didn't get a directory just assume the file's parent directory.
+    if ! is_valid_dir "$input"; then
         input="${input%/*}"
     fi
 
-    # If we got nothing assume the current working directory
+    # If we got nothing assume the current working directory.
     if [[ ! -e "$input" ]]; then
         input="$PWD"
     fi
 
-    # Always return absolute paths
+    # Always return absolute paths.
     if [[ "${input:0:1}" != / ]]; then
         input="$PWD"/"$input"
     fi
@@ -186,14 +180,13 @@ add() {
         shift
     done
 
-    if ! is_valid_pdf "$input"; then
-        err '%s: Not a valid pdf document' "$input"
+    if [[ -z "$input" ]]; then
+        err 'No input document found.'
         exit 1
     fi
 
-    # Make sure user-supplied directory is valid
-    if ! is_valid_dir "$output"; then
-        err '%s: Cannot find directory' "$output"
+    if ! is_valid_pdf "$input"; then
+        err '%s: Not a valid pdf document.' "$input"
         exit 1
     fi
 
@@ -201,7 +194,7 @@ add() {
     output="${output:-$library}"
 
     if [[ -n "$title" && -n "$pdfmark" ]]; then
-        err "Cannot include both a title and pdfmark"
+        err 'Cannot include both a title and pdfmark.'
         exit
     fi
 
@@ -217,18 +210,18 @@ add() {
     version="$(pdf_version "$input")"
 
     if [[ -z "$version" ]]; then
-        err 'Unable to determine pdf version'
-        err 'Assuming latest version (%1.1f)' "$current_pdf_version"
+        err 'Unable to determine pdf version.'
+        err 'Assuming latest version (%1.1f).' "$current_pdf_version"
         version=$current_pdf_version
     fi
 
-    # Store for a nice comparison report at the end
+    # Store for a nice comparison report at the end.
     original_size="$(fsize "$input")"
 
     pdf_file="${input##*/}"
     pdf_parent_path="${input%/*}"
 
-    target_output="$output/$pdf_file".tmp
+    target_output="$output"
 
     run_ghostscript "$input" "$version" "$pdfmark" "$target_output"
 
@@ -285,7 +278,6 @@ check_for_titles() {
 
 run_ghostscript() {
     # WooOOooOoo
-
     local input="$1"
     local version="$2"
     local pdfmark="$3"
