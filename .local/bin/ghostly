@@ -38,7 +38,7 @@ puts() { # string(s) -> stdout
 }
 
 err() { # string(s) -> stderr
-    puts "$progn: $@" >&2 
+    puts "$progn: $@" >&2
 }
 
 is_valid_pdf() { # file -> bool
@@ -51,20 +51,13 @@ is_valid_pdf() { # file -> bool
 
 pdf_version() { # file -> float
     local input="$1"
+    local k v
 
     while IFS=: read -r k v; do
         if [[ "$k" == "PDF version" ]]; then
             puts '%1.1f' "$v"
         fi
     done < <(pdfinfo "$input")
-}
-
-is_valid_dir() { # string -> bool
-    local input="$1"
-
-    if [[ -n "$input" && ! -d "$input" ]]; then
-        return 1
-    fi
 }
 
 fsize() { # file -> string
@@ -96,9 +89,10 @@ cmp_size() { # number number -> string
 
 find_pdf_files() { # string -> string
     local input="${1%/}"
+    local p
 
     # If we didn't get a directory just assume the file's parent directory.
-    if ! is_valid_dir "$input"; then
+    if [[ ! -d "$input" ]]; then
         input="${input%/*}"
     fi
 
@@ -123,124 +117,9 @@ find_pdf_files() { # string -> string
     shopt -u globstar
 }
 
-info() {
-    while (($#)); do
-        case "$1" in
-            -t) check=1 ;;
-            -g) generate=1 ;;
-            -h) usage; exit ;;
-            *) input="$1"
-        esac
-        shift
-    done
-
-    input_parent_path="${input%/*}"
-
-    if ((generate)); then
-        if [[ -d "$input" ]]; then
-            generate "$input"
-        else
-            generate "$input_parent_path"
-        fi
-        exit
-    fi
-
-    if ((check)); then
-        if [[ -d "$input" ]]; then
-            check_for_titles "$input"
-        else
-            check_for_titles "$input_parent_path"
-        fi
-        exit
-    fi
-
-    if [[ -n "$input" ]]; then
-        if is_valid_pdf "$input"; then
-            pdfinfo "$input"
-        fi
-    else
-        usage
-        exit 1
-    fi
-
-}
-
-add() {
-    local title output input pdf_path
-
-    while (($#)); do
-        case "$1" in
-            -t) shift; title="$1" ;;
-            -o) shift; output="$1" ;;
-            -m) shift; pdfmark="$1" ;;
-            -n) noclobber=1 ;;
-            -h) usage; exit ;;
-            *) input="$1"
-        esac
-        shift
-    done
-
-    if [[ -z "$input" ]]; then
-        err 'No input document found.'
-        exit 1
-    fi
-
-    if ! is_valid_pdf "$input"; then
-        err '%s: Not a valid pdf document.' "$input"
-        exit 1
-    fi
-
-    # If it's not set then fallback
-    output="${output:-$library}"
-
-    if [[ -n "$title" && -n "$pdfmark" ]]; then
-        err 'Cannot include both a title and pdfmark.'
-        exit
-    fi
-
-    if [[ -n "$pdfmark" ]]; then
-        pdfmark="$pdfmark"
-    fi
-
-    if [[ -n "$title" ]]; then
-        puts '[/Title (%s) /DOCINFO pdfmark' "$title" > "$TMPDIR"/pdfmark
-        pdfmark="$TMPDIR"/pdfmark
-    fi
-
-    version="$(pdf_version "$input")"
-
-    if [[ -z "$version" ]]; then
-        err 'Unable to determine pdf version.'
-        err 'Assuming latest version (%1.1f).' "$current_pdf_version"
-        version=$current_pdf_version
-    fi
-
-    # Store for a nice comparison report at the end.
-    original_size="$(fsize "$input")"
-
-    pdf_file="${input##*/}"
-    pdf_parent_path="${input%/*}"
-
-    target_output="$output"
-
-    run_ghostscript "$input" "$version" "$pdfmark" "$target_output"
-
-    output_size="$(fsize "$target_output")"
-    size_difference="$(cmp_size "$original_size" "$output_size")"
-
-    puts 'Size difference %s' "$size_difference"
-
-    if ((noclobber)); then
-        mv -v -- "$target_output" "$output"/"$pdf_file".new
-    else
-        mv -v -- "$target_output" "$output"/"$pdf_file"
-    fi
-}
-
-generate() {
+generate() { # string -> stdout
     local input="$1"
-    local title
-    local reader
+    local title reader pdf_files pdf
 
     # Try to guess the pdf reader
     reader="$(xdg-mime query default application/pdf)"
@@ -262,7 +141,7 @@ generate() {
     done
 }
 
-check_for_titles() {
+check_for_titles() { # string -> stdout
     local input="${1%/}"
 
     mapfile -t pdf_files < <(find_pdf_files "$input")
@@ -276,7 +155,7 @@ check_for_titles() {
     done
 }
 
-run_ghostscript() {
+run_ghostscript() { # string number string string -> command
     # WooOOooOoo
     local input="$1"
     local version="$2"
@@ -307,15 +186,137 @@ run_ghostscript() {
         err 'gs failure'
 
         if [[ "$pdfmark" == "$TMPDIR"/pdfmark ]]; then
-            rm -f -- "$pdfmark" "$output"
+            rm -vf -- "$pdfmark" "$output"
         else
-            rm -f -- "$output"
+            rm -vf -- "$output"
         fi
         exit 1
     fi
 
     if [[ "$pdfmark" == "$TMPDIR"/pdfmark ]]; then
-        rm -f -- "$pdfmark"
+        rm -vf -- "$pdfmark"
+    fi
+}
+
+info() {
+    local check generate input input_parent_dir
+
+    while (($#)); do
+        case "$1" in
+            -t) check=1 ;;
+            -g) generate=1 ;;
+            -h) usage; exit ;;
+            *) input="$1"
+        esac
+        shift
+    done
+
+    input_parent_dir="${input%/*}"
+
+    if ((generate)); then
+        if [[ -d "$input" ]]; then
+            generate "$input"
+        else
+            generate "$input_parent_dir"
+        fi
+        exit
+    fi
+
+    if ((check)); then
+        if [[ -d "$input" ]]; then
+            check_for_titles "$input"
+        else
+            check_for_titles "$input_parent_dir"
+        fi
+        exit
+    fi
+
+    if [[ -n "$input" ]]; then
+        if is_valid_pdf "$input"; then
+            pdfinfo "$input"
+        fi
+    else
+        usage
+        exit 1
+    fi
+
+}
+
+add() {
+    local title output input pdfmark noclobber version size_difference 
+    local output_size original_size target_output
+
+    while (($#)); do
+        case "$1" in
+            -t) shift; title="$1" ;;
+            -o) shift; output="$1" ;;
+            -m) shift; pdfmark="$1" ;;
+            -n) noclobber=1 ;;
+            -h) usage; exit ;;
+            *) input="$1"
+        esac
+        shift
+    done
+
+    if [[ -z "$input" ]]; then
+        err 'No input document found.'
+        exit 1
+    fi
+
+    if ! is_valid_pdf "$input"; then
+        err '%s: Not a valid pdf document.' "$input"
+        exit 1
+    fi
+
+    if [[ -d "$output" ]]; then
+        err '%s: Not a file.' "$output"
+        exit 1
+    fi
+
+    # If the set output is a directory then make sure it exists.
+    if [[ "$output" == */* ]]; then
+        mkdir -p -- "${output%/*}"
+    fi
+
+    # If it's not set then fallback.
+    output="${output:-$library/$input}"
+
+    if [[ -n "$title" && -n "$pdfmark" ]]; then
+        err 'Cannot include both a title and pdfmark.'
+        exit
+    fi
+
+    if [[ -n "$pdfmark" ]]; then
+        pdfmark="$pdfmark"
+    fi
+
+    if [[ -n "$title" ]]; then
+        puts '[/Title (%s) /DOCINFO pdfmark' "$title" > "$TMPDIR"/pdfmark
+        pdfmark="$TMPDIR"/pdfmark
+    fi
+
+    version="$(pdf_version "$input")"
+
+    if [[ -z "$version" ]]; then
+        err 'Unable to determine pdf version.'
+        err 'Assuming latest version (%1.1f).' "$current_pdf_version"
+        version=$current_pdf_version
+    fi
+
+    # Store for a nice comparison report at the end.
+    original_size="$(fsize "$input")"
+    target_output="$output".tmp
+
+    run_ghostscript "$input" "$version" "$pdfmark" "$target_output"
+
+    output_size="$(fsize "$target_output")"
+    size_difference="$(cmp_size "$original_size" "$output_size")"
+    puts 'Size difference %s' "$size_difference"
+
+    if ((noclobber)); then
+        mv -v -- "$target_output" "$output".new
+    else
+        mv -v -- "$target_output" "$output"
     fi
 }
 
