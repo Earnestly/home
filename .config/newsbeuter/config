@@ -26,7 +26,7 @@ color listfocus color7 color8
 color info color4 color0 bold
 
 # Macros
-macro q set browser "mpv --loop=inf %u &> /dev/null &" ; open-in-browser ; set browser "firefox %u &> /dev/null &"
+macro q set browser "mpv --loop-file --cache-file=TMP %u &> /dev/null &" ; open-in-browser ; set browser "firefox %u &> /dev/null &"
 
 # Open 4th url in an article
 macro i open ; four ; quit
