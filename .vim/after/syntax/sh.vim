@@ -1,1 +1,1 @@
-syn keyword bashStatement mapfile readarray
+syn keyword bashStatement mapfile readarray chown
