@@ -9,6 +9,13 @@ allow_bold = true
 dynamic_title = true
 urgent_on_bell = true
 clickable_url = true
+cursor_blink = off
+cursor_shape = block
+scrollback_lines = 10000
+search_wrap = true
+browser = firefox
+#icon_name = terminal
+#geometry = 640x480
 
 #font = CMU Typewriter Text 12.5
 #font = DejaVu Sans Mono 10.5
@@ -20,19 +27,6 @@ font = Inconsolatazi4 12
 #font = Fira Mono 11
 #font = Source Code Pro Earnest 9.9
 
-scrollback_lines = 10000
-search_wrap = true
-#icon_name = terminal
-#geometry = 640x480
-
-# "system", "on" or "off"
-cursor_blink = off
-
-# "block", "underline" or "ibeam"
-cursor_shape = block
-
-# $BROWSER is used by default
-browser = firefox
 
 [colors]
 # Base16 Twilight
