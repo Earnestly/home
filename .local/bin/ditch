@@ -26,11 +26,11 @@ bemenu_opts=(
     --sf '#9b859d' --sb '#262626'
 )
 
-puts() { # string string -> stdout
+puts() { # strings -> stdout
     printf -- "$1\n" "${@:2}"
 }
 
-err() { # string string -> stderr
+err() { # strings -> stderr
     local msg
 
     if [[ ! -t 0 ]] && hash notify-send &> /dev/null; then
