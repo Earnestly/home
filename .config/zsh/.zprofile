@@ -13,7 +13,7 @@ export TIGRC_USER=$XDG_CONFIG_HOME/tigrc
 
 # XXX This always seems to complain about no directory being found, not sure why.
 #export DVDCSS_CACHE =$XDG_CACHE_HOME/dvdcss
-
+export RLWRAP_HOME=$XDG_CONFIG_HOME/rlwrap
 export PERL_CPANM_HOME=$XDG_CACHE_HOME/cpanm
 export GIMP2_DIRECTORY=$XDG_CONFIG_HOME/gimp
 export ELINKS_CONFDIR=$XDG_CONFIG_HOME/elinks
@@ -51,7 +51,8 @@ export LESSHISTFILE=$XDG_CACHE_HOME/lesshist
 export BROWSER=firefox
 export TERMINAL=termite
 
-# LS_COLORS (or a valid TERM, which I don't have) is now required for `ls` to use colour.
+# LS_COLORS (or a valid TERM, which I don't have) is now required for `ls` to
+# use colour.
 source <(dircolors $XDG_CONFIG_HOME/dircolors)
 
 # Disable Mono and Gecko installation and .desktop creation.
