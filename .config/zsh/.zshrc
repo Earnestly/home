@@ -185,7 +185,6 @@ alias ll='ls --color=auto --group-directories-first -AlhXF'
 alias dmesg=dmesg -exL
 alias weechat="exec dtach -A $XDG_RUNTIME_DIR/weechat env LD_PRELOAD=$HOME/.local/lib/libwcwidth.so weechat"
 alias mutt="exec dtach -A $XDG_RUNTIME_DIR/mutt mutt -F $XDG_CONFIG_HOME/mutt/muttrc"
-alias newsbeuter="exec dtach -A $XDG_RUNTIME_DIR/newsbeuter newsbeuter"
 
 alias ix="curl -F 'f:1=<-' ix.io"
 alias sprunge="curl -F 'sprunge=<-' sprunge.us"
