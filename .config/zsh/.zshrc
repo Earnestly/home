@@ -175,6 +175,8 @@ alias mv='mv -vi'
 alias ln='ln -vi'
 alias mkdir='mkdir -vp'
 
+alias e='emacs -nw'
+
 alias chmod='chmod -c --preserve-root'
 alias chown='chown -c --preserve-root'
 alias chgrp='chgrp -c --preserve-root'
