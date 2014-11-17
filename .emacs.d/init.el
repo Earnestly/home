@@ -8,16 +8,12 @@
 
 (add-to-list 'load-path (concat user-emacs-directory "setup"))
 
+(require 'setup-annoyances)
 (require 'setup-keybinds)
 
 ;; evil-mode
 (evil-mode t)
 (global-evil-matchit-mode)
-
-;; Annoyances.
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
 
 (load-theme 'wombat t)
 
