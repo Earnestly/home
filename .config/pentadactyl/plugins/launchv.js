@@ -13,8 +13,8 @@
 */
 
 function launchv(target){
-    /* Escape anything which could be used to inject shell mpvands before
-     * passing it to the mpvands. */
+    /* Escape anything which could be used to inject shell commands before
+     * passing it to the commands. */
     var uri = target.replace(/([$`"\\])/g, "\\$1");
     var mpv = "mpv --loop-file --cache-file=TMP";
 
@@ -33,14 +33,10 @@ function launchv(target){
 
         /* XXX Currently youtube-dl will only fetch the first 30 minutes of the
          *     stream.  Replacing this with livestreamer until fixed. */
-        //exec("yt-dl", uri);
         exec("livestreamer", uri);
-
-    /* Currently youtube-dl's support for hitbox VOD is buggy but adding for
-     * future. */
     else if(uri.match(/hitbox\.tv\/video\/[0-9]+/))
         exec(mpv, uri);
-    else if(uri.match(/twitch\.tv/) || uri.match(/hitbox\.tv/))
+    else if(uri.match(/(hitbox|twitch)\.tv/)
         exec("livestreamer", uri);
 
     /* For everything else. */
@@ -51,7 +47,4 @@ function launchv(target){
 hints.addMode("q", "Launch video from hint", function (elem, loc) launchv(loc));
 
 commands.add(["launchv", "lv"], "Launches current buffer video",
-    function(args){ 
-        var uri = buffer.URL;
-        launchv(uri);
-    });
+    function(args){ launchv(buffer.URI); });
