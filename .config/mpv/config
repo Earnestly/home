@@ -26,7 +26,6 @@ slang=en,eng
 alang=en,eng
 
 # Network.
-ytdl=yes
 cache=auto
 cache-default=4096
 
