@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# if [[ -z "$DBUS_SESSION_BUS_ADDRESS" ]]; then
+#     eval "$(dbus-launch --sh-syntax --exit-with-session)"
+# fi
+
+# A better unclutter.
+hhpc -i 3 &
+
+# Wallpaper.
+display -window root -resize '1366x768!' ~/.local/share/wall &
+emacs --daemon &
+dunst &
+
+exec i3
