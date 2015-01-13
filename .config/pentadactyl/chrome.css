@@ -15,13 +15,18 @@
 /* Hide the little graphic seperator between inactive tabs */
 .tabbrowser-tab:before,
 .tabbrowser-tab:after {
+    max-height: 22px !important;
     visibility: hidden !important;
 }
 
+/* Hide the status panel popup, newtab and tabview buttons. */
+statuspanel, #new-tab-button, #tabview-button, .tabs-newtab-button {
+    display: none !important;
+}
+
 /* Reduce the padding around the contents of a tab */
-.tabbrowser-tab .tab-content,
-.tabbrowser-tab[selected] .tab-content {
-    padding: 0 2px 2px 4px !important;
+.tab-content {
+    padding: 0 0px 2px 2px !important;
 }
 
 #TabsToolbar {
@@ -29,15 +34,12 @@
     background: #dedede !important;
 }
 
-/* Hide the newtab button */
-.tabs-newtab-button {
-    display: none !important;
-}
-
 /* Mostly hacks to try deal with tab overflow, it's not pretty */
 #tabbrowser-tabs {
     margin-left: -15px !important;
     margin-right: -15px !important;
+    max-height: 22px !important;
+    min-height: 22px !important;
 }
 
 #tabbrowser-tabs ~ #alltabs-button {
