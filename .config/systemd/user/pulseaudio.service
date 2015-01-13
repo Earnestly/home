@@ -1,8 +1,7 @@
-# ~/.config/systemd/user/pulseaudio.service
+# XDG_CONFIG_HOME/systemd/user/pulseaudio.service
 
 [Unit]
 Description=PulseAudio Server
-Requires=dbus.socket
 
 [Service]
 ExecStart=/usr/bin/pulseaudio

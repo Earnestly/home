@@ -1,16 +1,13 @@
-# ~/.config/systemd/user/mpd.service
+# XDG_CONFIG_HOME/systemd/user/mpd.service
 
 [Unit]
 Description=Music Player Daemon
-After=sound.target
 
 [Service]
 Type=forking
 Environment=PULSE_PROP=application.icon_name=sound
 PIDFile=%h/.config/mpd/mpd.pid
-ExecStart=/usr/bin/mpd
-ExecStop=/usr/bin/mpd --kill
-
+ExecStart=/usr/bin/mpd --verbose
 
 [Install]
 WantedBy=default.target
