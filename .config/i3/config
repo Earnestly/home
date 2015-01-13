@@ -1,7 +1,9 @@
 # ~/.config/i3/config
 
 # font for window titles and bar
-font pango: Dina, Bold 8
+font pango: Dina, Bold 10
+#font pango: FNCP7 10
+
 
 new_window pixel 2
 workspace_auto_back_and_forth yes
@@ -174,6 +176,8 @@ for_window [class="Blender" title="Blender User Preferences"] floating enable
 # fontforge floating toolboxes
 for_window [class="fontforge" title="Layers"] floating enable
 for_window [class="fontforge" title="Tools"] floating enable
+for_window [class="fontforge" title="Point Info"] floating enable
+for_window [class="fontforge" title="Problem explanation"] floating enable
 
 for_window [class="Wine"] floating enable
 
