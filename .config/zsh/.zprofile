@@ -9,21 +9,23 @@ export XDG_DATA_HOME=$HOME/.local/share
 export SLRNHOME=$XDG_CONFIG_HOME/slrn
 export GNUPGHOME=$XDG_CONFIG_HOME/gnupg
 export INPUTRC=$XDG_CONFIG_HOME/inputrc
-export TIGRC_USER=$XDG_CONFIG_HOME/tigrc
+export RLWRAP_HOME=$XDG_DATA_HOME/rlwrap
+export LYNX_CFG_PATH=$XDG_CONFIG_HOME/lynx
+export TIGRC_USER=$XDG_CONFIG_HOME/tig/tigrc
 
 # XXX This always seems to complain about no directory being found, not sure why.
 #export DVDCSS_CACHE =$XDG_CACHE_HOME/dvdcss
-export RLWRAP_HOME=$XDG_CONFIG_HOME/rlwrap
 export PERL_CPANM_HOME=$XDG_CACHE_HOME/cpanm
 export GIMP2_DIRECTORY=$XDG_CONFIG_HOME/gimp
 export ELINKS_CONFDIR=$XDG_CONFIG_HOME/elinks
-export XCOMPOSEFILE=$XDG_CONFIG_HOME/X11/xcompose
-export NOTMUCH_CONFIG=$XDG_CONFIG_HOME/notmuchrc
+export XCOMPOSEFILE=$XDG_CONFIG_HOME/x11/xcompose
 export HTTPIE_CONFIG_DIR=$XDG_CONFIG_HOME/httpie
 export GUILE_HISTORY=$XDG_CONFIG_HOME/guile/history
-export PENTADACTYL_RUNTIME=$XDG_CONFIG_HOME/pentadactyl
 export VIMPERATOR_RUNTIME=$XDG_CONFIG_HOME/vimperator
+export PENTADACTYL_RUNTIME=$XDG_CONFIG_HOME/pentadactyl
+export NOTMUCH_CONFIG=$XDG_CONFIG_HOME/notmuch/notmuchrc
 export GTK2_RC_FILES=$XDG_CONFIG_HOME/gtk-2.0/settings.ini
+
 
 # Perl libraries.
 export PERL5LIB=$HOME/.local/lib/perl5
@@ -36,24 +38,23 @@ export GOPATH=$HOME/dev/go
 export GTK_IM_MODULE=xim
 export XKB_DEFAULT_LAYOUT=gb
 export XKB_DEFAULT_OPTIONS=compose:ralt,ctrl:nocaps
-export XAUTHORITY=$XDG_RUNTIME_DIR/X11/xauthority
+export XAUTHORITY=$XDG_RUNTIME_DIR/x11/xauthority
 
 export EDITOR=vim
 export VISUAL=vim
 export SUDO_EDITOR=rvim
 
-export GREP_OPTIONS=--color=auto
 export LESS=-R
 
 export PAGER=less
-export LESSHISTFILE=$XDG_CACHE_HOME/lesshist
+export LESSHISTFILE=$XDG_CACHE_HOME/less/history
 
 export BROWSER=firefox
 export TERMINAL=termite
 
 # LS_COLORS (or a valid TERM, which I don't have) is now required for `ls` to
 # use colour.
-source <(dircolors $XDG_CONFIG_HOME/dircolors)
+source <(dircolors $XDG_CONFIG_HOME/terminal-colors.d/ls.enable)
 
 # Disable Mono and Gecko installation and .desktop creation.
 export WINEDLLOVERRIDES=winemenubuilder.exe,mscoree,mshtml=d
