@@ -1,7 +1,7 @@
 #!/bin/bash
 # ~/.local/bin/pomf <file [file [...]]>
 
-# Generate the form arguments for curl
+# Generate the form arguments for curl.
 for f in "$@"; do
     if [[ -e "$f" ]]; then
         curl_args+=(-F "files[]=@$f")
