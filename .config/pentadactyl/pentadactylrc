@@ -1,51 +1,53 @@
 " ~/.pentadactylrc
 
-" Keep ~ clean
+" Keep ~ clean.
 set runtimepath=~/.config/pentadactyl
 
 loadplugins '\.(js|penta)$'
 group user
 
-" UI
+" UI.
 source ~/.config/pentadactyl/chrome.css
 "source ~/.config/pentadactyl/simple.css
 
 set guioptions=Csn
 set hlfind
 
-" Speed up scrolling
+" Speed up scrolling.
 nmap -b h 5h
 nmap -b j 5j
 nmap -b k 5k
 nmap -b l 5l
 
-" Tab control
+" Tab control.
 nmap <A-h> -e :tabprev
 nmap <A-l> -e :tabnext
 nmap <A-S-h> -e :tabmove -1
 nmap <A-S-l> -e :tabmove +1
 
-" Toggle bookmark toolbar
+" Toggle bookmark toolbar.
 nmap s -e :toolbartoggle Bookmarks Toolbar
 
-" Easily show downloads
+" Easily show downloads.
 nmap <S-d> -e :downloads
 
-" Stop <C-j> and <C-k> doing whatever it does
+" Stop <C-j> and <C-k> doing whatever they do.
 nmap <C-j> <nop>
 nmap <C-k> <nop>
 
-" Open the current URL as an argument to yt-dl
+" Open the current URL as an argument to mpv.
 nmap <S-u> -e :launchv
 
-" Use vim instead of gvim for now
+nmap <C-l> -e :nohl
+
+" Use vim instead of gvim for now.
 set editor='termite -e "vim +<line> <file>"'
 
-" Hide the status bar when using fullscreen
+" Hide the status bar when using fullscreen.
 au fullscreen on set go-=s
 au fullscreen off set go+=s
 
-" Change some default about:configs
+" Change some default about:configs.
 set! extensions.checkCompatibility.nightly=false
 set! noscript.keys.tempAllowPage="alt z"
 set! noscript.keys.revokeTemp="alt x"
@@ -53,12 +55,9 @@ set! noscript.notify=false
 set! plugins.click_to_play=true
 set! plugin.default.state=1
 
-" Disable iframes
-set! browser.frames.enabled=false
-
-" Require websites preform safe ssl negotiation
+" Require websites preform safe ssl negotiation.
 set! security.ssl.require_safe_negotiation=true
 set! security.ssl.treat_unsafe_negotiation_as_broken=true
 
-" Style
+" Style.
 colorscheme hints

@@ -13,38 +13,36 @@
 */
 
 function launchv(target){
-    /* Escape anything which could be used to inject shell commands before
-     * passing it to the commands. */
+    // Escape anything which could be used to inject shell commands before
+    // passing it to the commands.
     var uri = target.replace(/([$`"\\])/g, "\\$1");
     var mpv = "mpv --loop-file --cache-file=TMP";
 
     function exec(launcher, uri){
 
-        /* If we're using pentadactyl then echo the action as io.system won't. */
+        // If we're using pentadactyl then echo the action as io.system won't.
         if(typeof dactyl !== "undefined")
             dactyl.echomsg("Executing: " + launcher + " \"" + uri + "\"");
 
         return io.system(launcher + ' "' + uri + '" &');
     }
 
-    /* Filter certain urls to more appropriate programs before passing to
-     * yt-dl. */
+    /* Filter certain urls to more appropriate programs */
     if(uri.match(/twitch\.tv\/.*\/[bc]\/[0-9]+/))
-
-        /* XXX Currently youtube-dl will only fetch the first 30 minutes of the
-         *     stream.  Replacing this with livestreamer until fixed. */
+        // XXX Currently youtube-dl will only fetch the first 30 minutes of the
+        //     stream.  Replacing this with livestreamer until fixed.
         exec("livestreamer", uri);
+
     else if(uri.match(/hitbox\.tv\/video\/[0-9]+/))
         exec(mpv, uri);
-    else if(uri.match(/(hitbox|twitch)\.tv/)
+
+    else if(uri.match(/(hitbox|twitch)\.tv/))
         exec("livestreamer", uri);
 
-    /* For everything else. */
+    // For everything else.
     else
         exec(mpv, uri);
 }
 
-hints.addMode("q", "Launch video from hint", function (elem, loc) launchv(loc));
-
-commands.add(["launchv", "lv"], "Launches current buffer video",
-    function(args){ launchv(buffer.URI); });
+hints.addMode("q", "Launch video from hint", function(elem, loc) launchv(loc));
+commands.add(["launchv", "lv"], "Launches current buffer video", function(args){launchv(buffer.URL);});
