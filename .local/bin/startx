@@ -8,12 +8,12 @@ if [[ -n "$DISPLAY" ]]; then
     exit 1
 fi
 
-readonly confdir="${XDG_CONFIG_HOME:-$HOME/.config}"/X11
-readonly cachedir="${XDG_CACHE_HOME:-$HOME/.cache}"/X11
-readonly rundir="$XDG_RUNTIME_DIR"/X11
+readonly confdir="${XDG_CONFIG_HOME:-$HOME/.config}"/x11
+readonly cachedir="${XDG_CACHE_HOME:-$HOME/.cache}"/x11
+readonly rundir="$XDG_RUNTIME_DIR"/x11
 
 xinitrc="${XINITRC:-$confdir/xinitrc}"
-#log="$cachedir"/X11/xsession.log
+#log="$cachedir"/x11/xsession.log
 
 if ! mkdir -p "$confdir" "$rundir"; then
     exit 1
@@ -27,20 +27,12 @@ unset SESSION_MANAGER
 if [[ -n "$XDG_VTNR" ]]; then
     export DISPLAY=:"$XDG_VTNR"
 else
-    printf >&2 'Apparently XDG_VTNR is not set, bailing out.\n'
+    printf -- 'Apparently XDG_VTNR is not set, bailing out.\n' >&2
     exit 1
 fi
 
-# I can blindly add a new entry with xauth because this is stored in a tmpfs.
+# I blindly add a new entry with xauth because this is stored in a tmpfs.
 xauth -q add "$DISPLAY" . "$(mcookie)" &> /dev/null
-
-# # If using systemd --user with dbus.service.
-# sysdopts=(
-#     --user
-#     --scope
-#     --unit="xinit-$DISPLAY.scope"
-#     --description="Simple xinit wrapper"
-# )
 
 serveropts=(
     vt"$XDG_VTNR" 
@@ -50,4 +42,13 @@ serveropts=(
 )
 
 exec xinit "${1:-$xinitrc}" -- "$DISPLAY" "${serveropts[@]}" "${@:2}"
+
+# If using systemd --user with dbus.service.
+#sysdopts=(
+#    --user
+#    --scope
+#    --unit="xinit-$DISPLAY.scope"
+#    --description="Simple xinit wrapper"
+#)
+
 #exec systemd-run "${sysdopts[@]}" xinit "${1:-$xinitrc}" -- "$DISPLAY" "${serveropts[@]}" "${@:2}"
