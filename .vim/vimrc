@@ -18,6 +18,7 @@ set undofile
 set wildmenu
 set linebreak
 set scrolloff=1
+set wildmode=longest,list
 set backspace=indent,eol,start
 
 syntax on
@@ -25,7 +26,7 @@ filetype indent plugin on
 
 runtime! macros/matchit.vim
 
-" 4 spaced expanded tabs by default
+" 4 spaced expanded tabs by default.
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
@@ -53,24 +54,24 @@ set cursorline
 set laststatus=2
 set statusline=%n\ %F\ %M%=%y%w%r%h\ %{&fenc}\ %l,%c\ %p%%\ %L
 
-" Speed up ESC in msec
+" Speed up ESC in msec.
 set ttimeoutlen=50
 
-" Use the Xorg's primary buffer as default register
+" Use the Xorg's primary buffer as default register.
 set clipboard=unnamed
 
-" Set directories
+" Set directories.
 set undodir=~/.cache/vim/undo
 set directory=~/.cache/vim/swap
 set backupdir=~/.cache/vim/backup
 set viminfo+=n~/.cache/vim/viminfo
 
-" Fancy arrows are not welcome
+" Fancy arrows are not welcome.
 let g:no_rust_conceal = 1
 let g:haskell_conceal = 0
 
-" Make bash the default for `sh` files
+" Make bash the default for `sh` files.
 let g:is_bash = 1
 
-" Use clang when checking C syntax
+" Use clang when checking C syntax.
 let g:syntastic_c_compiler = 'clang'
