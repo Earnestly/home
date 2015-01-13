@@ -17,8 +17,15 @@ update_interval 2.0
 # Run forever (or will it?)
 total_run_times 0
 
+# Sometimes MPD titles can be very long and the default of 256 is too small to
+# hold the entire temporary buffer.  This caused conky to send garbage to i3bar
+# and generate invalid UTF-8 data causing yajl to give up.  1024 seems like a 
+# decent number for now.
+text_buffer_size 2048
+
 TEXT
-[${if_mpd_playing}
+[\
+${if_mpd_playing}
 {"full_text":"MPD:${mpd_title 90}",\
 "color":"\#5f5f5f"},\
 ${endif}
