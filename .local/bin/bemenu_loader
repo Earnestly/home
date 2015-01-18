@@ -1,31 +1,32 @@
 #!/bin/bash
-# ~/.local/bin/dmenu_loader
+# ~/.local/bin/bemenu_loader
 
-# dmenu_loader <file>
+# bemenu_loader <file>
 
 # A simple script which loads a key value pair into an associative array where
-# the key is displayed by dmenu and the value is acted upon given the
+# the key is displayed by bemenu and the value is acted upon given the
 # corresponding key.
 
 # Configuration example:
 
-# Title=[optional: title for dmenu]
+# Title=[optional: title for bemenu]
 # # Comments
-# Command=<required: program used to act on result from dmenu>
+# Command=<required: program used to act on result from bemenu>
 # Key Display=Value Executed
 
-readonly progn=dmenu_loader
+readonly progn=bemenu_loader
 readonly input="$1"
 
 # Number of entries to display at once.
-readonly lines=40
+readonly lines=20
 read -r font < "${XDG_CONFIG_HOME:-$HOME/.config}"/dmenu/font
 
-# Options passed to dmenu, the `-p` prompt is passed later.
-dmenu_opts=(
-    -fn "$font" -w -i -l $lines
-    -nf '#a7a7a7' -nb '#1e1e1e'
-    -sf '#9b859d' -sb '#262626'
+# Options passed to bemenu.
+bemenu_opts=(
+    --fn "$font" -w -i -l "$lines"
+    --nf '#a7a7a7' --nb '#1e1e1e'
+    --sf '#9b859d' --sb '#262626'
+    --scrollbar autohide
 )
 
 typeset -a cmd # Some commands might have arguments.
@@ -58,10 +59,10 @@ else
 fi
 
 # Append the number of elements to the title.
-dmenu_opts+=(-p "$title ${#index[@]}/$lines")
+bemenu_opts+=(-p "$title")
 
-# Print the keys for dmenu consumption.
-selection="$(printf '%s\n' "${!index[@]}" | dmenu "${dmenu_opts[@]}")"
+# Print the keys for bemenu consumption.
+selection="$(printf '%s\n' "${!index[@]}" | bemenu "${bemenu_opts[@]}")"
 
 # Make sure we get a selection before continuing
 [[ -z "$selection" ]] && exit 0
