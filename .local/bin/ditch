@@ -19,11 +19,13 @@ readonly TMPDIR="${TMPDIR:-/tmp}"
 readonly lines=20
 read -r font < "${XDG_CONFIG_HOME:-$HOME/.config}"/dmenu/font
 
-# Options passed to bemenu, the `-p` prompt is passed later.
+# Options passed to bemenu, the prompt is passed later.
 bemenu_opts=(
     --fn "$font" -w -i -l "$lines"
+    --tf '#9b859d' --tb '#262626'
     --nf '#a7a7a7' --nb '#1e1e1e'
-    --sf '#9b859d' --sb '#262626'
+    --hf '#9b859d' --hb '#262626'
+    --scf '#9b859d' --scb '#1e1e1e'
     --scrollbar always
 )
 
@@ -70,7 +72,7 @@ get_user_data() { # disk -> stdout
                 printf -- '%s,' "${list[@]:0:$chunk}"
 
                 tmp=("${list[@]:0:$chunk}")
-                puts'&limit=%d' ${#tmp[@]}
+                puts '&limit=%d' ${#tmp[@]}
 
                 # 1st loop: [ 1 2 { 3 4 5 }] => list = [3 4 5]
                 # 2nd loop: [ 3 4 { 5 }]     => list = [5]
@@ -87,8 +89,8 @@ get_json() { # string -> stdout
     local s="$1"
     local stream data
 
-    # We assume streams always have `&limit=` appended.
-    if [[ "$s" =~ \&limit= ]]; then
+    # We assume streams always contain the string "&limit=".
+    if [[ "$s" == *\&limit=* ]]; then
         data="$(mktemp -t "$progn"-channels-XXX.json)"
         curl -s "https://api.twitch.tv/kraken/streams?channel=$s" > "$data"
     else
@@ -110,31 +112,25 @@ parse_json() { # disk -> stdout
     # Wait for all the get_json jobs to finish before continuing.
     wait
 
-    # Around 50-70% of time is spent here.
+    # Around 50-70% of time is spent here as jshon read()'s every character.
     for i in "$TMPDIR"/*.json; do
         if [[ "$i" == *$progn-channels-* ]]; then
-            local args=(-Q -e streams -a -e channel
-                        -e name
-                        -upe game
-                        -upe url
-                        -upe status)
+            local args=(-CQ -e streams -a -e channel -e name -upe game
+                        -upe url -upe status)
 
             jshon "${args[@]}" < "$i"
         fi
 
         if [[ "$i" == *$progn-teams-* ]]; then
-            local args=(-Q -e channels -a -e channel
-                        -e name
-                        -upe meta_game
-                        -upe link
-                        -upe title)
+            local args=(-CQ -e channels -a -e channel -e name -upe meta_game
+                        -upe link -upe title)
 
             jshon "${args[@]}" < "$i"
         fi
 
         # Make sure we remove the json once we're done so it doesn't interfere
-        # with proceeding runs and doesn't clutter up `$TMPDIR`.
-        rm -rf -- "$i"
+        # with proceeding runs and doesn't clutter up $TMPDIR.
+        rm -f -- "$i"
     done
 }
 
@@ -143,7 +139,7 @@ get_user_picks() { # globals(streams, menu, bemenu_opts) -> command -> stdout
     local max=0
 
     # Display the number of current streams in bemenu's prompt.
-    bemenu_opts+=(-p "Stream ${#stream[@]}/$lines")
+    bemenu_opts+=(-p "Stream ${#stream[@]}")
 
     # Calculate the required spacing by finding the longest streamer name.
     for i in "${!stream[@]}"; do
@@ -158,7 +154,7 @@ get_user_picks() { # globals(streams, menu, bemenu_opts) -> command -> stdout
 play_stream() { # string string -> either(command, stderr)
     local url="$1"
     local title="$2"
-    local err lstreamer_opts
+    local err streamer_opts
 
     streamer_opts=(
         --player "mpv --title='${title//\'/’}' --profile=live"
@@ -186,19 +182,25 @@ while {
     read -r url
     read -r title
 } do
-    # Manually de-json the title.  XXX This doesn't handle all json escapes.
-    title="${title%\"*}" title="${title#\"}" title="${title//\\/}"
+    # Jshon will return null for keys without values (or missing keys
+    # entirely), since a valid url can never be null we'll use this as a
+    # sentinel for bad values and skip any we find.
+    if [[ "$url" != null ]]; then
 
-    # The `menu` is what we will use for displaying via bemenu, we will later
-    # extract the first word from the result which is `$name` used as the key
-    # in `streams` to access the `$url`.
-    menu["$name $game: $title"]=1 # Store only unique results using a "set".
-    stream["$name"]="$url"
+        # Manually de-json the title.  XXX This doesn't handle all json
+        # escapes but we don't have to.
+        title="${title%\"*}" title="${title#\"}" title="${title//\\/}"
+
+        # The menu is what we will use for displaying via bemenu, we will later
+        # extract the first word from the result which is $name used as the key
+        # in streams to access the $url.
+        menu["$name $game: $title"]=1
+        stream["$name"]="$url"
+    fi
 done < <(parse_json)
 
 results="$(get_user_picks)"
 
-# Exit if nothing was selected.
 [[ -z "$results" ]] && exit
 
 while read -r streamer game title; do
@@ -212,6 +214,5 @@ while read -r streamer game title; do
         exit 1
     fi
 
-    # Fire off all in the background, this will still warn on failure.
     play_stream "$url" "$game $title" &
 done <<< "$results"
