@@ -33,16 +33,21 @@ puts() { # strings -> stdout
     printf -- "$1\n" "${@:2}"
 }
 
+has() { 
+    hash "$1" &> /dev/null
+}
+
 err() { # strings -> stderr
     local msg
 
-    if [[ ! -t 0 ]] && hash notify-send &> /dev/null; then
+    if [[ ! -t 0 ]] && has notify-send; then
         msg="$(puts "$@")"
         notify-send -u critical -- "$progn" "$msg"
     else
         puts "$progn: $@" >&2
     fi
 }
+
 
 get_user_data() { # disk -> stdout
     local team list chunk nelem tmp
@@ -156,13 +161,13 @@ play_stream() { # string string -> either(command, stderr)
     local title="$2"
     local err streamer_opts
 
-    streamer_opts=(
-        --player "mpv --title='${title//\'/’}' --profile=live"
-        --quiet
-        "$url"
-    )
+    streamer_opts=(--quiet)
 
-    if ! err="$(livestreamer "${streamer_opts[@]}")"; then
+    if has mpv; then
+        streamer_opts+=(--player-args "--title='${title//\'/’}' {filename}")
+    fi
+
+    if ! err="$(livestreamer "${streamer_opts[@]}" "$url")"; then
         err '%s' "${err:-livestreamer}"
     fi
 }
