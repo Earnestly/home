@@ -33,21 +33,42 @@ puts() { # strings -> stdout
     printf -- "$1\n" "${@:2}"
 }
 
-has() { 
+has() { # string -> bool
     hash "$1" &> /dev/null
 }
 
 err() { # strings -> stderr
     local msg
 
-    if [[ ! -t 0 ]] && has notify-send; then
+    puts "$progn: $@" >&2
+
+    if has notify-send; then
         msg="$(puts "$@")"
         notify-send -u critical -- "$progn" "$msg"
-    else
-        puts "$progn: $@" >&2
     fi
 }
 
+chunk_by() { # integer array -> stdout
+    local chunk="$1"
+    local list=("${@:2}")
+    local tmp
+
+    while ((${#list[@]})); do
+        printf -- '%s,' "${list[@]:0:$chunk}"
+
+        # Assuming chunks of 2, the following occurs on [1 2 3 4 5]:
+        # 1st loop: [{ 1 2 } 3 4 5]  => 1,2,
+        # 2nd loop: [{ 3 4 } 5]      => 3,4,
+        # 3rd loop: [{ 5 }]          => 5,
+        tmp=("${list[@]:0:$chunk}")
+        puts '&limit=%d' ${#tmp[@]}
+
+        # 1st loop: [ 1 2 { 3 4 5 }] => list = [3 4 5]
+        # 2nd loop: [ 3 4 { 5 }]     => list = [5]
+        # 3rd loop: [ 5 { }]         => done
+        list=("${list[@]:$chunk}")
+    done
+}
 
 get_user_data() { # disk -> stdout
     local team list chunk nelem tmp
@@ -66,24 +87,9 @@ get_user_data() { # disk -> stdout
         nelem=${#list[@]}
 
         if ((nelem < chunk)); then
-            printf -- '%s,' "${list[@]}"
-            puts '&limit=%d' $nelem
+            chunk_by "$nelem" "${list[@]}"
         else
-            while ((${#list[@]})); do
-                # Assuming chunks of 2, the following occurs on [1 2 3 4 5]:
-                # 1st loop: [{ 1 2 } 3 4 5]  => 1,2,
-                # 2nd loop: [{ 3 4 } 5]      => 3,4,
-                # 3rd loop: [{ 5 }]          => 5,
-                printf -- '%s,' "${list[@]:0:$chunk}"
-
-                tmp=("${list[@]:0:$chunk}")
-                puts '&limit=%d' ${#tmp[@]}
-
-                # 1st loop: [ 1 2 { 3 4 5 }] => list = [3 4 5]
-                # 2nd loop: [ 3 4 { 5 }]     => list = [5]
-                # 3rd loop: [ 5 { }]         => done
-                list=("${list[@]:$chunk}")
-            done
+            chunk_by "$chunk" "${list[@]}"
         fi
     fi
 }
