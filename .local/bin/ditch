@@ -51,22 +51,20 @@ err() { # strings -> stderr
 chunk_by() { # integer array -> stdout
     local chunk="$1"
     local list=("${@:2}")
-    local tmp
 
     while ((${#list[@]})); do
         printf -- '%s,' "${list[@]:0:$chunk}"
+        # Assuming chunking by 2, the following occurs on the array [1 2 3 4 5]:
+        # 1st loop: [{ 1 2 } 3 4 5]  => 1,2,&limit=2
+        # 2nd loop: [{ 3 4 } 5]      => 3,4,&limit=2
+        # 3rd loop: [{ 5 }]          => 5,&limit=1
 
-        # Assuming chunks of 2, the following occurs on [1 2 3 4 5]:
-        # 1st loop: [{ 1 2 } 3 4 5]  => 1,2,
-        # 2nd loop: [{ 3 4 } 5]      => 3,4,
-        # 3rd loop: [{ 5 }]          => 5,
-        tmp=("${list[@]:0:$chunk}")
-        puts '&limit=%d' ${#tmp[@]}
+        puts '&limit=%d' "${#list[@]:0:$chunk}"
 
+        list=("${list[@]:$chunk}")
         # 1st loop: [ 1 2 { 3 4 5 }] => list = [3 4 5]
         # 2nd loop: [ 3 4 { 5 }]     => list = [5]
         # 3rd loop: [ 5 { }]         => done
-        list=("${list[@]:$chunk}")
     done
 }
 
@@ -158,7 +156,7 @@ get_user_picks() { # globals(streams, menu, bemenu_opts) -> command -> stdout
     done
 
     # Use awk to pretty-print the user and title in 2 columns.
-    fmt='{ a = $1; $1 = ""; printf "%-'$max's %s\n", a, $0 }'
+    fmt='{f = $1; $1 = ""; printf "%-'$max's %s\n", f, $0}'
     puts '%s' "${!menu[@]}" | awk "$fmt" | bemenu "${bemenu_opts[@]}"
 }
 
@@ -188,7 +186,7 @@ if [[ -z "${twitch_list[@]}" ]]; then
 fi
 
 while {
-    read -r name
+    read -r streamer
     read -r game
     read -r url
     read -r title
@@ -205,8 +203,8 @@ while {
         # The menu is what we will use for displaying via bemenu, we will later
         # extract the first word from the result which is $name used as the key
         # in streams to access the $url.
-        menu["$name $game: $title"]=1
-        stream["$name"]="$url"
+        menu["$streamer $game: $title"]=1
+        stream["$streamer"]="$url"
     fi
 done < <(parse_json)
 
