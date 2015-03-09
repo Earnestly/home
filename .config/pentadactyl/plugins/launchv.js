@@ -5,7 +5,7 @@
 
     Requires: livestreamer, mpv, youtube-dl.
 
-    mpvand:
+    Command:
     * :launchv  Attempts to start the current buffer URL as a video.
 
     Hint:
@@ -19,7 +19,6 @@ function launchv(target){
     var mpv = "mpv --loop-file --cache-file=TMP";
 
     function exec(launcher, uri){
-
         // If we're using pentadactyl then echo the action as io.system won't.
         if(typeof dactyl !== "undefined")
             dactyl.echomsg("Executing: " + launcher + " \"" + uri + "\"");
@@ -27,11 +26,9 @@ function launchv(target){
         return io.system(launcher + ' "' + uri + '" &');
     }
 
-    /* Filter certain urls to more appropriate programs */
+    // Filter certain urls to more appropriate programs
     if(uri.match(/twitch\.tv\/.*\/[bc]\/[0-9]+/))
-        // XXX Currently youtube-dl will only fetch the first 30 minutes of the
-        //     stream.  Replacing this with livestreamer until fixed.
-        exec("livestreamer", uri);
+        exec(mpv, uri);
 
     else if(uri.match(/hitbox\.tv\/video\/[0-9]+/))
         exec(mpv, uri);
