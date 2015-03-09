@@ -73,5 +73,9 @@ let g:haskell_conceal = 0
 " Make bash the default for `sh` files.
 let g:is_bash = 1
 
-" Use clang when checking C syntax.
+" Use clang when checking C/C++ syntax.
 let g:syntastic_c_compiler = 'clang'
+let g:syntastic_c_compiler_options = '-std=c11'
+
+let g:syntastic_cpp_compiler = 'clang++'
+let g:syntastic_cpp_compiler_options = '-std=c++14 -stdlib=libc++'
