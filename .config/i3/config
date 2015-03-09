@@ -1,9 +1,8 @@
 # ~/.config/i3/config
 
 # font for window titles and bar
-font pango: Dina, Bold 10
+font pango: Dina, Bold 9
 #font pango: FNCP7 10
-
 
 new_window pixel 2
 workspace_auto_back_and_forth yes
@@ -113,12 +112,13 @@ mode "RESIZE MODE" {
 
 bindsym $mod+r mode "RESIZE MODE"
 
-mode "DMENU MODE" {
+mode "MENU MODE" {
     bindsym d exec --no-startup-id ditch; mode "default"
     bindsym s exec --no-startup-id switch; mode "default"
     bindsym w exec --no-startup-id dwall; mode "default"
     bindsym y exec --no-startup-id dclip; mode "default"
     bindsym p exec --no-startup-id dmenu_run; mode "default"
+    bindsym g exec --no-startup-id taverner; mode "default"
     bindsym u exec --no-startup-id bemenu_loader ~/.local/share/plaid/plaid_dmenu; mode "default"
     bindsym o exec --no-startup-id bemenu_loader ~/.local/share/dmenu/dmenu_pdf; mode "default"
 
@@ -126,7 +126,7 @@ mode "DMENU MODE" {
     bindsym Escape mode "default"
 }
 
-bindsym $mod+p mode "DMENU MODE"
+bindsym $mod+p mode "MENU MODE"
 
 # control music
 mode "MPD CONTROL" {
@@ -182,8 +182,11 @@ for_window [class="fontforge" title="Problem explanation"] floating enable
 for_window [class="Wine"] floating enable
 
 assign [class="Firefox"] 2
+assign [class="Chromium"] 2
 assign [class="mpv"] 3
 assign [class="Wine"] 5
+
+for_window [class="Wine"] floating disable
 
 # focus latest urgent window
 bindsym $mod+u [urgent="latest"] focus
