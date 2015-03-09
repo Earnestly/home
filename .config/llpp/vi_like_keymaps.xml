@@ -4,6 +4,7 @@
     </ui-font>
 
     <defaults zoom='100'
+              auto-scroll-step='12'
               horizontal-scroll-step='24'
               case-insensitive-search='true'
               uri-launcher='$BROWSER &quot;%s&quot;'
