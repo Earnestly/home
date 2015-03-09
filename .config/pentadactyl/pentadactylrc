@@ -14,8 +14,8 @@ set guioptions=Csn
 set hlfind
 
 command jsenable -nargs=1 :set! javascript.enabled=<args>
-nmap <A-x> :jsenable true<CR>
-nmap <A-z> :jsenable false<CR>
+nmap <A-z> :jsenable true<CR>
+nmap <A-x> :jsenable false<CR>
 
 " Speed up scrolling.
 nmap -b h 5h
@@ -65,6 +65,16 @@ set! security.ssl.treat_unsafe_negotiation_as_broken=true
 
 " Straight from the school of enumerating badness.
 set! browser.safebrowsing.malware.enabled=false
+
+" Try in futility to disable HTML5 video/audio. 
+" Note: Autoplay disable doesn't actually prevent autoplay because that would
+"       be too simple. <https://bugzil.la/659285>
+set! media.autoplay.enabled=false
+set! media.gstreamer.enabled=false
+set! media.webm.enabled=false
+set! media.ogg.enabled=false
+set! media.opus.enabled=false
+set! media.wave.enabled=false
 
 " Style.
 colorscheme hints
