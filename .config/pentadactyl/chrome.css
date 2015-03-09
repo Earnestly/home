@@ -20,7 +20,8 @@
 }
 
 /* Hide the status panel popup, newtab and tabview buttons. */
-statuspanel, #new-tab-button, #tabview-button, .tabs-newtab-button {
+statuspanel, #new-tab-button, #tabview-button,
+.tabs-newtab-button, .tab-close-button {
     display: none !important;
 }
 
@@ -34,17 +35,14 @@ statuspanel, #new-tab-button, #tabview-button, .tabs-newtab-button {
     background: #dedede !important;
 }
 
-/* Mostly hacks to try deal with tab overflow, it's not pretty */
 #tabbrowser-tabs {
-    margin-left: -15px !important;
-    margin-right: -15px !important;
     max-height: 22px !important;
     min-height: 22px !important;
 }
 
-#tabbrowser-tabs ~ #alltabs-button {
-    padding-left: 15px !important;
-}
+/* #tabbrowser-tabs ~ #alltabs-button { */
+/*     padding-left: 15px !important; */
+/* } */
 
 /* Make the tab expand to fill the maximum width */
 .tabbrowser-tab {
