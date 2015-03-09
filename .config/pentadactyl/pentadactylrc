@@ -13,6 +13,10 @@ source ~/.config/pentadactyl/chrome.css
 set guioptions=Csn
 set hlfind
 
+command jsenable -nargs=1 :set! javascript.enabled=<args>
+nmap <A-x> :jsenable true<CR>
+nmap <A-z> :jsenable false<CR>
+
 " Speed up scrolling.
 nmap -b h 5h
 nmap -b j 5j
@@ -48,16 +52,19 @@ au fullscreen on set go-=s
 au fullscreen off set go+=s
 
 " Change some default about:configs.
-set! extensions.checkCompatibility.nightly=false
-set! noscript.keys.tempAllowPage="alt z"
-set! noscript.keys.revokeTemp="alt x"
-set! noscript.notify=false
+set! extensions.checkCompatibility=false
 set! plugins.click_to_play=true
 set! plugin.default.state=1
+
+" Globally disable javascript.
+set !javascript.enabled=false
 
 " Require websites preform safe ssl negotiation.
 set! security.ssl.require_safe_negotiation=true
 set! security.ssl.treat_unsafe_negotiation_as_broken=true
+
+" Straight from the school of enumerating badness.
+set! browser.safebrowsing.malware.enabled=false
 
 " Style.
 colorscheme hints
