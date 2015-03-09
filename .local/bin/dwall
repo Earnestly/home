@@ -62,5 +62,6 @@ wall_sel=$(
 if [[ -n "$wall_sel" ]]; then
     read -r resolution < <(collect_resolutions | sort -nr)
     ln -sf "$wall_dir"/"$wall_sel" "$wall_sym"
-    display -window root -resize $resolution\! "$wall_sym"
+    # -sample is the cheapest.
+    display -window root -sample $resolution\! "$wall_sym"
 fi

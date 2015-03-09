@@ -156,7 +156,7 @@ check_for_titles() { # string -> stdout
 }
 
 run_ghostscript() { # string number string string -> command
-    # WooOOooOoo
+    # WooOOooOoo.
     local input="$1"
     local version="$2"
     local pdfmark="$3"
@@ -164,19 +164,21 @@ run_ghostscript() { # string number string string -> command
     local -a options
 
     # These options do their best to retain the original quality of the input
-    # pdf while trying to save space where it doesn't compromise the original
-    options=(-sDEVICE=pdfwrite -dBATCH -dNOPAUSE
-             -dCompatibilityLevel="$version"
-             -sOutputFile="$output"
-             -dAutoRotatePages=/None
-             -dSubsetFonts=true
-             -dCompressFonts=true
-             -dAutoFilterGrayImages=false
-             -dAutoFilterColorImages=false
-             -dGrayImageFilter=/FlateEncode
-             -dMonoImageFilter=/FlateEncode
-             -dColorImageFilter=/FlateEncode
-             "$input")
+    # pdf while trying to save space.
+    options=(
+        -sDEVICE=pdfwrite -dBATCH -dNOPAUSE
+        -dCompatibilityLevel="$version"
+        -sOutputFile="$output"
+        -dAutoRotatePages=/None
+        -dSubsetFonts=true
+        -dCompressFonts=true
+        -dAutoFilterGrayImages=false
+        -dAutoFilterColorImages=false
+        -dGrayImageFilter=/FlateEncode
+        -dMonoImageFilter=/FlateEncode
+        -dColorImageFilter=/FlateEncode
+        "$input"
+    )
 
     if [[ -n "$pdfmark" ]]; then
         options+=("$pdfmark")

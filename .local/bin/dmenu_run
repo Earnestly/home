@@ -5,9 +5,11 @@ read -r font < ${XDG_CONFIG_HOME:-$HOME/.config}/dmenu/font
 
 opts=(
     --fn $font -p 'Run'
+    --tf '#9b859d' --tb '#262626'
     --nf '#a7a7a7' --nb '#1e1e1e'
-    --sf '#9b859d' --sb '#262626'
+    --hf '#9b859d' --hb '#262626'
+    --scf '#9b859d' --scb '#1e1e1e'
 )
 
-#print -lo ${(k)commands} | dmenu $opts $@ | exec /bin/dash
+#print -lo ${(k)commands} | bemenu $opts $@ | exec /bin/dash
 bemenu-run $opts

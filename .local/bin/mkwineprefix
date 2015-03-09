@@ -23,7 +23,7 @@ EOF
 }
 
 # We need at least one argument
-if (( $# == 0 )); then
+if (($# == 0)); then
     usage
     exit 1
 fi
