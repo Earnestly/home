@@ -30,7 +30,7 @@ setopt autocd \
     interactivecomments \
 
 READNULLCMD=$PAGER
-HELPDIR=$XDG_CONFIG_HOME/zsh/help
+HELPDIR=/usr/share/zsh/$ZSH_VERSION/help
 HISTFILE=$XDG_CONFIG_HOME/zsh/.zsh_history
 HISTSIZE=20000
 SAVEHIST=$HISTSIZE
@@ -153,19 +153,19 @@ bindkey -M isearch '^M' accept-search
 
 # Quick and easy note taking (I should make this into a seperate script).
 function n {
-    $EDITOR "${@[@]/#/"$HOME/docs/notes/"}"
+    $EDITOR "${@[@]/#/"$HOME/docs/note/"}"
 }
-compdef "_files -W $HOME/docs/notes -/" n
+compdef "_files -W $HOME/docs/note -/" n
 
 function nrm {
-    rm -v "${@[@]/#/"$HOME/docs/notes/"}"
+    rm -v "${@[@]/#/"$HOME/docs/note/"}"
 }
-compdef "_files -W $HOME/docs/notes -/" nrm
+compdef "_files -W $HOME/docs/note -/" nrm
 
 function nmv {
-    mv -v "${@[@]/#/"$HOME/docs/notes/"}"
+    mv -v "${@[@]/#/"$HOME/docs/note/"}"
 }
-compdef "_files -W $HOME/docs/notes -/" nmv
+compdef "_files -W $HOME/docs/note -/" nmv
 
 # Aliases.
 alias -g ...='../..'
@@ -197,11 +197,12 @@ alias k='rlwrap k'
 alias i="curl -F 'f:1=<-' ix.io"
 alias s="curl -F 'sprunge=<-' sprunge.us"
 alias p="curl -F 'c=@-' https://ptpb.pw"
-alias xc='xclip -o | s'
+alias xc='xclip -o | i'
 
 # XXX force XDG_CONFIG_HOME where possible.
 alias ncmpcpp="ncmpcpp -c $XDG_CONFIG_HOME/ncmpcpp/ncmpcpp.conf"
 alias aria2c="aria2c --dht-file-path $XDG_CACHE_HOME/aria2/dht.dat"
+alias gdb="gdb -nh -x $XDG_CONFIG_HOME/gdb/init"
 
 # Bash-like help.
 unalias run-help
