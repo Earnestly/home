@@ -18,50 +18,52 @@ browser = firefox
 #geometry = 640x480
 
 #font = CMU Typewriter Text 12.5
-#font = DejaVu Sans Mono 10.5
-#font = LetterGothic 12.2
+#font = DejaVu Sans Mono 10
+#font = LetterGothic 12
 font = Inconsolatazi4 12
+#font = Monaco 9.8
 #font = Latin Modern Mono 11.8
 #font = Perfect DOS VGA 437 12
 #font = Meslo LG S 9.8
 #font = Dina 9
 #font = PragmataPro 12
 #font = Fira Mono 10.8
-#font = Source Code Pro Earnest 11.2
+#font = Source Code Pro Earnest 11
 
 [colors]
 # Base16 Twilight
 # Scheme: David Hart (http://hart-dev.com)
-foreground      = #A7A7A7
-foreground_bold = #A7A7A7
-cursor          = #A7A7A7
-background      = #1E1E1E
+
+foreground      = #a7a7a7
+foreground_bold = #a7a7a7
+cursor          = #a7a7a7
+background      = #1e1e1e
 
 # 16 color space
-color0  = #1E1E1E
-color1  = #CF6A4C
-color2  = #8F9D6A
-color3  = #F9EE98
-color4  = #7587A6
-color5  = #9B859D
-color6  = #AFC4DB
-color7  = #A7A7A7
-color8  = #5F5A60
-color9  = #CF6A4C
-color10 = #8F9D6A
-color11 = #F9EE98
-color12 = #7587A6
-color13 = #9B859D
-color14 = #AFC4DB
-color15 = #FFFFFF
+color0  = #1e1e1e
+color1  = #cf6a4c
+color2  = #8f9d6a
+color3  = #f9ee98
+color4  = #7587a6
+color5  = #9b859d
+color6  = #afc4db
+color7  = #a7a7a7
+color8  = #5f5a60
+color9  = #cf6a4c
+color10 = #8f9d6a
+color11 = #f9ee98
+color12 = #7587a6
+color13 = #9b859d
+color14 = #afc4db
+color15 = #ffffff
 
 # 256 color space
-color16 = #CDA869
-color17 = #9B703F
+color16 = #cda869
+color17 = #9b703f
 color18 = #323537
-color19 = #464B50
+color19 = #464b50
 color20 = #838184
-color21 = #C3C3C3
+color21 = #c3c3c3
 
 [hints]
 #font = Monospace 12
