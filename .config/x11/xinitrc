@@ -8,7 +8,9 @@
 hhpc -i 3 &
 
 # Wallpaper.
-display -window root -resize '1366x768!' ~/.local/share/wall &
+#display -window root -resize '1366x768!' ~/.local/share/wall &
+xsetroot -mod 16 16 -fg '#131313' -bg '#1e1e1e'
+
 emacs --daemon &
 dunst &
 
