@@ -10,29 +10,29 @@ zle -N zle-line-init
 zle -N zle-keymap-select
 
 # Shell options.
-setopt autocd \
-    dotglob \
-    nobgnice \
-    histappend \
-    histverify \
-    promptsubst \
-    rmstarsilent \
-    extendedglob \
-    sharehistory \
-    printexitvalue \
-    histsavenodups \
-    completealiases \
-    histignorespace \
-    numericglobsort \
-    histignorespace \
-    histreduceblanks \
-    histignorealldups \
-    interactivecomments \
+setopt auto_cd \
+    dot_glob \
+    hist_verify \
+    hist_append \
+    prompt_subst \
+    extended_glob \
+    rm_star_silent \
+    hist_fcntl_lock \
+    print_exit_value \
+    complete_aliases \
+    numeric_glob_sort \
+    hist_save_no_dups \
+    hist_ignore_space \
+    hist_ignore_space \
+    hist_reduce_blanks \
+    hist_ignore_all_dups \
+    interactive_comments \
+    hist_expire_dups_first
 
 READNULLCMD=$PAGER
 HELPDIR=/usr/share/zsh/$ZSH_VERSION/help
 HISTFILE=$XDG_CONFIG_HOME/zsh/.zsh_history
-HISTSIZE=20000
+HISTSIZE=100000
 SAVEHIST=$HISTSIZE
 
 # Style.
