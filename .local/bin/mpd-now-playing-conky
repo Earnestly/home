@@ -1,0 +1,14 @@
+#!/bin/dash
+
+escape_and_truncate() {
+    # Not only does json require " and \ to be escaped, but since i3bar also
+    # accepts pango-markup, we also need to escape most entities like <, >, &,
+    # and so on.  
+    
+    # For now I am just going to escape ampersand as it will otherwise prevent
+    # anything from being displayed.  I have not yet encountered problems with
+    # other valid pango-markup characters.
+    sed -r 's/(.{100}).*/\1/g; s/([\"])/\\\1/g; s/&/&amp;/g'
+}
+
+mpc current -f '%title%' | escape_and_truncate
