@@ -51,13 +51,17 @@ set editor='termite -e "vim +<line> <file>"'
 au fullscreen on set go-=s
 au fullscreen off set go+=s
 
+" Style.
+colorscheme hints
+
 " Change some default about:configs.
 set! extensions.checkCompatibility=false
 set! plugins.click_to_play=true
 set! plugin.default.state=1
+set! media.peerconnection.enabled=false
 
 " Globally disable javascript.
-set !javascript.enabled=false
+set! javascript.enabled=false
 
 " Require websites preform safe ssl negotiation.
 set! security.ssl.require_safe_negotiation=true
@@ -75,6 +79,3 @@ set! media.webm.enabled=false
 set! media.ogg.enabled=false
 set! media.opus.enabled=false
 set! media.wave.enabled=false
-
-" Style.
-colorscheme hints
