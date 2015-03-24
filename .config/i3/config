@@ -1,8 +1,9 @@
-# ~/.config/i3/config
+# XDG_CONFIG_HOME/i3/config
 
-# font for window titles and bar
-font pango: Dina, Bold 9
-#font pango: FNCP7 10
+# Font for window titles and bar.
+#font pango: Dina Bold 9
+#font pango: FNCP7 10.2
+font pango: Source Sans Pro Semibold 10
 
 new_window pixel 2
 workspace_auto_back_and_forth yes
