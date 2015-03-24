@@ -74,7 +74,18 @@ function zle-line-init zle-keymap-select {
     zle reset-prompt
 }
 
-# Keybinds.
+# Simple widget for quoting the current word or the previous if cursor
+# positioned on a blank.
+function quote-word {
+    zle vi-forward-word
+    zle vi-backward-blank-word
+    zle set-mark-command
+    zle vi-forward-blank-word-end
+    zle quote-region
+}
+zle -N quote-word
+
+# Keybinds, use vimode explicitly.
 bindkey -v
 
 # Initialise vimode to insert mode.
@@ -150,6 +161,9 @@ bindkey          '^T' history-incremental-pattern-search-backward
 
 # Verify search result before accepting.
 bindkey -M isearch '^M' accept-search
+
+# Quote the current or previous word.
+bindkey -M vicmd 'Q' quote-word
 
 # Quick and easy note taking (I should make this into a seperate script).
 function n {
