@@ -26,8 +26,7 @@ setopt auto_cd \
     hist_ignore_space \
     hist_reduce_blanks \
     hist_ignore_all_dups \
-    interactive_comments \
-    hist_expire_dups_first
+    interactive_comments
 
 READNULLCMD=$PAGER
 HELPDIR=/usr/share/zsh/$ZSH_VERSION/help

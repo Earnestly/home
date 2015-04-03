@@ -44,7 +44,7 @@ export EDITOR=vim
 export VISUAL=vim
 export SUDO_EDITOR=rvim
 
-export LESS=-R
+export LESS=-RX
 
 export PAGER=less
 export LESSHISTFILE=$XDG_CACHE_HOME/less/history
