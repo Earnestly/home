@@ -2,9 +2,9 @@
 # mkwineprefix
 # Creates a sane prefix, unlinking all directories pointing at the users home
 # and remaps z: to /mnt instead of / and disables the winemenubuilder to
-# prevent .desktop/mime pollution
+# prevent .desktop/mime pollution.
 
-# [TODO]: Add a mechanism to load external registery snippets
+# [TODO]: Add a mechanism to load external registery snippets.
 
 usage() {
     cat <<EOF
@@ -22,7 +22,7 @@ NAME:
 EOF
 }
 
-# We need at least one argument
+# We need at least one argument.
 if (($# == 0)); then
     usage
     exit 1
@@ -37,7 +37,6 @@ while (($#)); do
         -h) usage
             exit
             ;;
-
         *)  prefix="$1"
             ;;
     esac
@@ -52,7 +51,7 @@ fi
 
 # If arch was set to something make sure it's valid for our needs
 if [[ "$arch" != @(32|64) ]]; then
-    printf 'No valid architectures found, can only be 32 or 64\n'
+    printf 'No valid architectures found, can only be 32 or 64\n' >&2
     exit 1
 fi
 
@@ -66,30 +65,30 @@ if [[ -n "$prefix" ]]; then
         export WINEPREFIX="$prefix"
     fi
 else
-    printf 'No prefix was found, bailing.\n'
+    printf 'No prefix was found, bailing.\n' >&2
     exit 1
 fi
 
 # Check if the prefix already exists, is this even necessary?
 if [[ -d "$WINEPREFIX"/dosdevices ]]; then
-    printf 'Found a dosdevices directory\n'
-    printf 'The prefix probably already exists\n'
+    printf 'Found a dosdevices directory\n' >&2
+    printf 'The prefix probably already exists\n' >&2
     exit 1
 fi
 
-# Enable both if set by unsetting overrides
+# Enable both if set by unsetting overrides.
 if ((with_mono & with_gecko)); then
     export WINEDLLOVERRIDES="winemenubuilder.exe=d"
 
-# Just enable mono
+# Just enable mono.
 elif ((with_mono)); then
     export WINEDLLOVERRIDES="winemenubuilder.exe,mshtml=d"
 
-# Just enable gecko
+# Just enable gecko.
 elif ((with_gecko)); then
     export WINEDLLOVERRIDES="winemenubuilder.exe,mscoree=d"
 
-# Default disable both
+# Default disable both.
 else
     export WINEDLLOVERRIDES="winemenubuilder.exe,mscoree,mshtml=d"
 fi
@@ -100,7 +99,7 @@ else
     export WINEARCH=win64
 fi
 
-# Initialise the prefix
+# Initialise the prefix.
 wineboot -i
 
 # Remap Z:
@@ -113,10 +112,10 @@ if ((remap_z)); then
     fi
 fi
 
-# Remove all the symlinks pointing at the user home directory
+# Remove all the symlinks pointing at the user home directory.
 # Note: Since a prefix is always going to be Windows XP we don't need to test
 #       for windows 7+ directories during the creation of a prefix using this
-#       script
+#       script.
 for dir in Desktop 'My Documents' 'My Music' 'My Pictures' 'My Videos'; do
     rm "$WINEPREFIX"/drive_c/users/"$USER"/"$dir"
     mkdir -p "$WINEPREFIX"/drive_c/users/"$USER"/"$dir"

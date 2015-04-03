@@ -30,7 +30,7 @@ nmap <A-S-h> -e :tabmove -1
 nmap <A-S-l> -e :tabmove +1
 
 " Toggle bookmark toolbar.
-nmap s -e :toolbartoggle Bookmarks Toolbar
+"nmap s -e :toolbartoggle Bookmarks Toolbar
 
 " Easily show downloads.
 nmap <S-d> -e :downloads

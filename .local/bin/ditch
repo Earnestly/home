@@ -225,6 +225,7 @@ process_results() { # global(stream) -> fork_bg
     done
 }
 
+# Main routine.
 mapfile -t twitch_list < <(get_user_data)
 
 if [[ -n "${twitch_list[@]}" ]]; then

@@ -1,4 +1,4 @@
-/* ~/.config/pentadactyl/chrome.css */
+/* XDG_CONFIG_HOME/pentadactyl/chrome.css */
 
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
@@ -39,10 +39,6 @@ statuspanel, #new-tab-button, #tabview-button,
     max-height: 22px !important;
     min-height: 22px !important;
 }
-
-/* #tabbrowser-tabs ~ #alltabs-button { */
-/*     padding-left: 15px !important; */
-/* } */
 
 /* Make the tab expand to fill the maximum width */
 .tabbrowser-tab {
