@@ -18,6 +18,7 @@ set undofile
 set wildmenu
 set linebreak
 set scrolloff=1
+set cinoptions+=t0
 set wildmode=longest,list
 set backspace=indent,eol,start
 
@@ -78,4 +79,4 @@ let g:syntastic_c_compiler = 'clang'
 let g:syntastic_c_compiler_options = '-std=c11'
 
 let g:syntastic_cpp_compiler = 'clang++'
-let g:syntastic_cpp_compiler_options = '-std=c++14 -stdlib=libc++'
+let g:syntastic_cpp_compiler_options = '-std=c++14'
