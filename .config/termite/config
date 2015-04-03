@@ -4,7 +4,7 @@ scroll_on_output = false
 scroll_on_keystroke = true
 audible_bell = false
 modify_other_keys = true
-mouse_autohide = true
+mouse_autohide = false
 allow_bold = true
 dynamic_title = true
 urgent_on_bell = true
@@ -20,7 +20,7 @@ browser = firefox
 #font = CMU Typewriter Text 12.5
 #font = DejaVu Sans Mono 10
 #font = LetterGothic 12
-font = Inconsolatazi4 12
+font = Inconsolatazi4 12.2
 #font = Monaco 9.8
 #font = Latin Modern Mono 11.8
 #font = Perfect DOS VGA 437 12
@@ -31,39 +31,39 @@ font = Inconsolatazi4 12
 #font = Source Code Pro Earnest 11
 
 [colors]
-# Base16 Twilight
-# Scheme: David Hart (http://hart-dev.com)
+# Base16 Ocean
+# Scheme: Chris Kempson (http://chriskempson.com)
 
-foreground      = #a7a7a7
-foreground_bold = #a7a7a7
-cursor          = #a7a7a7
-background      = #1e1e1e
+foreground      = #c0c5ce
+foreground_bold = #c0c5ce
+cursor          = #c0c5ce
+background      = #2b303b
 
 # 16 color space
-color0  = #1e1e1e
-color1  = #cf6a4c
-color2  = #8f9d6a
-color3  = #f9ee98
-color4  = #7587a6
-color5  = #9b859d
-color6  = #afc4db
-color7  = #a7a7a7
-color8  = #5f5a60
-color9  = #cf6a4c
-color10 = #8f9d6a
-color11 = #f9ee98
-color12 = #7587a6
-color13 = #9b859d
-color14 = #afc4db
-color15 = #ffffff
+color0  = #2b303b
+color1  = #bf616a
+color2  = #a3be8c
+color3  = #ebcb8b
+color4  = #8fa1b3
+color5  = #b48ead
+color6  = #96b5b4
+color7  = #c0c5ce
+color8  = #65737e
+color9  = #bf616a
+color10 = #a3be8c
+color11 = #ebcb8b
+color12 = #8fa1b3
+color13 = #b48ead
+color14 = #96b5b4
+color15 = #eff1f5
 
 # 256 color space
-color16 = #cda869
-color17 = #9b703f
-color18 = #323537
-color19 = #464b50
-color20 = #838184
-color21 = #c3c3c3
+color16 = #d08770
+color17 = #ab7967
+color18 = #343d46
+color19 = #4f5b66
+color20 = #a7adba
+color21 = #dfe1e8
 
 [hints]
 #font = Monospace 12
