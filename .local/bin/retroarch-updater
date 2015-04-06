@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# retroarch-updater
+
+set +e
+
+readonly core_directory="${XDG_CONFIG_HOME:-$HOME/.config}"/retroarch/core
+readonly build_directory="$core_directory"/build
+
+declare -A cores
+readonly cores=(
+    [pcsx_rearmed]=pcsx_rearmed_libretro.so
+    [mgba]=mgba_libretro.so
+    [snes9x-next]=snes9x_next_libretro.so
+    [nestopia]=nestopia_libretro.so
+    [libretro-fba]=fb_alpha_libretro.so
+)
+
+confirm() {
+    local -l reply
+    local message="$@"
+
+    read -p "$message [Y/n] " reply
+    [[ -z "$reply" || "$reply" = y?(es) ]]
+}
+
+check_and_update() {
+    # Global: core_directory
+    local repo="$1"
+    local core="$2"
+
+    # git fetch will return 0 even if nothing was fetched meaning we need to
+    # check regardless, meh.
+    git fetch
+
+    if [[ "$(git rev-parse HEAD)" != "$(git rev-parse @{upstream})" ]]; then
+        printf -- '%s: Changes found:\n' "$repo"
+        git --no-pager log --oneline --stat ..@{upstream}
+        if confirm 'Rebuild?'; then
+            git merge
+            build_and_install "$core"
+            return
+        fi
+    else
+        printf -- '%s: Repository up to date.\n' "$repo"
+    fi
+
+    if [[ ! -e "$core_directory"/"$core" ]]; then
+        printf -- '%s: Not found.\n' "$core_directory"/"$core"
+        if confirm 'Would you like to build it anyway?'; then
+            build_and_install "$core"
+        fi
+    fi
+}
+
+build_and_install() {
+    # Global: core_directory
+    local core="$1"
+
+    # Libretro let this get out of hand and now we have to suffer for it.
+    # https://github.com/libretro/libretro-super/issues/244
+    if [[ -e Makefile.libretro ]]; then
+        make -f Makefile.libretro
+    elif [[ -e makefile.libretro ]]; then
+        make -f makefile.libretro
+    elif [[ -d libretro ]]; then
+        make -C libretro
+        core="libretro/$core"
+    fi
+
+    if [[ -e "$core" ]]; then
+        mv -vf -- "$core" "$core_directory"
+    else
+        printf -- '%s: No core found.  This should not happen :-(\n' "$core"
+        printf -- 'Here is some hopefully useful state information:\n'
+        printf -- '    PWD=%s\n' "$PWD"
+        printf -- '    core=%s\n' "$core"
+        printf -- '    core_directory=%s\n' "$core_directory"
+        printf -- '    build_directory=%s\n' "$build_directory"
+    fi
+}
+
+for core in "${!cores[@]}"; do
+    if [[ ! -d "$build_directory"/"$core" ]]; then
+        printf -- '%s: Core not present, attempting to clone...\n' "$core"
+        git clone --depth 1 git://github.com/libretro/"$core" "$build_directory"/"$core"
+    fi
+
+    (
+        cd "$build_directory"/"$core"
+        check_and_update "$core" "${cores[$core]}"
+    )
+done
