@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # retroarch-updater
 
-set +e
-
 readonly core_directory="${XDG_CONFIG_HOME:-$HOME/.config}"/retroarch/core
 readonly build_directory="$core_directory"/build
 
@@ -13,7 +11,12 @@ readonly cores=(
     [snes9x-next]=snes9x_next_libretro.so
     [nestopia]=nestopia_libretro.so
     [libretro-fba]=fb_alpha_libretro.so
+    [libretro-ppsspp]=ppsspp_libretro.so
 )
+
+# while read -r k v; do
+#     cores["$k"]="$v"
+# done < 
 
 confirm() {
     local -l reply
@@ -70,8 +73,8 @@ build_and_install() {
     if [[ -e "$core" ]]; then
         mv -vf -- "$core" "$core_directory"
     else
-        printf -- '%s: No core found.  This should not happen :-(\n' "$core"
-        printf -- 'Here is some hopefully useful state information:\n'
+        printf -- '%s: No core found.  This might be the result of a build failure.\n' "$core"
+        printf -- 'Here is some, hopefully useful, state information:\n'
         printf -- '    PWD=%s\n' "$PWD"
         printf -- '    core=%s\n' "$core"
         printf -- '    core_directory=%s\n' "$core_directory"

@@ -80,3 +80,6 @@ let g:syntastic_c_compiler_options = '-std=c11'
 
 let g:syntastic_cpp_compiler = 'clang++'
 let g:syntastic_cpp_compiler_options = '-std=c++14'
+
+" Haskell.
+let g:syntastic_haskell_hdevtools_args = '-g-Wall'

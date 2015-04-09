@@ -42,7 +42,7 @@ err() { # strings -> stderr
 
     puts "$progn: $@" >&2
 
-    if has notify-send && [[ ! -t 1 ]]; then
+    if has notify-send; then
         msg="$(puts "$@")"
         notify-send -u critical -- "$progn" "$msg"
     fi

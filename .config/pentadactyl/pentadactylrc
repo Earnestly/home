@@ -7,8 +7,8 @@ loadplugins '\.(js|penta)$'
 group user
 
 " UI.
-source ~/.config/pentadactyl/chrome.css
-"source ~/.config/pentadactyl/simple.css
+"source ~/.config/pentadactyl/chrome.css
+source ~/.config/pentadactyl/simple.css
 
 set guioptions=Csn
 set hlfind
