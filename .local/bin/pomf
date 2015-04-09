@@ -1,5 +1,6 @@
 #!/bin/bash
 # ~/.local/bin/pomf <file [file [...]]>
+# Requires: jshon curl
 
 # Generate the form arguments for curl.
 for f in "$@"; do
@@ -10,7 +11,7 @@ for f in "$@"; do
     fi
 done
 
-# Make sure we have something to upload
+# Make sure we have something to upload.
 if [[ -z "$curl_args" ]]; then
     printf >&2 'Nothing found to upload\n'
     exit 1
