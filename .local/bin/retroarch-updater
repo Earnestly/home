@@ -16,7 +16,7 @@ readonly cores=(
 
 # while read -r k v; do
 #     cores["$k"]="$v"
-# done < 
+# done < "$build_directory"/core_list
 
 confirm() {
     local -l reply
@@ -38,18 +38,18 @@ check_and_update() {
     if [[ "$(git rev-parse HEAD)" != "$(git rev-parse @{upstream})" ]]; then
         printf -- '%s: Changes found:\n' "$repo"
         git --no-pager log --oneline --stat ..@{upstream}
-        if confirm 'Rebuild?'; then
+        if confirm 'Rebuild the core?'; then
             git merge
             build_and_install "$core"
             return
         fi
     else
-        printf -- '%s: Repository up to date.\n' "$repo"
+        printf -- '\e[1;32m%s\e[0m: Repository up to date.\n' "$repo"
     fi
 
     if [[ ! -e "$core_directory"/"$core" ]]; then
         printf -- '%s: Not found.\n' "$core_directory"/"$core"
-        if confirm 'Would you like to build it anyway?'; then
+        if confirm 'Attempt to build it anyway?'; then
             build_and_install "$core"
         fi
     fi
@@ -73,7 +73,7 @@ build_and_install() {
     if [[ -e "$core" ]]; then
         mv -vf -- "$core" "$core_directory"
     else
-        printf -- '%s: No core found.  This might be the result of a build failure.\n' "$core"
+        printf -- '\e[1;31m%s\e[0m: No core found.  This might be the result of a build failure.\n' "$core"
         printf -- 'Here is some, hopefully useful, state information:\n'
         printf -- '    PWD=%s\n' "$PWD"
         printf -- '    core=%s\n' "$core"
@@ -83,6 +83,8 @@ build_and_install() {
 }
 
 for core in "${!cores[@]}"; do
+    mkdir -p -- "$build_directory"
+
     if [[ ! -d "$build_directory"/"$core" ]]; then
         printf -- '%s: Core not present, attempting to clone...\n' "$core"
         git clone --depth 1 git://github.com/libretro/"$core" "$build_directory"/"$core"
