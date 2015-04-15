@@ -132,6 +132,7 @@ mode "MPD CONTROL" {
     bindsym p exec --no-startup-id mpc toggle
     bindsym l exec --no-startup-id mpc next
     bindsym h exec --no-startup-id mpc prev
+    bindsym r exec --no-startup-id mpc repeat && mpc single
     bindsym equal exec --no-startup-id mpc volume +3
     bindsym minus exec --no-startup-id mpc volume -3
 
@@ -152,7 +153,7 @@ client.urgent           #bf616a #bf616a #eff1f5 #ff00ff
 bar {
 	position top
     status_command i3status-conky
-#343d46
+
     colors {
         background         #2b303b
         separator          #2b303b
