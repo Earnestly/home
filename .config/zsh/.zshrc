@@ -201,8 +201,8 @@ alias ls='ls --color=auto --group-directories-first -AhXF'
 alias ll='ls --color=auto --group-directories-first -AlhXF'
 
 alias dmesg=dmesg -exL
-alias weechat="exec dtach -A $XDG_RUNTIME_DIR/weechat env LD_PRELOAD=$HOME/.local/lib/libwcwidth.so weechat"
-alias mutt="exec dtach -A $XDG_RUNTIME_DIR/mutt mutt -F $XDG_CONFIG_HOME/mutt/muttrc"
+alias weechat='dtach-weechat'
+alias mutt='dtach-mutt'
 alias tmux="tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf"
 
 alias k='rlwrap k'
