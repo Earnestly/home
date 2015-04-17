@@ -61,6 +61,8 @@ build_and_install() {
 
     # Libretro let this get out of hand and now we have to suffer for it.
     # https://github.com/libretro/libretro-super/issues/244
+    apply_hacks "$core"
+
     if [[ -e Makefile.libretro ]]; then
         make -f Makefile.libretro
     elif [[ -e makefile.libretro ]]; then
@@ -82,16 +84,34 @@ build_and_install() {
     fi
 }
 
-for core in "${!cores[@]}"; do
+apply_hacks() {
+    local core="$1"
+
+    case $core in
+        ppsspp_libretro.so)
+            git submodule update --init lang native ext/armips
+            ;;
+    esac
+}
+
+process_core() {
+    # Global: build_directory
+    local repo="$1"
+    local core="$2"
+
     mkdir -p -- "$build_directory"
 
-    if [[ ! -d "$build_directory"/"$core" ]]; then
-        printf -- '%s: Core not present, attempting to clone...\n' "$core"
-        git clone --depth 1 git://github.com/libretro/"$core" "$build_directory"/"$core"
+    if [[ ! -d "$build_directory"/"$repo" ]]; then
+        printf -- '%s: Core not present, attempting to clone...\n' "$repo"
+        git clone --depth 1 git://github.com/libretro/"$repo" "$build_directory"/"$repo"
     fi
 
     (
-        cd "$build_directory"/"$core"
-        check_and_update "$core" "${cores[$core]}"
+        cd "$build_directory"/"$repo"
+        check_and_update "$repo" "$core"
     )
+}
+
+for core in "${!cores[@]}"; do
+    process_core "$core" "${cores[$core]}"
 done
