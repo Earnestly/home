@@ -64,7 +64,7 @@ fi
 bemenu_opts+=(-p "$title")
 
 # Print the keys for bemenu consumption.
-selection="$(printf '%s\n' "${!index[@]}" | bemenu "${bemenu_opts[@]}")"
+selection="$(printf '%s\n' "${!index[@]}" | sort | bemenu "${bemenu_opts[@]}")"
 
 # Make sure we get a selection before continuing
 [[ -z "$selection" ]] && exit 0
