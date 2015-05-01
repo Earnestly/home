@@ -7,10 +7,11 @@ export XDG_CONFIG_HOME=$HOME/.config
 export XDG_DATA_HOME=$HOME/.local/share
 
 export SLRNHOME=$XDG_CONFIG_HOME/slrn
-#
+
 # https://github.com/mozilla/rr/issues/1455#issuecomment-89714904
 export _RR_TRACE_DIR=$XDG_DATA_HOME/rr
 
+export CARGO_HOME=$XDG_DATA_HOME/cargo
 export GNUPGHOME=$XDG_CONFIG_HOME/gnupg
 export INPUTRC=$XDG_CONFIG_HOME/inputrc
 export RLWRAP_HOME=$XDG_DATA_HOME/rlwrap
@@ -20,7 +21,7 @@ export TIGRC_USER=$XDG_CONFIG_HOME/tig/tigrc
 # XXX This always seems to complain about no directory being found, not sure
 #     why.
 #export DVDCSS_CACHE =$XDG_CACHE_HOME/dvdcss
-#
+
 export PERL_CPANM_HOME=$XDG_CACHE_HOME/cpanm
 export GIMP2_DIRECTORY=$XDG_CONFIG_HOME/gimp
 export ELINKS_CONFDIR=$XDG_CONFIG_HOME/elinks
