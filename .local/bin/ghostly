@@ -5,7 +5,7 @@
 
 readonly progn=ghostly
 readonly current_pdf_version=1.7
-readonly library="$HOME"/docs/pdf
+readonly library="$HOME"/doc/pdf
 readonly TMPDIR=/tmp
 
 usage() { # -> stderr

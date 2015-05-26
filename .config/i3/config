@@ -3,71 +3,70 @@
 # Font for window titles and bar.
 font pango: Source Sans Pro Semibold 10
 
+# General settings.
 new_window pixel 2
 workspace_auto_back_and_forth yes
 workspace_layout tabbed
 
-# use super key
+# Use super/logo key as modifier.
 set $mod mod4
 
-# use Mouse+$mod to drag floating windows to their wanted position
+# Use Mouse+$mod to drag floating windows to their wanted position.
 floating_modifier $mod
 
-# start a terminal
+# Terminal.
 bindsym $mod+Return exec termite
 
-# brightness control
+# Brightness control.
 #bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 2
 #bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 2
 
-# kill focused window
+# Kill focused window.
 bindsym $mod+Shift+q kill
 
-# change focus
+# Change focus.
 bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
 bindsym $mod+l focus right
 
-# Move container
+# Move container.
 bindsym $mod+Shift+h move left
 bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
 
-# Move container to next output
+# Move container to next output.
 bindsym $mod+Ctrl+h move container to output left
 bindsym $mod+Ctrl+j move container to output down
 bindsym $mod+Ctrl+k move container to output up
 bindsym $mod+Ctrl+l move container to output right
 
-# split in horizontal orientation
+# Split in horizontal orientation.
 bindsym $mod+semicolon split h
 
-# split in vertical orientation
+# Split in vertical orientation.
 bindsym $mod+v split v
 
-# enter fullscreen mode for the focused container
+# Toggle fullscreen for selected container(s).
 bindsym $mod+f fullscreen
 
-# change container layout (stacked, tabbed, toggle split)
+# Change container layout.
 bindsym $mod+s layout stacking
 bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
 
-# toggle tiling / floating
+# Toggle tiling / floating.
 bindsym $mod+Shift+space floating toggle
 
-# change focus between tiling / floating windows
+# Change focus between tiling / floating windows.
 bindsym $mod+space focus mode_toggle
 
-# focus the parent container
+# Focus the containers.
 bindsym $mod+a focus parent
-
-# focus the child container
 bindsym $mod+d focus child
 
-# switch to workspace
+# Switch to workspace.
 bindsym $mod+1 workspace 1
 bindsym $mod+2 workspace 2
 bindsym $mod+3 workspace 3
@@ -79,7 +78,7 @@ bindsym $mod+8 workspace 8
 bindsym $mod+9 workspace 9
 bindsym $mod+0 workspace 10
 
-# move focused container to workspace
+# Move focused container to workspace.
 bindsym $mod+Shift+1 move container to workspace 1
 bindsym $mod+Shift+2 move container to workspace 2
 bindsym $mod+Shift+3 move container to workspace 3
@@ -91,14 +90,10 @@ bindsym $mod+Shift+8 move container to workspace 8
 bindsym $mod+Shift+9 move container to workspace 9
 bindsym $mod+Shift+0 move container to workspace 10
 
-# reload the configuration file
 bindsym $mod+Shift+c reload
-# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
-# exit i3
 bindsym $mod+Shift+e exit
 
-# resize window (you can also use the mouse for that)
 mode "RESIZE MODE" {
     bindsym h resize shrink width 1 px or 1 ppt
     bindsym j resize grow height 1 px or 1 ppt
@@ -108,7 +103,6 @@ mode "RESIZE MODE" {
     bindsym q mode "default"
     bindsym Escape mode "default"
 }
-
 bindsym $mod+r mode "RESIZE MODE"
 
 mode "MENU MODE" {
@@ -126,7 +120,7 @@ mode "MENU MODE" {
 }
 bindsym $mod+p mode "MENU MODE"
 
-# control music
+# Music control.
 mode "MPD CONTROL" {
     bindsym s exec --no-startup-id mpc stop
     bindsym p exec --no-startup-id mpc toggle
@@ -141,20 +135,19 @@ mode "MPD CONTROL" {
 }
 bindsym $mod+m mode "MPD CONTROL"
 
-# colors
+# Colors.
 # class                 border  backgnd text    indicator
 client.focused          #65737e #65737e #c0c5ce #bf616a
 client.focused_inactive #343d46 #343d46 #c0c5ce #bf616a
 client.unfocused        #343d46 #343d46 #65737e #0000ff
 client.urgent           #bf616a #bf616a #eff1f5 #ff00ff
 
-# Start i3bar to display a workspace bar (plus the system information i3status
-# finds out, if available)
 bar {
 	position top
     status_command i3status-conky
 
     colors {
+        # class            border  backgnd text
         background         #2b303b
         separator          #2b303b
         focused_workspace  #2b303b #2b303b #c0c5ce
@@ -168,36 +161,30 @@ for_window [class="plugin-container"] floating enable
 for_window [class="Firefox"] floating enable
 for_window [class="Firefox" instance="Navigator"] floating disable
 
-# blender floating preferences
+# Blender floating.
 for_window [class="Blender" title="Blender User Preferences"] floating enable
 
-# fontforge floating toolboxes
+# Fontforge floating toolboxes.
 for_window [class="fontforge" title="Layers"] floating enable
 for_window [class="fontforge" title="Tools"] floating enable
 for_window [class="fontforge" title="Point Info"] floating enable
 for_window [class="fontforge" title="Problem explanation"] floating enable
-
-for_window [class="Wine"] floating enable
 
 assign [class="Firefox"] 2
 assign [class="Chromium"] 2
 assign [class="mpv"] 3
 assign [class="Wine"] 5
 
-for_window [class="Wine"] floating disable
-
-# focus latest urgent window
+# Focus latest urgent window.
 bindsym $mod+u [urgent="latest"] focus
 
-# toggle trackpad
+# Toggle trackpad.
 bindsym XF86TouchpadToggle exec trackpad-toggle
 
-# toggle mic mute
+# Toggle mic mute.
 bindsym XF86AudioMicMute exec --no-startup-id ponymix -t source -d alsa_input.pci-0000_00_1b.0.analog-stereo toggle
 
-# global media keys
-# send SIGUSR1 to immediately refresh i3status
-# e.g. bindsym XF86AudioMute exec ponymix toggle && pkill -SIGUSR1 i3status
+# Global media keys.
 bindsym XF86AudioMute exec --no-startup-id ponymix toggle
 bindsym XF86AudioLowerVolume exec --no-startup-id ponymix decrease 3
 bindsym XF86AudioRaiseVolume exec --no-startup-id ponymix increase 3
@@ -207,5 +194,4 @@ bindsym XF86AudioPlay exec mpc toggle
 bindsym XF86AudioNext exec mpc next
 bindsym XF86AudioPrev exec mpc prev
 
-# meh
 bindsym XF86Launch1 exec firefox
