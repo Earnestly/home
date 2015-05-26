@@ -15,6 +15,7 @@ setopt auto_cd \
     hist_verify \
     hist_append \
     prompt_subst \
+    share_history \
     extended_glob \
     rm_star_silent \
     hist_fcntl_lock \
@@ -25,12 +26,13 @@ setopt auto_cd \
     hist_ignore_space \
     hist_ignore_space \
     hist_reduce_blanks \
+    inc_append_history \
     hist_ignore_all_dups \
     interactive_comments
 
 READNULLCMD=$PAGER
 HELPDIR=/usr/share/zsh/$ZSH_VERSION/help
-HISTFILE=$XDG_CONFIG_HOME/zsh/.zsh_history
+HISTFILE=$XDG_CONFIG_HOME/zsh/.zhistory
 HISTSIZE=25000
 SAVEHIST=$HISTSIZE
 
@@ -166,19 +168,19 @@ bindkey -M vicmd 'Q' quote-word
 
 # Quick and easy note taking (I should make this into a seperate script).
 function n {
-    $EDITOR "${@[@]/#/"$HOME/docs/note/"}"
+    $EDITOR "${@[@]/#/"$HOME/doc/note/"}"
 }
-compdef "_files -W $HOME/docs/note -/" n
+compdef "_files -W $HOME/doc/note -/" n
 
 function nrm {
-    rm -v "${@[@]/#/"$HOME/docs/note/"}"
+    rm -v "${@[@]/#/"$HOME/doc/note/"}"
 }
-compdef "_files -W $HOME/docs/note -/" nrm
+compdef "_files -W $HOME/doc/note -/" nrm
 
 function nmv {
-    mv -v "${@[@]/#/"$HOME/docs/note/"}"
+    mv -v "${@[@]/#/"$HOME/doc/note/"}"
 }
-compdef "_files -W $HOME/docs/note -/" nmv
+compdef "_files -W $HOME/doc/note -/" nmv
 
 # Aliases.
 alias -g ...='../..'
