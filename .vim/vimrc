@@ -35,7 +35,6 @@ set expandtab
 
 if &t_Co > 255 || has('gui_running')
     set background=dark
-    "colorscheme gotham
 
     let base16colorspace=256
     colorscheme base16-twilight
@@ -77,9 +76,11 @@ let g:is_bash = 1
 " Use clang when checking C/C++ syntax.
 let g:syntastic_c_compiler = 'clang'
 let g:syntastic_c_compiler_options = '-std=c11'
+let g:syntastic_c_remove_include_errors = 1
 
 let g:syntastic_cpp_compiler = 'clang++'
 let g:syntastic_cpp_compiler_options = '-std=c++14'
+let g:syntastic_cpp_remove_include_errors = 1
 
 " Haskell.
 let g:syntastic_haskell_hdevtools_args = '-g-Wall'
