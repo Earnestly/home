@@ -108,7 +108,7 @@ fetch_json() { # string -> stdout
     fi
 }
 
-download_json() { # array -> disk
+parallel_fetch_json() { # array -> fork_bg
     local list=("$@")
 
     # Fire off all the curl calls as soon as possible.
@@ -229,7 +229,7 @@ process_results() { # global(stream) -> fork_bg
 mapfile -t twitch_list < <(get_user_data)
 
 if [[ -n "${twitch_list[@]}" ]]; then
-    download_json "${twitch_list[@]}"
+    parallel_fetch_json "${twitch_list[@]}"
 else
     err 'No configuration data found.'
     exit 1
