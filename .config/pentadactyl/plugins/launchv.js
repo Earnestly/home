@@ -27,7 +27,7 @@ function launchv(target){
     }
 
     // Filter certain urls to more appropriate programs
-    if(uri.match(/twitch\.tv\/.*\/[bc]\/[0-9]+/))
+    if(uri.match(/twitch\.tv\/.*\/[a-z]\/[0-9]+/))
         exec(mpv, uri);
 
     else if(uri.match(/hitbox\.tv\/video\/[0-9]+/))
