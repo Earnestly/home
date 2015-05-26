@@ -59,6 +59,17 @@ set! extensions.checkCompatibility=false
 set! plugins.click_to_play=true
 set! plugin.default.state=1
 set! media.peerconnection.enabled=false
+set! network.cookie.cookieBehavior=1
+
+" Preferences.
+set! font.name.monospace.x-western=Inconsolatazi4
+set! font.name.serif.x-western=Georgia
+set! font.minimum-size.x-western=16
+
+" Placebo or ineffectual as most delays are caused by 3rd party junk.
+set! network.http.pipelining=true
+set! network.http.pipelining.ssl=true
+set! network.http.pipelining.aggressive=true
 
 " Globally disable javascript.
 set! javascript.enabled=false
