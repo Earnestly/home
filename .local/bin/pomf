@@ -1,5 +1,5 @@
 #!/bin/bash
-# ~/.local/bin/pomf <file [file [...]]>
+# ~/.local/bin/pomf file [file [...]]
 # Requires: jshon curl
 
 # Generate the form arguments for curl.
@@ -7,21 +7,22 @@ for f in "$@"; do
     if [[ -e "$f" ]]; then
         curl_args+=(-F "files[]=@$f")
     else
-        printf >&2 '%s: File does not exist\n' "$f"
+        printf '%s: File does not exist.\n' "$f" >&2
     fi
 done
 
 # Make sure we have something to upload.
-if [[ -z "$curl_args" ]]; then
-    printf >&2 'Nothing found to upload\n'
+if [[ ! "$curl_args" ]]; then
+    printf 'Nothing found to upload.\n' >&2
     exit 1
 fi
 
-upload=$(curl -#S "${curl_args[@]}" 'http://pomf.se/upload.php?output=gyazo')
+upload=$(curl -#S "${curl_args[@]}" http://pomf.se/upload.php)
+geturls=$(jshon -e files -a -e name -upe url -u <<< "$upload")
 
 while {
     read -r name
     read -r url
 } do
-    printf '%s\n' "$url"
-done <<< "$upload"
+    printf '%s: http://a.pomf.se/%s\n' "$name" "$url"
+done <<< "$geturls"
