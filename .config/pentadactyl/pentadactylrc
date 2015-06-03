@@ -51,6 +51,11 @@ set editor='termite -e "vim +<line> <file>"'
 au fullscreen on set go-=s
 au fullscreen off set go+=s
 
+" Fix ublock's popup not being displayed.
+" * https://github.com/chrisaljoudi/uBlock/issues/720
+" * https://github.com/chrisaljoudi/uBlock/issues/549
+style -name ublick * #nav-bar * {visibility: visible;}
+
 " Style.
 colorscheme hints
 
