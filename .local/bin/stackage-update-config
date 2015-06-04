@@ -1,7 +1,7 @@
 #!/bin/sh
 # stackage-update-config
 # Requires: curl, ed
-# This script exists because cabal and cabal-install is possibly one of the
+# This script exists because cabal and cabal-install are possibly some of the
 # worst tools I've ever used which is all the more bitter given such an elegant
 # language.
 
@@ -14,7 +14,7 @@ fetch() {
     curl -sLo "$1" 'http://www.stackage.org/nightly/cabal.config?global=true'
 
     # Remove useless comments and enable the repo.  This is a terrible hack for
-    # assuming the file will only ever have fur comments before the remote-repo
+    # assuming the file will have four comments before the remote-repo
     # declaration.
     sed -i '1,4d; s/^-- //' "$1"
 }
