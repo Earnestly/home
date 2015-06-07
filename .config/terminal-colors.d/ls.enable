@@ -5,6 +5,7 @@ TERM rxvt-unicode-256color
 TERM screen-256color
 TERM xterm-256color
 TERM xterm-termite
+TERM screen-256color-tmux
 
 #NORMAL                0
 #FILE                  0
@@ -14,7 +15,7 @@ DIR                    38;5;12
 #LINK                  1;36
 LINK                   38;5;14
 #LINK                  target # not supported by bash 4.3 colored-stats
-#MULTIHARDLINK         0
+MULTIHARDLINK          31
 FIFO                   33;40
 SOCK                   1;35
 DOOR                   1;35
