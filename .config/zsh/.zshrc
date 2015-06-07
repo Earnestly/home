@@ -11,7 +11,7 @@ zle -N zle-keymap-select
 
 # Shell options.
 setopt auto_cd \
-    dot_glob \
+    glob_dots \
     hist_verify \
     hist_append \
     prompt_subst \

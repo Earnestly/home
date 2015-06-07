@@ -1,10 +1,10 @@
 # XDG_CONFIG_HOME/zsh/.zprofile
 
-export PATH=$HOME/.local/bin:$HOME/.cabal/bin:$PATH
-
 export XDG_CACHE_HOME=$HOME/.cache
 export XDG_CONFIG_HOME=$HOME/.config
 export XDG_DATA_HOME=$HOME/.local/share
+
+export PATH=$HOME/.local/bin:$PATH
 
 export SLRNHOME=$XDG_CONFIG_HOME/slrn
 
@@ -26,13 +26,16 @@ export WEECHAT_HOME=$XDG_CONFIG_HOME/weechat
 export PERL_CPANM_HOME=$XDG_CACHE_HOME/cpanm
 export GIMP2_DIRECTORY=$XDG_CONFIG_HOME/gimp
 export ELINKS_CONFDIR=$XDG_CONFIG_HOME/elinks
+export CABAL_CONFIG=$XDG_DATA_HOME/cabal/config
 export HTTPIE_CONFIG_DIR=$XDG_CONFIG_HOME/httpie
+export LESSHISTFILE=$XDG_CACHE_HOME/less/history
 export XCOMPOSEFILE=$XDG_CONFIG_HOME/x11/xcompose
 export GUILE_HISTORY=$XDG_CONFIG_HOME/guile/history
 export VIMPERATOR_RUNTIME=$XDG_CONFIG_HOME/vimperator
 export PENTADACTYL_RUNTIME=$XDG_CONFIG_HOME/pentadactyl
 export NOTMUCH_CONFIG=$XDG_CONFIG_HOME/notmuch/notmuchrc
 export GTK2_RC_FILES=$XDG_CONFIG_HOME/gtk-2.0/settings.ini
+export TERMINFO_DIRS=$XDG_DATA_HOME/terminfo:/usr/share/terminfo
 
 
 # Perl libraries.
@@ -55,7 +58,6 @@ export SUDO_EDITOR=rvim
 export LESS=-RX
 
 export PAGER=less
-export LESSHISTFILE=$XDG_CACHE_HOME/less/history
 
 export BROWSER=firefox
 export TERMINAL=termite
