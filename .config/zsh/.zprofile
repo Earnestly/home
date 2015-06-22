@@ -36,6 +36,7 @@ export PENTADACTYL_RUNTIME=$XDG_CONFIG_HOME/pentadactyl
 export NOTMUCH_CONFIG=$XDG_CONFIG_HOME/notmuch/notmuchrc
 export GTK2_RC_FILES=$XDG_CONFIG_HOME/gtk-2.0/settings.ini
 export TERMINFO_DIRS=$XDG_DATA_HOME/terminfo:/usr/share/terminfo
+export UNCRUSTIFY_CONFIG=$XDG_CONFIG_HOME/uncrustify/uncrustify.cfg
 
 
 # Perl libraries.
