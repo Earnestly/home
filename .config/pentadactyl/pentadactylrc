@@ -71,13 +71,27 @@ set! font.name.monospace.x-western=Inconsolatazi4
 set! font.name.serif.x-western=Georgia
 set! font.minimum-size.x-western=16
 
+" Disable webfonts, a waste of bandwidth and look worse as they strip hints.
+set! browser.display.use_document_fonts=0
+
 " Placebo or ineffectual as most delays are caused by 3rd party junk.
 set! network.http.pipelining=true
 set! network.http.pipelining.ssl=true
 set! network.http.pipelining.aggressive=true
 
+" <https://wiki.mozilla.org/Electrolysis>
+set! browser.tabs.remote.autostart=true
+set! dom.ipc.processCount=4
+
+" Force hardware acceleration.
+set! layers.acceleration.force-enabled=true
+
+" Misc.
+set! layers.enable-tiles=true
+
 " Globally disable javascript.
 set! javascript.enabled=false
+set! privacy.trackingprotection.enabled=true
 
 " Require websites preform safe ssl negotiation.
 set! security.ssl.require_safe_negotiation=true
