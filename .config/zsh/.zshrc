@@ -199,8 +199,8 @@ alias chmod='chmod -c --preserve-root'
 alias chown='chown -c --preserve-root'
 alias chgrp='chgrp -c --preserve-root'
 
-alias ls='ls --color=auto --group-directories-first -AhXF'
-alias ll='ls --color=auto --group-directories-first -AlhXF'
+alias ls='ls --color=auto --show-control-chars --group-directories-first -AhXF'
+alias ll='ls --color=auto --show-control-chars --group-directories-first -AlhXF'
 
 alias dmesg=dmesg -exL
 alias weechat='dtach-weechat'
