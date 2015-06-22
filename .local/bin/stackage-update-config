@@ -20,7 +20,7 @@ fetch() {
 }
 
 combine_config() {
-    printf 'g/^remote-repo:/d\ng/^constraint:/d\n$ r %s\nw\n' "$2" | ed -s "$1"
+    printf 'g/^remote-repo: stackage/d\ng/^constraint:/d\n$ r %s\nw\n' "$2" | ed -s "$1"
 }
 
 if fetch "$stackage_config"; then

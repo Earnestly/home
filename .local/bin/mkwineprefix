@@ -18,7 +18,7 @@ Options:
     -h       This help message
 
 NAME:
-    The name of the prefix.
+    The path to the prefix, if not absolute then prepend pwd.
 EOF
 }
 
