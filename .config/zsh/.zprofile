@@ -38,6 +38,9 @@ export GTK2_RC_FILES=$XDG_CONFIG_HOME/gtk-2.0/settings.ini
 export TERMINFO_DIRS=$XDG_DATA_HOME/terminfo:/usr/share/terminfo
 export UNCRUSTIFY_CONFIG=$XDG_CONFIG_HOME/uncrustify/uncrustify.cfg
 
+# Chicken libraries/eggs.
+export CHICKEN_REPOSITORY=~/.local/lib/chicken
+export CHICKEN_INCLUDE_PATH=~/.local/lib/chicken
 
 # Perl libraries.
 export PERL5LIB=$HOME/.local/lib/perl5
