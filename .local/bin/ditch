@@ -51,17 +51,21 @@ err() { # strings -> stderr
 chunk_by() { # integer, array -> stdout
     local chunk="$1"
     local list=("${@:2}")
+    local tmp
 
     while ((${#list[@]})); do
-        printf -- '%s,' "${list[@]:0:$chunk}"
+        # NOTE: There is no way to get the length of an offset in the same
+        #       operation so temporary storage is needed.
+        tmp=("${list[@]:0:chunk}")
+        printf -- '%s,' "${tmp[@]}"
         # Assuming chunking by 2, the following occurs on the array [1 2 3 4 5]
         # 1st loop: [{ 1 2 } 3 4 5]  => 1,2,&limit=2
         # 2nd loop: [{ 3 4 } 5]      => 3,4,&limit=2
         # 3rd loop: [{ 5 }]          => 5,&limit=1
 
-        puts '&limit=%d' "${#list[@]:0:$chunk}"
+        puts '&limit=%d' "${#tmp[@]}"
 
-        list=("${list[@]:$chunk}")
+        list=("${list[@]:chunk}")
         # 1st loop: [ 1 2 { 3 4 5 }] => list = [3 4 5]
         # 2nd loop: [ 3 4 { 5 }]     => list = [5]
         # 3rd loop: [ 5 { }]         => done
@@ -163,15 +167,19 @@ get_user_picks() { # global(stream, menu, bemenu_opts) -> command -> stdout
 play_stream() { # string, string -> either(command, stderr)
     local url="$1"
     local title="$2"
-    local err streamer_opts
+    local err options
 
-    streamer_opts=(--quiet)
+    shopt -s extglob
+    # Strip consecutive spaces and replace single quotes.
+    title="${title//+( )/ }" title="${title//\'/’}"
+
+    options=(--quiet)
 
     if has mpv; then
-        streamer_opts+=(--player-args "--title='${title//\'/’}' {filename}")
+        options+=(--player-args "--force-media-title='$title' {filename}")
     fi
 
-    if ! err="$(livestreamer "${streamer_opts[@]}" "$url")"; then
+    if ! err="$(livestreamer "${options[@]}" "$url")"; then
         err '%s' "${err:-livestreamer}"
     fi
 }
@@ -214,7 +222,7 @@ process_results() { # global(stream) -> fork_bg
         [[ -z "$title" ]] && title="$streamer"
 
         # Check if the selection actually matches a stream.
-        if [[ -n "${stream[$streamer]}" ]]; then
+        if [[ "${stream[$streamer]}" ]]; then
             url="${stream[$streamer]}"
         else
             err '%s: Cannot find associated stream.' "$streamer"
@@ -228,7 +236,7 @@ process_results() { # global(stream) -> fork_bg
 # Main routine.
 mapfile -t twitch_list < <(get_user_data)
 
-if [[ -n "${twitch_list[@]}" ]]; then
+if [[ "${twitch_list[@]}" ]]; then
     parallel_fetch_json "${twitch_list[@]}"
 else
     err 'No configuration data found.'
@@ -240,6 +248,6 @@ declare -A stream menu
 populate_arrays < <(parse_json)
 
 results="$(get_user_picks)"
-if [[ -n "$results" ]]; then
+if [[ "$results" ]]; then
     process_results <<< "$results"
 fi
