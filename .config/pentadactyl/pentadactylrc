@@ -60,45 +60,55 @@ style -name ublick * #nav-bar * {visibility: visible;}
 colorscheme hints
 
 " Change some default about:configs.
+set! browser.search.defaultenginename=DDG Bangs
 set! extensions.checkCompatibility=false
-set! plugins.click_to_play=true
-set! plugin.default.state=1
 set! media.peerconnection.enabled=false
 set! network.cookie.cookieBehavior=1
+set! plugins.click_to_play=true
+set! general.smoothScroll=false
+set! plugin.default.state=1
 
-" Preferences.
+" Look at our precision designed curves, lol.  No.
+set! browser.devedition.theme.enabled=true
+
+" Preferences, mostly added for reproducability from a single configuration.
 set! font.name.monospace.x-western=Inconsolatazi4
 set! font.name.serif.x-western=Georgia
 set! font.minimum-size.x-western=16
 
-" Disable webfonts, a waste of bandwidth and look worse as they strip hints.
-set! browser.display.use_document_fonts=0
+" Disable all kinds of additional crap that leaks private data.
+" Straight from the school of enumerating badness.
+set! browser.safebrowsing.downloads.enabled=false
+set! browser.safebrowsing.malware.enabled=false
+set! browser.safebrowsing.enabled=false
 
-" Placebo or ineffectual as most delays are caused by 3rd party junk.
-set! network.http.pipelining=true
-set! network.http.pipelining.ssl=true
-set! network.http.pipelining.aggressive=true
+set! browser.search.suggest.enabled=false
+set! browser.pocket.enabled=false
+set! geo.enabled=false
 
-" <https://wiki.mozilla.org/Electrolysis>
-set! browser.tabs.remote.autostart=true
-set! dom.ipc.processCount=4
+" Firefox can honestly go to hell.
+set! datareporting.healthreport.service.enabled=false
+set! datareporting.healthreport.uploadEnabled=false
+set! toolkit.telemetry.enabled=false
 
-" Force hardware acceleration.
-set! layers.acceleration.force-enabled=true
+" Fuck EME and the scum suckers that supported getting this trash into the
+" standard.
+set! media.gmp-eme-adobe.enabled=false
+set! media.eme.enabled=false
 
-" Misc.
-set! layers.enable-tiles=true
+" Disable "Firefox Hello" garbage.
+set! loop.enabled=false
+
+" Disable WebRTC crap.
+set! media.peerconnection.enabled=false
 
 " Globally disable javascript.
-set! javascript.enabled=false
 set! privacy.trackingprotection.enabled=true
+set! javascript.enabled=false
 
 " Require websites preform safe ssl negotiation.
-set! security.ssl.require_safe_negotiation=true
 set! security.ssl.treat_unsafe_negotiation_as_broken=true
-
-" Straight from the school of enumerating badness.
-set! browser.safebrowsing.malware.enabled=false
+set! security.ssl.require_safe_negotiation=true
 
 " Try in futility to disable HTML5 video/audio. 
 " Note: Autoplay disable doesn't actually prevent autoplay because that would
@@ -106,6 +116,6 @@ set! browser.safebrowsing.malware.enabled=false
 set! media.autoplay.enabled=false
 set! media.gstreamer.enabled=false
 set! media.webm.enabled=false
-set! media.ogg.enabled=false
 set! media.opus.enabled=false
 set! media.wave.enabled=false
+set! media.ogg.enabled=false
