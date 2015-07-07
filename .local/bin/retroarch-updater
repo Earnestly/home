@@ -19,7 +19,7 @@ check() {
 
     # git fetch will return 0 even if nothing was fetched meaning we need to
     # check regardless, meh.
-    printf -- '\e[1;33m%s\e[0m: Updating...\r' "$repo"
+    printf -- '\e[1;33m %s\e[0m: Updating...\r' "$repo"
     git fetch 2> /dev/null
 
     if [[ "$(git rev-parse HEAD)" != "$(git rev-parse @{upstream})" ]]; then
@@ -31,7 +31,7 @@ check() {
             return
         fi
     else
-        printf -- '\e[1;32m%s\e[0m: Repository up to date.\n' "$repo"
+        printf -- '\e[1;32m %s\e[0m: Repository up to date.\n' "$repo"
     fi
 
     update "$core"
@@ -72,6 +72,16 @@ build() {
     install "$core"
 }
 
+apply_hacks() {
+    local core="$1"
+
+    case $core in
+        ppsspp_libretro.so)
+            git submodule update --init lang native ext/armips
+            ;;
+    esac
+}
+
 install() {
     # Global: core_directory, build_directory
     local core="$1"
@@ -86,16 +96,6 @@ install() {
         printf -- '    core_directory=%s\n' "$core_directory"
         printf -- '    build_directory=%s\n' "$build_directory"
     fi
-}
-
-apply_hacks() {
-    local core="$1"
-
-    case $core in
-        ppsspp_libretro.so)
-            git submodule update --init lang native ext/armips
-            ;;
-    esac
 }
 
 process_core() {
