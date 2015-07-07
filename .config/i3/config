@@ -170,6 +170,7 @@ for_window [class="fontforge" title="Tools"] floating enable
 for_window [class="fontforge" title="Point Info"] floating enable
 for_window [class="fontforge" title="Problem explanation"] floating enable
 
+assign [class="qutebrowser"] 2
 assign [class="Firefox"] 2
 assign [class="Chromium"] 2
 assign [class="mpv"] 3
