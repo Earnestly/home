@@ -36,6 +36,7 @@ handle_youtube() {
     output="$(jshon "${jshon_opts[@]}" <<< "$json")"
 
     read -r title <<< "$output"
+    title="${title//\//}"
 
     mapfile -s 1 -t ids <<< "$output"
 
