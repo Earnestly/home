@@ -63,6 +63,7 @@ colorscheme hints
 set! browser.search.defaultenginename=DDG Bangs
 set! extensions.checkCompatibility=false
 set! media.peerconnection.enabled=false
+set! middlemouse.contentLoadURL=false
 set! network.cookie.cookieBehavior=1
 set! plugins.click_to_play=true
 set! general.smoothScroll=false
@@ -90,6 +91,7 @@ set! geo.enabled=false
 set! datareporting.healthreport.service.enabled=false
 set! datareporting.healthreport.uploadEnabled=false
 set! toolkit.telemetry.enabled=false
+set! browser.selfsupport.url=""
 
 " Fuck EME and the scum suckers that supported getting this trash into the
 " standard.
