@@ -1,7 +1,18 @@
 " ~/.vimrc
 
 set nocompatible
-execute pathogen#infect()
+
+call plug#begin('~/.vim/packages')
+Plug 'miekg/rfc'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-commentary'
+Plug 'scrooloose/syntastic'
+Plug '~/.vim/packages/vim-draft'
+Plug '~/.vim/packages/vim-promela'
+Plug 'Shougo/vimproc.vim', {'do': 'make'}
+Plug 'dleonard0/pony-vim-syntax', {'for': 'pony'}
+Plug 'octol/vim-cpp-enhanced-highlight', {'for': ['c', 'cpp']}
+call plug#end()
 
 " Keys.
 map Q q:
@@ -18,7 +29,9 @@ set undofile
 set wildmenu
 set linebreak
 set scrolloff=1
+set encoding=utf-8
 set cinoptions+=t0
+set formatoptions+=j
 set wildmode=longest,list
 set backspace=indent,eol,start
 
@@ -37,7 +50,7 @@ if &t_Co > 255 || has('gui_running')
     set background=dark
 
     let base16colorspace=256
-    colorscheme base16-twilight
+    colorscheme base16-ocean
 
     "let g:zenburn_high_Contrast=1
     "colorscheme zenburn
