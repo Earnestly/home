@@ -8,17 +8,17 @@
 
 usage() {
     cat <<EOF
-Usage: mkwineprefix [options] NAME
+Usage: mkwineprefix [options] PREFIX
 
 Options:
-    -a ARCH  Architecture, 32 or 64 (Default: 32)
-    -m       Enable Mono installation
-    -g       Enable Gecko installation
-    -r       Remap z: to /mnt instead of /
-    -h       This help message
+    -a ARCH  Architecture, 32 or 64. (Default: 32)
+    -m       Enable Mono installation.
+    -g       Enable Gecko installation.
+    -r       Remap z: to /mnt instead of /.
+    -h       This help message.
 
-NAME:
-    The path to the prefix, if not absolute then prepend pwd.
+PREFIX:
+    The path to the prefix, pwd prepended if not absolute.
 EOF
 }
 
@@ -44,53 +44,15 @@ while (($#)); do
 done
 
 
-# Make sure we get a valid architecture, if we don't assume 32
-if [[ -z "$arch" ]]; then
+# Make sure we get a valid architecture, if we don't assume 32.
+if [[ ! "$arch" ]]; then
     arch=32
 fi
 
-# If arch was set to something make sure it's valid for our needs
+# If arch was set to something make sure it's valid.
 if [[ "$arch" != @(32|64) ]]; then
-    printf 'No valid architectures found, can only be 32 or 64\n' >&2
+    printf 'No valid architectures found, can only be 32 or 64.\n' >&2
     exit 1
-fi
-
-# Check that we got something for the prefix
-if [[ -n "$prefix" ]]; then
-
-    # Make sure it's an absolute path by prepending PWD
-    if [[ "${prefix:0:1}" != "/" ]]; then
-        export WINEPREFIX="$PWD"/"$prefix"
-    else
-        export WINEPREFIX="$prefix"
-    fi
-else
-    printf 'No prefix was found, bailing.\n' >&2
-    exit 1
-fi
-
-# Check if the prefix already exists, is this even necessary?
-if [[ -d "$WINEPREFIX"/dosdevices ]]; then
-    printf 'Found a dosdevices directory\n' >&2
-    printf 'The prefix probably already exists\n' >&2
-    exit 1
-fi
-
-# Enable both if set by unsetting overrides.
-if ((with_mono & with_gecko)); then
-    export WINEDLLOVERRIDES="winemenubuilder.exe=d"
-
-# Just enable mono.
-elif ((with_mono)); then
-    export WINEDLLOVERRIDES="winemenubuilder.exe,mshtml=d"
-
-# Just enable gecko.
-elif ((with_gecko)); then
-    export WINEDLLOVERRIDES="winemenubuilder.exe,mscoree=d"
-
-# Default disable both.
-else
-    export WINEDLLOVERRIDES="winemenubuilder.exe,mscoree,mshtml=d"
 fi
 
 if ((arch == 32)); then
@@ -99,15 +61,47 @@ else
     export WINEARCH=win64
 fi
 
+# Check that we got something for the prefix.
+if [[ ! "$prefix" ]]; then
+    printf 'No prefix was found, bailing.\n' >&2
+    exit 1
+fi
+
+# Make sure it's an absolute path by prepending PWD.
+if [[ "${prefix:0:1}" != "/" ]]; then
+    export WINEPREFIX="$PWD"/"$prefix"
+else
+    export WINEPREFIX="$prefix"
+fi
+
+# Check if the prefix already exists, is this even necessary?
+if [[ -d "$WINEPREFIX"/dosdevices ]]; then
+    printf 'Found a dosdevices directory.  The prefix probably already exists.\n' >&2
+    exit 1
+fi
+
+# Enable both if set by unsetting overrides.
+if ((with_mono & with_gecko)); then
+    export WINEDLLOVERRIDES="winemenubuilder.exe=d"
+elif ((with_mono)); then
+    export WINEDLLOVERRIDES="winemenubuilder.exe,mshtml=d"
+elif ((with_gecko)); then
+    export WINEDLLOVERRIDES="winemenubuilder.exe,mscoree=d"
+else
+    export WINEDLLOVERRIDES="winemenubuilder.exe,mscoree,mshtml=d"
+fi
+
 # Initialise the prefix.
 wineboot -i
 
-# Remap Z:
+# Remap Z: which limits what wine can see, the default / gives access to
+# everything the user does.  Selecting /mnt as an alternative due to most isos
+# being mounted there for installation purposes.
 if ((remap_z)); then
     if [[ -d "$WINEPREFIX"/dosdevices/z: ]]; then
         rm -r "$WINEPREFIX"/dosdevices/z:
 
-        # Recreate it and point to /mnt instead of /
+        # Recreate it and point to /mnt instead of /.
         ln -sf /mnt "$WINEPREFIX"/dosdevices/z:
     fi
 fi
@@ -120,6 +114,9 @@ for dir in Desktop 'My Documents' 'My Music' 'My Pictures' 'My Videos'; do
     rm "$WINEPREFIX"/drive_c/users/"$USER"/"$dir"
     mkdir -p "$WINEPREFIX"/drive_c/users/"$USER"/"$dir"
 done
+
+# Return a useful string users may copy for this prefix.
+printf 'export %s\n' "$WINEPREFIX"
 
 # cat > "$WINEPREFIX"/colors.reg <<EOF
 # REGEDIT4
@@ -134,7 +131,7 @@ done
 # [HKEY_CURRENT_USER\Software\Wine\Explorer]
 # "Desktop"="Default"
 # [HKEY_CURRENT_USER\Software\Wine\Explorer\Desktops]
-# "Default"="800x600"
+# "Default"="1024x786"
 # EOF
 
 # wine regedit /S "$WINEPREFIX"/colors.reg
