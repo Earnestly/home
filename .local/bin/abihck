@@ -1,0 +1,124 @@
+#!/bin/bash
+
+puts() {
+    printf '%s\n' "$@"
+}
+
+err() {
+    puts "$@" >&2
+    exit 1
+}
+
+replicate_install() {
+    local pname="$1"
+    local version="$2"
+
+    bsdtar -xvf /var/cache/pacman/pkg/"$pname"-"$version"-x86_64.pkg.tar.xz -C abi/"$pname"/"$version"
+}
+
+print_version() {
+    local pname="$1"
+    expac '%v' "$pname" || err "No version found for $pname."
+}
+
+make_relpath() {
+    local path="$1"
+    mkdir -p "$path"
+}
+
+check_package_exists() {
+    local pname="$1"
+    pacman -T "$pname" || err 'No such package found.'
+}
+
+dump_version() {
+    local -a options
+    local pname="$1"
+    local version="$2"
+
+    options=(
+        -lib "$pname"
+        -dump abi/"$pname".xml -vnum "$version"
+        -relpath abi/"$pname"/"$version"/usr
+        -dump-path abi/"$pname"-"$version".abi
+    )
+
+    if ! abi-compliance-checker "${options[@]}"; then
+        err 'Failed to dump first version.'
+    fi
+}
+
+create_abi_dump() {
+    local pname="$1"
+    local version="$2"
+
+    replicate_install "$pname" "$version"
+    dump_version "$pname" "$version"
+}
+
+update_system() {
+    set +e
+    if ((makepkg)); then
+        makepkg -rscf
+        repose -fvr "$HOME"/build/repo earnestly
+    fi
+    sudo pacman -Syu
+    set -e
+}
+
+compare_abi_dumps() {
+    local -a options
+    local pname="$1"
+    local oversion="$2"
+    local nversion="$3"
+
+    options=(
+        -lib "$pname"
+        -relpath1 abi/"$pname"/"$oversion"/usr
+        -relpath2 abi/"$pname"/"$nversion"/usr
+        -old abi/"$pname"-"$oversion".abi
+        -new abi/"$pname"-"$nversion".abi
+        -report-path abi/"$oversion"_to_"$nversion".html
+    )
+
+    if ! abi-compliance-checker "${options[@]}"; then
+        err 'Failed to compare abi.'
+    fi
+}
+
+if (($# == 0)); then
+    err 'See -h'
+fi
+
+while (($#)); do
+    case $1 in
+        -m) makepkg=1 ;;
+        -h) puts 'Usage: abihck [-m] <package_name>'
+            puts '       -m  Use makepkg and repose update before system update.'
+            exit ;;
+        *)  pname="$1"
+    esac
+    shift
+done
+
+check_package_exists "$pname"
+
+if [[ ! -f abi/"$pname".xml ]]; then
+    err 'No descriptor found.'
+fi
+
+old_version="$(print_version "$pname")"
+make_relpath abi/"$pname"/"$old_version"
+create_abi_dump "$pname" "$old_version"
+
+update_system
+
+new_version="$(print_version "$pname")"
+if [[ $new_version == $old_version ]]; then
+    err 'Versions are the same?'
+fi
+
+make_relpath abi/"$pname"/"$new_version"
+create_abi_dump "$pname" "$new_version"
+
+compare_abi_dumps "$pname" "$old_version" "$new_version"
