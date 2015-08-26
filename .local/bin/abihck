@@ -37,10 +37,12 @@ dump_version() {
     local version="$2"
 
     options=(
+        -xml
         -lib "$pname"
-        -dump abi/"$pname".xml -vnum "$version"
         -relpath abi/"$pname"/"$version"/usr
+        -dump abi/"$pname".xml -vnum "$version"
         -dump-path abi/"$pname"-"$version".abi
+        #-extra-dump # What does this do?  All symbols?  Wonder what it means..
     )
 
     if ! abi-compliance-checker "${options[@]}"; then
@@ -74,11 +76,14 @@ compare_abi_dumps() {
 
     options=(
         -lib "$pname"
-        -relpath1 abi/"$pname"/"$oversion"/usr
-        -relpath2 abi/"$pname"/"$nversion"/usr
         -old abi/"$pname"-"$oversion".abi
         -new abi/"$pname"-"$nversion".abi
-        -report-path abi/"$oversion"_to_"$nversion".html
+        -relpath1 abi/"$pname"/"$oversion"/usr
+        -relpath2 abi/"$pname"/"$nversion"/usr
+        -log-path abi/logs
+        -log1-path abi/logs/"$oversion".txt
+        -log2-path abi/logs/"$nversion".txt
+        -report-path abi/report/"$oversion"_to_"$nversion".html
     )
 
     if ! abi-compliance-checker "${options[@]}"; then
