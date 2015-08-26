@@ -1,4 +1,8 @@
 #!/bin/bash
+# abihck - Generates abi/api compliance report between two pacman packages
+#          before and after a system update.
+
+# Requires: abi-compliance-tool, ctags, expac
 
 puts() {
     printf '%s\n' "$@"
@@ -13,7 +17,9 @@ replicate_install() {
     local pname="$1"
     local version="$2"
 
-    bsdtar -xvf /var/cache/pacman/pkg/"$pname"-"$version"-x86_64.pkg.tar.xz -C abi/"$pname"/"$version"
+    if ! bsdtar -xvf /var/cache/pacman/pkg/"$pname"-"$version"-"$arch".pkg.tar.xz -C abi/"$pname"/"$version"; then
+        err 'Extraction failed.'
+    fi
 }
 
 print_version() {
@@ -39,6 +45,7 @@ dump_version() {
     options=(
         -xml
         -lib "$pname"
+        -log-path abi/logs/"$version"/dump_log.txt
         -relpath abi/"$pname"/"$version"/usr
         -dump abi/"$pname".xml -vnum "$version"
         -dump-path abi/"$pname"-"$version".abi
@@ -61,7 +68,11 @@ create_abi_dump() {
 update_system() {
     set +e
     if ((makepkg)); then
-        makepkg -rscf
+        if [[ -f makepkg."$pname" ]]; then
+            MAKEPKG_CONF=makepkg."$pname" makepkg -rscf
+        else
+            makepkg -rscf
+        fi
         repose -fvr "$HOME"/build/repo earnestly
     fi
     sudo pacman -Syu
@@ -81,13 +92,29 @@ compare_abi_dumps() {
         -relpath1 abi/"$pname"/"$oversion"/usr
         -relpath2 abi/"$pname"/"$nversion"/usr
         -log-path abi/logs
-        -log1-path abi/logs/"$oversion".txt
-        -log2-path abi/logs/"$nversion".txt
-        -report-path abi/report/"$oversion"_to_"$nversion".html
+        -log1-path abi/logs/"$oversion"/log.txt
+        -log2-path abi/logs/"$nversion"/log.txt
+        -report-path abi/report_"$oversion"_to_"$nversion"/report.html
     )
 
     if ! abi-compliance-checker "${options[@]}"; then
         err 'Failed to compare abi.'
+    fi
+}
+
+create_basic_descriptor() {
+    local pname="$1"
+
+    if [[ ! -f abi/"$pname".xml ]]; then
+        cat <<EOF > abi/"$pname".xml
+<headers>
+    {RELPATH}/include/
+</headers>
+
+<libs>
+    {RELPATH}/lib/
+</libs>
+EOF
     fi
 }
 
@@ -98,19 +125,23 @@ fi
 while (($#)); do
     case $1 in
         -m) makepkg=1 ;;
-        -h) puts 'Usage: abihck [-m] <package_name>'
+        -a) shift; arch="$1" ;;
+        -h) puts 'Usage: abihck [-m] [-a arch] <package_name>'
             puts '       -m  Use makepkg and repose update before system update.'
+            puts '       -a  Select architecture: i686, x86_64 or any.  Defaults to x86_64.'
             exit ;;
         *)  pname="$1"
     esac
     shift
 done
 
+if [[ ! "$arch" ]]; then
+    arch=x86_64
+fi
+
 check_package_exists "$pname"
 
-if [[ ! -f abi/"$pname".xml ]]; then
-    err 'No descriptor found.'
-fi
+create_basic_descriptor "$pname"
 
 old_version="$(print_version "$pname")"
 make_relpath abi/"$pname"/"$old_version"
