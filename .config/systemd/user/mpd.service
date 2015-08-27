@@ -7,7 +7,7 @@ Description=Music Player Daemon
 Type=forking
 Environment=PULSE_PROP=application.icon_name=sound
 PIDFile=%h/.config/mpd/mpd.pid
-ExecStart=/usr/bin/mpd --verbose
+ExecStart=/usr/bin/mpd
 
 [Install]
 WantedBy=default.target
