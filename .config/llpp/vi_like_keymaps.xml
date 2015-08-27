@@ -7,6 +7,8 @@
               auto-scroll-step='12'
               horizontal-scroll-step='24'
               case-insensitive-search='true'
+              horizontal-scrollbar-visible='false'
+              vertical-scrollbar-visible='false'
               uri-launcher='$BROWSER &quot;%s&quot;'
               path-launcher='$TERMINAL &quot;%s&quot;'>
 
