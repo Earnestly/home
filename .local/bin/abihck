@@ -2,7 +2,7 @@
 # abihck - Generates abi/api compliance report between two pacman packages
 #          before and after a system update.
 
-# Requires: abi-compliance-tool, ctags, expac
+# Requires: abi-compliance-checker, ctags, expac
 
 puts() {
     printf '%s\n' "$@"
@@ -141,12 +141,10 @@ fi
 
 check_package_exists "$pname"
 
-create_basic_descriptor "$pname"
-
 old_version="$(print_version "$pname")"
 make_relpath abi/"$pname"/"$old_version"
+create_basic_descriptor "$pname"
 create_abi_dump "$pname" "$old_version"
-
 update_system
 
 new_version="$(print_version "$pname")"
@@ -156,5 +154,4 @@ fi
 
 make_relpath abi/"$pname"/"$new_version"
 create_abi_dump "$pname" "$new_version"
-
 compare_abi_dumps "$pname" "$old_version" "$new_version"
