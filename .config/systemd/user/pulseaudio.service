@@ -4,11 +4,9 @@
 Description=PulseAudio Server
 
 [Service]
+Restart=on-failure
 ExecStart=/usr/bin/pulseaudio
 ExecStop=/usr/bin/pulseaudio --kill
-
-BusName=org.pulseaudio.Server
-Restart=on-failure
 
 [Install]
 WantedBy=default.target
