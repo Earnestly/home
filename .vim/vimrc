@@ -7,6 +7,7 @@ Plug 'miekg/rfc'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
 Plug 'scrooloose/syntastic'
+Plug '~/.vim/packages/vim-ktap'
 Plug '~/.vim/packages/vim-draft'
 Plug '~/.vim/packages/vim-promela'
 Plug 'Shougo/vimproc.vim', {'do': 'make'}
