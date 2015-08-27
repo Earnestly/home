@@ -129,6 +129,9 @@ mode "MPD CONTROL" {
     bindsym r exec --no-startup-id mpc repeat && mpc single
     bindsym equal exec --no-startup-id mpc volume +3
     bindsym minus exec --no-startup-id mpc volume -3
+    bindsym XF86AudioMute exec --no-startup-id ponymix toggle
+    bindsym XF86AudioLowerVolume exec --no-startup-id mpc volume -3
+    bindsym XF86AudioRaiseVolume exec --no-startup-id mpc volume +3
 
     bindsym q mode "default"
     bindsym Escape mode "default"
