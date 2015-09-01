@@ -1,0 +1,35 @@
+#!/bin/bash
+
+set +e
+repo=$1
+
+usage() {
+    printf 'Usage: repo-cycle-detector repo\n' >&2
+}
+
+generate() {
+    local repo=$1
+    expac -S '%n:%E' -l ':' < <(pacman -Sql "$repo")
+}
+
+parse() {
+    # We assume a package name cannot contain this FS.
+    awk -F : '{ 
+        p = $1
+
+        # If we find that a package contains no dependency, make it a
+        # dependency of itself to provide tsort a complete graph.
+        if($2 == "")
+            $2 = $1
+       
+        for(i = 1; i <= NF; ++i)
+            printf "%s %s\n", p, $NF
+    }'
+}
+
+if (($# == 0)); then
+    usage
+    exit 1
+fi
+
+generate "$repo" | parse | uniq | tsort > /dev/null
