@@ -5,7 +5,7 @@
 # fi
 
 # A better unclutter.
-hhpc -i 3 &
+#hhpc -i 3 &
 
 # Wallpaper.
 #display -window root -resize '1366x768!' ~/.local/share/wall &
