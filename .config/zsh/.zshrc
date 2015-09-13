@@ -212,6 +212,7 @@ alias k='rlwrap k'
 alias i="curl -F 'f:1=<-' ix.io"
 alias s="curl -F 'sprunge=<-' sprunge.us"
 alias p="curl -F 'c=@-' https://ptpb.pw"
+alias z="curl -F 'file=@-' https://0x0.st"
 alias xc='xclip -o | i'
 
 # XXX force XDG_CONFIG_HOME where possible.
