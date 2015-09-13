@@ -23,16 +23,16 @@ EOF
 }
 
 # We need at least one argument.
-if (($# == 0)); then
+if (($#)); then
     usage
     exit 1
 fi
 
 while (($#)); do
-    case "$1" in
+    case $1 in
         -a) shift; arch="$1" ;;
-        -m) with_mono=1 ;;
         -g) with_gecko=1 ;;
+        -m) with_mono=1 ;;
         -r) remap_z=1 ;;
         -h) usage
             exit
@@ -45,12 +45,12 @@ done
 
 
 # Make sure we get a valid architecture, if we don't assume 32.
-if [[ ! "$arch" ]]; then
+if [[ ! $arch ]]; then
     arch=32
 fi
 
 # If arch was set to something make sure it's valid.
-if [[ "$arch" != @(32|64) ]]; then
+if [[ $arch != @(32|64) ]]; then
     printf 'No valid architectures found, can only be 32 or 64.\n' >&2
     exit 1
 fi
@@ -62,13 +62,13 @@ else
 fi
 
 # Check that we got something for the prefix.
-if [[ ! "$prefix" ]]; then
+if [[ ! $prefix ]]; then
     printf 'No prefix was found, bailing.\n' >&2
     exit 1
 fi
 
 # Make sure it's an absolute path by prepending PWD.
-if [[ "${prefix:0:1}" != "/" ]]; then
+if [[ "${prefix:0:1}" != / ]]; then
     export WINEPREFIX="$PWD"/"$prefix"
 else
     export WINEPREFIX="$prefix"
