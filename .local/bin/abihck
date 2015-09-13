@@ -68,11 +68,7 @@ create_abi_dump() {
 update_system() {
     set +e
     if ((makepkg)); then
-        if [[ -f makepkg."$pname" ]]; then
-            MAKEPKG_CONF=makepkg."$pname" makepkg -rscf
-        else
-            makepkg -rscf
-        fi
+        makepkg -rscf
         repose -fvr "$HOME"/build/repo earnestly
     fi
     sudo pacman -Syu
