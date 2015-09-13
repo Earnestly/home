@@ -11,6 +11,7 @@ export SLRNHOME=$XDG_CONFIG_HOME/slrn
 # https://github.com/mozilla/rr/issues/1455#issuecomment-89714904
 export _RR_TRACE_DIR=$XDG_DATA_HOME/rr
 
+export STACK_ROOT=$XDG_DATA_HOME/stack
 export CARGO_HOME=$XDG_DATA_HOME/cargo
 export GNUPGHOME=$XDG_CONFIG_HOME/gnupg
 export INPUTRC=$XDG_CONFIG_HOME/inputrc
