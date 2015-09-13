@@ -4,34 +4,35 @@
 # eventually systemd.
 
 # Make sure we aren't running in an xserver.
-if [[ -n "$DISPLAY" ]]; then
+if [[ $DISPLAY ]]; then
     exit 1
 fi
 
-readonly confdir="${XDG_CONFIG_HOME:-$HOME/.config}"/x11
-readonly cachedir="${XDG_CACHE_HOME:-$HOME/.cache}"/x11
-readonly rundir="$XDG_RUNTIME_DIR"/x11
+readonly confdir=${XDG_CONFIG_HOME:-$HOME/.config}/x11
+readonly cachedir=${XDG_CACHE_HOME:-$HOME/.cache}/x11
+readonly rundir=$XDG_RUNTIME_DIR/x11
 
-xinitrc="${XINITRC:-$confdir/xinitrc}"
-#log="$cachedir"/x11/xsession.log
+xinitrc=${XINITRC:-$confdir/xinitrc}
+#log=$cachedir/x11/xsession.log
 
 if ! mkdir -p "$confdir" "$rundir"; then
     exit 1
 fi
 
-export XAUTHORITY="$rundir"/xauthority
+export XAUTHORITY=$rundir/xauthority
 
-# E.g. ICE Authority stuff.
+# Such as ICEAuthority.
 unset SESSION_MANAGER
 
-if [[ -n "$XDG_VTNR" ]]; then
-    export DISPLAY=:"$XDG_VTNR"
+if [[ $XDG_VTNR ]]; then
+    export DISPLAY=:$XDG_VTNR
 else
-    printf -- 'Apparently XDG_VTNR is not set, bailing out.\n' >&2
+    printf 'Apparently XDG_VTNR is not set, bailing out.\n' >&2
     exit 1
 fi
 
-# I blindly add a new entry with xauth because this is stored in a tmpfs.
+# I blindly add a new entry with xauth as this is stored in a tmpfs and thus
+# destroyed after a reboot.
 xauth -q add "$DISPLAY" . "$(mcookie)" &> /dev/null
 
 serveropts=(
