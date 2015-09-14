@@ -2,7 +2,7 @@
 # abihck - Generates abi/api compliance report between two pacman packages
 #          before and after a system update.
 
-# Requires: abi-compliance-checker, ctags, expac
+# Requires: abi-compliance-checker, api-sanity-checker, ctags, expac, pacman, makepkg
 
 puts() {
     printf '%s\n' "$@"
@@ -68,7 +68,7 @@ create_abi_dump() {
 update_system() {
     set +e
     if ((makepkg)); then
-        makepkg -rscf
+        makepkg -rsc
         repose -fvr "$HOME"/build/repo earnestly
     fi
     sudo pacman -Syu
@@ -95,6 +95,26 @@ compare_abi_dumps() {
 
     if ! abi-compliance-checker "${options[@]}"; then
         err 'Failed to compare abi.'
+    fi
+}
+
+check_api_sanity() {
+    local -a options
+    local pname=$1
+    local version=$2
+
+    options=(
+        -lib "$pname"
+        -d "$pname".xml
+        -relpath abi/"$pname"/"$version"/usr
+        -vnum "$version"
+        -gen
+        -build
+        -run
+    )
+
+    if ! api-sanity-checker "${options[@]}"; then
+        err 'Failed to check api sanity.'
     fi
 }
 
@@ -151,3 +171,4 @@ fi
 make_relpath abi/"$pname"/"$new_version"
 create_abi_dump "$pname" "$new_version"
 compare_abi_dumps "$pname" "$old_version" "$new_version"
+check_api_sanity "$pname" "$new_version"
