@@ -106,14 +106,18 @@ check_api_sanity() {
     options=(
         -lib "$pname"
         -d "$pname".xml
-        -relpath abi/"$pname"/"$version"/usr
+        -relpath "$pname"/"$version"/usr
         -vnum "$version"
         -gen
         -build
         -run
     )
+    
+    if [[ -e abi/spec_types.xml ]]; then
+        options+=(-st spec_types.xml)
+    fi
 
-    if ! api-sanity-checker "${options[@]}"; then
+    if ! (cd abi && api-sanity-checker "${options[@]}"); then
         err 'Failed to check api sanity.'
     fi
 }
