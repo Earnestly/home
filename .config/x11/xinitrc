@@ -4,11 +4,15 @@
 #     eval "$(dbus-launch --sh-syntax --exit-with-session)"
 # fi
 
-# A better unclutter.
-#hhpc -i 3 &
+source_checked() {
+    local file
+    if [[ -f $file ]]; then . $file; fi
+}
+
+# Import DISPLAY and XAUTHORITY into the systemd --user environment.
+source_checked /etc/X11/xinit/xinitrc.d/50-systemd-user.sh
 
 # Wallpaper.
-#display -window root -resize '1366x768!' ~/.local/share/wall &
 xsetroot -mod 16 16 -fg '#343d46' -bg '#2b303b'
 
 emacs --daemon &
