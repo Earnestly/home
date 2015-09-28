@@ -128,10 +128,13 @@ generate() { # string -> stdout
     puts 'Title=%s' "${title:-Library}"
     puts 'Command=exec %s\n' "${reader:-llpp}"
 
+    puts 'Scanning %s' "$library" >&2
+
     mapfile -t pdf_files < <(find_pdf_files "$input")
 
     for pdf in "${pdf_files[@]}"; do
-        read -r _ title < <(pdfinfo "$pdf")
+        puts 'Processing %s' "${pdf##*$library\/}" >&2
+        read -r _ title < <(pdfinfo "$pdf" 2> /dev/null)
 
         if [[ -z "$title" ]]; then
             title="Warning: No title set for ${pdf##*/}"
