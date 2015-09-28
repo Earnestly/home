@@ -1,21 +1,14 @@
 #!/bin/bash
 
-# if [[ -z "$DBUS_SESSION_BUS_ADDRESS" ]]; then
-#     eval "$(dbus-launch --sh-syntax --exit-with-session)"
-# fi
-
 source_checked() {
     local file
-    if [[ -f $file ]]; then . $file; fi
+    [[ -f $file ]] && . "$file"
 }
 
 # Import DISPLAY and XAUTHORITY into the systemd --user environment.
 source_checked /etc/X11/xinit/xinitrc.d/50-systemd-user.sh
 
-# Wallpaper.
 xsetroot -mod 16 16 -fg '#343d46' -bg '#2b303b'
-
 emacs --daemon &
 dunst &
-
 exec i3
