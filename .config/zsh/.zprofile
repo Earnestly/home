@@ -17,12 +17,12 @@ export GNUPGHOME=$XDG_CONFIG_HOME/gnupg
 export INPUTRC=$XDG_CONFIG_HOME/inputrc
 export RLWRAP_HOME=$XDG_DATA_HOME/rlwrap
 export LYNX_CFG_PATH=$XDG_CONFIG_HOME/lynx
-export TIGRC_USER=$XDG_CONFIG_HOME/tig/tigrc
 
 # XXX This always seems to complain about no directory being found, not sure
 #     why.
 #export DVDCSS_CACHE =$XDG_CACHE_HOME/dvdcss
 
+export TIGRC_USER=$XDG_CONFIG_HOME/tig/tigrc
 export WEECHAT_HOME=$XDG_CONFIG_HOME/weechat
 export PERL_CPANM_HOME=$XDG_CACHE_HOME/cpanm
 export GIMP2_DIRECTORY=$XDG_CONFIG_HOME/gimp

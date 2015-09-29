@@ -24,7 +24,6 @@ setopt auto_cd \
     numeric_glob_sort \
     hist_save_no_dups \
     hist_ignore_space \
-    hist_ignore_space \
     hist_reduce_blanks \
     inc_append_history \
     hist_ignore_all_dups \

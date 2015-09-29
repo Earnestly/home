@@ -21,14 +21,13 @@ browser = firefox
 #font = DejaVu Sans Mono 10
 #font = LetterGothic 12
 font = Inconsolatazi4 12
-#font = Monaco 9.8
-#font = Latin Modern Mono 11.8
+#font = Monaco 10
+#font = Latin Modern Mono 11
 #font = Perfect DOS VGA 437 12
-#font = Meslo LG S 9.8
+#font = Meslo LG S 10
 #font = Dina 9
-#font = PragmataPro 12
-#font = Fira Mono 10.8
-#font = Source Code Pro Earnest 11
+#font = Fira Mono 10.5
+#font = Source Code Pro Earnest 11.2
 
 [colors]
 # Base16 Ocean

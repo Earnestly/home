@@ -1,17 +1,22 @@
-" ~/.vimrc
+" ~/.vim/vimrc
 
 set nocompatible
 
 call plug#begin('~/.vim/packages')
-Plug 'miekg/rfc'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
 Plug 'scrooloose/syntastic'
-Plug '~/.vim/packages/vim-ktap'
-Plug '~/.vim/packages/vim-draft'
-Plug '~/.vim/packages/vim-promela'
+
+Plug 'miekg/rfc', {'for': 'rfc'}
 Plug 'Shougo/vimproc.vim', {'do': 'make'}
+Plug 'rust-lang/rust.vim', {'for': 'rust'}
+"Plug 'bbchung/clighter', {'for': ['c', 'cpp']} " Needs python 2.x :-(
 Plug 'dleonard0/pony-vim-syntax', {'for': 'pony'}
+
+Plug '~/.vim/packages/vim-ktap', {'for': 'ktap'}
+Plug '~/.vim/packages/vim-draft', {'for': 'draft'}
+Plug '~/.vim/packages/vim-promela', {'for': 'promela'}
+Plug '~/.vim/packages/vim-ats', {'for': ['dats', 'sats']}
 Plug 'octol/vim-cpp-enhanced-highlight', {'for': ['c', 'cpp']}
 call plug#end()
 

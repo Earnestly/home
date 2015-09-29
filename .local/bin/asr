@@ -23,12 +23,6 @@ for url in "${urls[@]}"; do
     fi
 done
 
-
-#read -r repo name < <(expac -S '%r %n-%v' "$pkgname")
-#gzip -cd /var/lib/pacman/sync/"$repo".db | grep --binary-files=text "$pkgname"
-#???? read -r pkgbase < <(grep -A1 %BASE% ...?)
-#profit!
-
 # Fail if we've gone through the array elements without success.
 if ((!status)); then
     printf -- '%s: cannot locate package.\n' "$pkgname" >&2
