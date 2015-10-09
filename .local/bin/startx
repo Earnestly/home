@@ -13,9 +13,9 @@ readonly cachedir=${XDG_CACHE_HOME:-$HOME/.cache}/x11
 readonly rundir=$XDG_RUNTIME_DIR/x11
 
 xinitrc=${XINITRC:-$confdir/xinitrc}
-#log=$cachedir/x11/xsession.log
+log=$cachedir/xsession.log
 
-if ! mkdir -p "$confdir" "$rundir"; then
+if ! mkdir -p "$confdir" "$cachedir" "$rundir"; then
     exit 1
 fi
 
@@ -38,11 +38,12 @@ xauth -q add "$DISPLAY" . "$(mcookie)" &> /dev/null
 serveropts=(
     vt"$XDG_VTNR" 
     -noreset
+    -keeptty
     -nolisten tcp 
     -auth "$XAUTHORITY"
 )
 
-exec xinit "${1:-$xinitrc}" -- "$DISPLAY" "${serveropts[@]}" "${@:2}"
+exec xinit "${1:-$xinitrc}" -- "$DISPLAY" "${serveropts[@]}" "${@:2}" &> "$log"
 
 # If using systemd --user with dbus.service.
 #sysdopts=(
