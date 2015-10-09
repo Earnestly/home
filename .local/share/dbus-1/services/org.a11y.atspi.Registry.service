@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.a11y.atspi.Registry
-Exec=/usr/bin/false

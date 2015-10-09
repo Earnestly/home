@@ -4,15 +4,17 @@ set nocompatible
 
 call plug#begin('~/.vim/packages')
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-surround'
 Plug 'tpope/vim-commentary'
 Plug 'scrooloose/syntastic'
+"Plug 'easymotion/vim-easymotion'
 
 Plug 'miekg/rfc', {'for': 'rfc'}
 Plug 'Shougo/vimproc.vim', {'do': 'make'}
 Plug 'rust-lang/rust.vim', {'for': 'rust'}
+"Plug 'idris-hackers/idris-vim', {'for': 'idr'}
 "Plug 'bbchung/clighter', {'for': ['c', 'cpp']} " Needs python 2.x :-(
 Plug 'dleonard0/pony-vim-syntax', {'for': 'pony'}
-
 Plug '~/.vim/packages/vim-ktap', {'for': 'ktap'}
 Plug '~/.vim/packages/vim-draft', {'for': 'draft'}
 Plug '~/.vim/packages/vim-promela', {'for': 'promela'}

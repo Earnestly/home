@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.a11y.Bus
-Exec=/usr/bin/false

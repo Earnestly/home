@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=ca.desrt.dconf
-Exec=/usr/bin/false
