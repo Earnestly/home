@@ -129,7 +129,6 @@ parallel_fetch_json() { # array -> fork_bg
 parse_json() { # disk -> stdout
     local i json args
 
-    # Around 50-70% of time is spent here as jshon read()'s every character.
     for i in "$TMPDIR"/*.json; do
         if [[ "$i" == *$progn-channels-* ]]; then
             args=(-CQ -e streams -a -e channel -e name -upe game -upe url -upe status)
@@ -176,7 +175,7 @@ play_stream() { # string, string -> either(command, stderr)
     options=(--quiet)
 
     if has mpv; then
-        options+=(--player-args "--force-media-title='$title' {filename}")
+        options+=(--player-args "--no-terminal --force-media-title='$title' {filename}")
     fi
 
     if ! err="$(livestreamer "${options[@]}" "$url")"; then
