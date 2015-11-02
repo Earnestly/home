@@ -112,8 +112,8 @@ mode "MENU MODE" {
     bindsym y exec --no-startup-id dclip; mode "default"
     bindsym p exec --no-startup-id dmenu_run; mode "default"
     bindsym g exec --no-startup-id taverner; mode "default"
-    bindsym u exec --no-startup-id bemenu_loader ~/.local/share/plaid/plaid_dmenu; mode "default"
-    bindsym o exec --no-startup-id bemenu_loader ~/.local/share/dmenu/dmenu_pdf; mode "default"
+    bindsym u exec --no-startup-id bemenu-loader ~/.local/share/plaid/plaid_menu; mode "default"
+    bindsym o exec --no-startup-id bemenu-loader ~/.local/share/dmenu/dmenu_pdf; mode "default"
 
     bindsym q mode "default"
     bindsym Escape mode "default"
@@ -198,4 +198,4 @@ bindsym XF86AudioPlay exec mpc toggle
 bindsym XF86AudioNext exec mpc next
 bindsym XF86AudioPrev exec mpc prev
 
-bindsym XF86Launch1 exec firefox
+bindsym XF86Launch1 exec qutebrowser
