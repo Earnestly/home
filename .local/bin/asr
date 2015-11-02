@@ -5,13 +5,13 @@
 # svntogit repositories.
 
 # Oh boy, here we go!
-pkgname="$1"
+pkgname=$1
 
 # A bit of future-proofing.
 urls=('git://projects.archlinux.org/svntogit/packages.git'
       'git://projects.archlinux.org/svntogit/community.git')
 
-status="${#urls[@]}"
+status=${#urls[@]}
 for url in "${urls[@]}"; do
     # Determine which repository the package exists in.
     if git ls-remote --exit-code "$url" refs/heads/packages/"$pkgname"; then
@@ -25,8 +25,8 @@ done
 
 # Fail if we've gone through the array elements without success.
 if ((!status)); then
-    printf -- '%s: cannot locate package.\n' "$pkgname" >&2
-    printf -- 'Make sure the pkgname is not from a split-package\n' >&2
+    printf '%s: cannot locate package\n' "$pkgname" >&2
+    printf 'Make sure the pkgname is not from a split-package\n' >&2
     exit 1
 fi
 
@@ -34,8 +34,4 @@ fi
 if [[ -d "$pkgname" ]]; then
     cd "$pkgname"
     git checkout HEAD:trunk -- .
-else
-    # This should never happen.
-    printf -- 'Directory does not exist.\n' >&2
-    exit 1
 fi
