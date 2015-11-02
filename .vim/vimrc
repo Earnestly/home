@@ -8,8 +8,8 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-commentary'
 Plug 'scrooloose/syntastic'
 "Plug 'easymotion/vim-easymotion'
-
 Plug 'miekg/rfc', {'for': 'rfc'}
+"Plug 'nathanaelkane/vim-indent-guides'
 Plug 'Shougo/vimproc.vim', {'do': 'make'}
 Plug 'rust-lang/rust.vim', {'for': 'rust'}
 "Plug 'idris-hackers/idris-vim', {'for': 'idr'}
@@ -19,7 +19,7 @@ Plug '~/.vim/packages/vim-ktap', {'for': 'ktap'}
 Plug '~/.vim/packages/vim-draft', {'for': 'draft'}
 Plug '~/.vim/packages/vim-promela', {'for': 'promela'}
 Plug '~/.vim/packages/vim-ats', {'for': ['dats', 'sats']}
-Plug 'octol/vim-cpp-enhanced-highlight', {'for': ['c', 'cpp']}
+"Plug 'octol/vim-cpp-enhanced-highlight', {'for': ['c', 'cpp']}
 call plug#end()
 
 " Keys.
