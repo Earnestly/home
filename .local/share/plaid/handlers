@@ -18,7 +18,7 @@ handle_local() {
             title="$k"
             playlist="$v"
         fi
-    done < "$dmenu_file"
+    done < "$bemenu_file"
 
     playlist_file="$playlist_dir"/"$title"
 }

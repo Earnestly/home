@@ -1,8 +1,8 @@
 #!/bin/bash
 # ~/.local/bin/plaid <url or path to playlist>
 # Generate a playlist for mpv's consumption while creating and/or appending to
-# a dmenu_loader file.
-# Requires jshon, elinks, dmenu_loader, quvi, mpv
+# a bemenu-loader file.
+# Requires jshon, elinks, bemenu-loader, mpv
 
 # XXX Need to remove duplication and think about a better structure, or use
 #     something else, sql?  Eugh
@@ -14,7 +14,7 @@ if (($# > 1)); then
 fi
 
 # Environment
-XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
 
 # Include handlers
 if ! source "$XDG_DATA_HOME"/plaid/handlers; then
@@ -23,24 +23,21 @@ if ! source "$XDG_DATA_HOME"/plaid/handlers; then
 fi
 
 # Globals
-dmenu_file="$XDG_DATA_HOME"/plaid/plaid_dmenu
-playlist_dir="$XDG_DATA_HOME"/plaid/playlists
+bemenu_file=$XDG_DATA_HOME/plaid/plaid_menu
+playlist_dir=$XDG_DATA_HOME/plaid/playlists
 
-# Make sure directories exist before doing anything
-if [[ ! -d "$playlist_dir" ]]; then
-    mkdir -p "$playlist_dir"
-fi
+mkdir -p "$playlist_dir"
 
-# Generate skeleton structure for `dmenu_loader`
-if [[ ! -e "$dmenu_file" ]]; then
-cat <<EOF > "$dmenu_file"
+# Generate skeleton structure for `bemenu-loader`
+if [[ ! -e $bemenu_file ]]; then
+cat <<EOF > "$bemenu_file"
 Title=Playlist
 Command=exec plaid
 
 EOF
 fi
 
-case "$1" in
+case $1 in
     "$playlist_dir"/*)
         if [[ -e "$1" ]]; then
             handle_local "$1"
@@ -64,17 +61,17 @@ esac
 # Use a counter to increment any occurances of a match, if we've gone through
 # the entire file without a match, append a new entry
 while IFS='=' read -r k v; do
-   if [[ "$k" == "$title" && "$v" == "$playlist_file" ]]; then
+   if [[ $k == $title && $v == $playlist_file ]]; then
        ((occurs++))
    fi
-done < "$dmenu_file"
+done < "$bemenu_file"
 
 # If no occurances
-if ! ((occurs)); then
-    printf '%s=%s\n' "$title" "$playlist_file" >> "$dmenu_file"
+if ((!occurs)); then
+    printf '%s=%s\n' "$title" "$playlist_file" >> "$bemenu_file"
 fi
 
-if [[ -n "$title" && -n "$playlist_file" ]]; then
+if [[ $title && $playlist_file ]]; then
     mpv_opts=(
         --save-position-on-quit
         --playlist="$playlist_file"

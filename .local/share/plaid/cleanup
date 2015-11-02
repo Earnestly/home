@@ -1,12 +1,12 @@
 #!/bin/bash
 
-dir="${XDG_DATA_HOME:-$HOME/.local/share}"/plaid/playlists
+dir=${XDG_DATA_HOME:-$HOME/.local/share}/plaid/playlists
 
 in_array() {
     local i
 
     for i in "${@:2}"; do
-        if [[ $1 == "$i" ]]; then
+        if [[ $1 == $i ]]; then
             return 0
         fi
     done
@@ -16,7 +16,7 @@ in_array() {
 
 # Build an array of playlists found in the actual dmenu menu
 while IFS='=' read -r k v; do
-    if ! [[ "$k" =~ ^Title|^Command ]]; then
+    if ! [[ $k =~ ^Title|^Command ]]; then
         playlists+=("$v")
     fi
 done < plaid_dmenu
