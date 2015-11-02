@@ -9,8 +9,8 @@
 # ~/.config/ditch/teams      List of twitch teams.
 # ~/.config/ditch/streamers  List of individual streamers.
 
-readonly progn=ditch
-readonly data_dir=${XDG_CONFIG_HOME:-$HOME/.config}/$progn
+readonly argv0=ditch
+readonly data_dir=${XDG_CONFIG_HOME:-$HOME/.config}/$argv0
 
 # Used to store downloaded json.
 readonly TMPDIR=${TMPDIR:-/tmp}
@@ -19,8 +19,8 @@ readonly TMPDIR=${TMPDIR:-/tmp}
 readonly lines=20
 read -r font < "${XDG_CONFIG_HOME:-$HOME/.config}"/dmenu/font
 
-# Options passed to bemenu, the prompt is passed later.
-bemenu_opts=(
+# Arguments passed to bemenu, the prompt is passed later.
+bemenu_args=(
     --fn "$font" -w -i -l "$lines"
     --tf '#9b859d' --tb '#262626'
     --nf '#a7a7a7' --nb '#1e1e1e'
@@ -29,22 +29,21 @@ bemenu_opts=(
     --scrollbar autohide
 )
 
-puts() {
-    printf -- "$1\n" "${@:2}"
-}
-
 has() {
     hash "$1" 2> /dev/null
 }
 
-err() {
-    local msg
+puts() {
+    printf -- "$1\n" "${@:2}"
+}
 
-    puts "$progn: $@" >&2
+err() {
+    puts "$argv0: $1" "${@:2}" >&2
 
     if has notify-send; then
-        msg="$(puts "$@")"
-        notify-send -u critical -- "$progn" "$msg"
+        local msg
+        msg=$(puts "$@")
+        notify-send -u critical -- "$argv0" "$msg"
     fi
 }
 
@@ -57,7 +56,7 @@ chunk_by() {
         # NOTE: There is no way to get the length of an offset in the same
         #       operation so temporary storage is needed.
         tmp=("${list_r[@]:0:chunk}")
-        printf -- '%s,' "${tmp[@]}"
+        printf '%s,' "${tmp[@]}"
         # Assuming chunking by 2, the following occurs on the array [1 2 3 4 5]
         # 1st loop: [{ 1 2 } 3 4 5]  => 1,2,&limit=2
         # 2nd loop: [{ 3 4 } 5]      => 3,4,&limit=2
@@ -72,7 +71,7 @@ chunk_by() {
     done
 }
 
-prepare_urls() {
+generate_urls() {
     local team list chunk nelem tmp
 
     if [[ -s $data_dir/teams ]]; then
@@ -109,55 +108,44 @@ parallel_fmap() {
     wait
 }
 
-# Download all the json chunks to individual files, each file will be read
-# sequentially later but this allows me to (fork) background this function.
+# Download the json associated with a twitch team name or comma separated list
+# of streamers, with &limit= appended to the end.
 fetch_json() {
     local a=$1
     local stream data
 
-    # We assume streams always contain the string "&limit=".
+    # We assume streamer lists always contain the string "&limit=".
     if [[ $a == *\&limit=* ]]; then
-        data=$(mktemp -t "$progn"-channels-XXX.json)
+        data=$(mktemp -t "$argv0"-channels-XXX.json)
         curl -s "https://api.twitch.tv/kraken/streams?channel=$a" > "$data"
     else
-        data=$(mktemp -t "$progn"-teams-XXX.json)
+        data=$(mktemp -t "$argv0"-teams-XXX.json)
         curl -s "http://api.twitch.tv/api/team/$a/live_channels.json" > "$data"
-    fi
-}
-
-download_json() {
-    local urls
-
-    mapfile -t urls < <(prepare_urls)
-
-    if [[ ${urls[@]} ]]; then
-        parallel_fmap fetch_json urls
-    else
-        err 'No configuration data found.'
-        exit 1
     fi
 }
 
 # Parsed json is printed in series of three lines, the first is the username,
 # then the url to their stream and finally the title.
 parse_json() {
-    local i json args
+    local json args channels teams
 
-    for i in "$TMPDIR"/*.json; do
-        if [[ $i == *$progn-channels-* ]]; then
-            args=(-CQ -e streams -a -e channel -e name -upe game -upe url -upe status)
-            jshon "${args[@]}" < "$i"
-        fi
+    channels=("$TMPDIR"/"$argv0"-channels*)
 
-        if [[ $i == *$progn-teams-* ]]; then
-            args=(-CQ -e channels -a -e channel -e name -upe meta_game -upe link -upe title)
-            jshon "${args[@]}" < "$i"
-        fi
-
-        # Make sure we remove the json once we're done so it doesn't interfere
-        # with proceeding execution and doesn't clutter up $TMPDIR.
-        rm -f -- "$i"
+    for json in "${channels[@]}"; do
+        args=(-CQ -e streams -a -e channel -e name -upe game -upe url -upe status)
+        jshon "${args[@]}" < "$json"
     done
+
+    teams=("$TMPDIR"/"$argv0"-teams*)
+
+    for json in "${teams[@]}"; do
+        args=(-CQ -e channels -a -e channel -e name -upe meta_game -upe link -upe title)
+        jshon "${args[@]}" < "$json"
+    done
+
+    # Make sure we remove the json once we're done so it doesn't interfere with
+    # proceeding execution and doesn't clutter up $TMPDIR.
+    rm -f -- "${channels[@]}" "${teams[@]}"
 }
 
 build_menu() {
@@ -177,12 +165,8 @@ build_menu() {
         if [[ $url != null ]]; then
 
             # Manually de-json the title.  XXX This doesn't handle all json
-            # escapes but we don't have to.
+            # escapes but we don't need to.
             title="${title%\"*}" title="${title#\"}" title="${title//\\/}"
-
-            # If pango markup is supported.
-            # begin='<span weight="bold" fgcolor="#555555">' end='</span>'
-            # game="$begin$game$end"
 
             # The menu is what we will use for displaying via bemenu, we will
             # later extract the first word from the result which is $name used
@@ -196,33 +180,32 @@ build_menu() {
 get_user_picks() {
     declare -n menu_r=$1
     declare -n stream_r=$2
-    local fmt i max=0
 
     # Display the number of current streams in bemenu's prompt.
-    bemenu_opts+=(-p "Stream ${#stream_r[@]}")
+    bemenu_args+=(-p "Stream ${#stream_r[@]}")
 
     # Using a marker here for column to pretty print the results in columns,
     # here's hoping not many people use this in their titles, generally this
     # hasn't been the case and it won't impact the passing of correct metadata.
-    puts '%s' "${!menu_r[@]}" | column -s '│' -t  | bemenu "${bemenu_opts[@]}"
+    puts '%s' "${!menu_r[@]}" | column -s '│' -t  | bemenu "${bemenu_args[@]}"
 }
 
 play_stream() {
     local url=$1
     local title=$2
-    local err options
+    local err args
 
     shopt -s extglob
     # Strip consecutive spaces and replace single quotes.
     title="${title//+( )/ }" title="${title//\'/’}"
 
-    options=(--quiet)
+    args=(--quiet)
 
     if has mpv; then
-        options+=(--player-args "--no-terminal --force-media-title='$title' {filename}")
+        args+=(--player-args "--no-terminal --force-media-title='$title' {filename}")
     fi
 
-    if ! err="$(livestreamer "${options[@]}" "$url")"; then
+    if ! err=$(livestreamer "${args[@]}" "$url"); then
         err '%s' "${err:-livestreamer}"
     fi
 }
@@ -236,9 +219,9 @@ play_if_valid() {
 
         # Check if the selection actually matches a stream.
         if [[ ${stream_r[$streamer]} ]]; then
-            url="${stream_r[$streamer]}"
+            url=${stream_r[$streamer]}
         else
-            err '%s: Cannot find associated stream.' "$streamer"
+            err '%s: cannot find associated stream' "$streamer"
             exit 1
         fi
 
@@ -248,7 +231,15 @@ play_if_valid() {
 
 declare -A menu stream 
 
-download_json
+mapfile -t urls < <(generate_urls)
+
+if [[ $urls ]]; then
+    parallel_fmap fetch_json urls
+else
+    err 'no configuration data found'
+    exit 1
+fi
+
 build_menu menu stream < <(parse_json)
 
 results=$(get_user_picks menu stream)
