@@ -2,7 +2,7 @@
 # ~/.local/bin/ditch
 # Create a menu using the twitch team and stream APIs.
 
-# Requires: jshon, bemenu, livestreamer, bash 4.3+
+# Requires: jshon, bemenu, mpv, youtube-dl, bash 4.3+
 # Optional: notify-send
 
 # Files
@@ -11,6 +11,9 @@
 
 readonly argv0=ditch
 readonly data_dir=${XDG_CONFIG_HOME:-$HOME/.config}/$argv0
+
+# Prefered quality in descending order.
+readonly quality=(High)
 
 # Used to store downloaded json.
 readonly TMPDIR=${TMPDIR:-/tmp}
@@ -193,20 +196,18 @@ get_user_picks() {
 play_stream() {
     local url=$1
     local title=$2
-    local err args
+    local q err args
 
     shopt -s extglob
-    # Strip consecutive spaces and replace single quotes.
-    title="${title//+( )/ }" title="${title//\'/’}"
+    # Squeeze repeated spaces.
+    args=(--no-terminal --title="${title//+( )/ }")
 
-    args=(--quiet)
+    for q in "${quality[@]}"; do
+        args+=(--ytdl-format="$q")
+    done
 
-    if has mpv; then
-        args+=(--player-args "--no-terminal --force-media-title='$title' {filename}")
-    fi
-
-    if ! err=$(livestreamer "${args[@]}" "$url"); then
-        err '%s' "${err:-livestreamer}"
+    if ! err=$(mpv "${args[@]}" "$url"); then
+        err '%s' "${err:-mpv}"
     fi
 }
 
@@ -229,7 +230,7 @@ play_if_valid() {
     done
 }
 
-declare -A menu stream 
+declare -A menu stream
 
 mapfile -t urls < <(generate_urls)
 
