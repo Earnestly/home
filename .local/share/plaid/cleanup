@@ -14,12 +14,14 @@ in_array() {
     return 1
 }
 
+[[ ! -s plaid_menu ]] && exit
+
 # Build an array of playlists found in the actual dmenu menu
 while IFS='=' read -r k v; do
     if ! [[ $k =~ ^Title|^Command ]]; then
         playlists+=("$v")
     fi
-done < plaid_dmenu
+done < plaid_menu
 
 
 files=("$dir"/*)
