@@ -1,12 +1,12 @@
 /* LOCALDIR/cfg/vimperator/chrome.css */
 
-/* ISSUES
- *      Visible '|' separators between tabs.
- *      Tabs are no longer interactive with the mouse.
- *      The scrollbox overflow mechanism isn't completely gone.
- *      Alignment and padding of the text and icon favours the bottom edge.
+/* 
+ * ISSUES
+ * 
+ * Tabs are no longer interactive with the mouse.
+ * The scrollbox overflow mechanism isn't completely gone.
+ * The last tab doesn't display vimperator's tabnumber.
  */
-
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
 :root {
@@ -30,7 +30,8 @@ tab {
     background: var(--bg-dark) !important;
 }
 
-/* I want tabs to expand and fill all available width, using a halving strategy
+/* 
+ * I want tabs to expand and fill all available width, using a halving strategy
  * when more tabs are opened.
  */
 .tabbrowser-tab {
@@ -48,6 +49,12 @@ tab {
     margin: 0 5px 0 0 !important;
     width: var(--tab-icon-size) !important;
     height: var(--tab-icon-size) !important;
+}
+
+/* Improve alignment of text in a tab. */
+.tabbrowser-tab * {
+    margin: -0.5px 0 0 2px !important;
+    padding: initial !important;
 }
 
 /* Remove padding set aside for the arrows which appear on tab overflow. */
@@ -71,3 +78,5 @@ statuspanel { display: none !important; }
 /* Hide the close button on the tab itself. */
 .tab-close-button { display: none !important; }
 
+/* Hide the '|' separators between tabs. */
+.tabbrowser-tab::before, .tabbrowser-tab::after { background: none !important; }
