@@ -12,24 +12,27 @@
 readonly argv0=ditch
 readonly data_dir=${XDG_CONFIG_HOME:-$HOME/.config}/$argv0
 
-# Prefered quality in descending order.
-readonly quality=(High)
+# Prefered quality in ascending order.
+readonly quality="High/Medium/best"
 
 # Used to store downloaded json.
 readonly TMPDIR=${TMPDIR:-/tmp}
 
 # Number of entries to display at once.
 readonly lines=20
+
 read -r font < "${XDG_CONFIG_HOME:-$HOME/.config}"/dmenu/font
 
 # Arguments passed to bemenu, the prompt is passed later.
 bemenu_args=(
     --fn "$font" -w -i -l "$lines"
-    --tf '#9b859d' --tb '#262626'
-    --nf '#a7a7a7' --nb '#1e1e1e'
-    --hf '#9b859d' --hb '#262626'
-    --scf '#9b859d' --scb '#1e1e1e'
-    --scrollbar autohide
+    --tf '#eff1f5' --tb '#bf616a'
+    --ff '#c0c5ce' --fb '#2b303b'
+    --sf '#bf616a' --sb '#343d46'
+    --nf '#65737e' --nb '#343d46'
+    --hf '#c0c5ce' --hb '#343d46'
+    --scf '#65737e' --scb '#343d46'
+    -p 'STREAM' --scrollbar autohide
 )
 
 has() {
@@ -132,17 +135,17 @@ fetch_json() {
 parse_json() {
     local json args channels teams
 
-    channels=("$TMPDIR"/"$argv0"-channels*)
-
-    for json in "${channels[@]}"; do
-        args=(-CQ -e streams -a -e channel -e name -upe game -upe url -upe status)
-        jshon "${args[@]}" < "$json"
-    done
-
     teams=("$TMPDIR"/"$argv0"-teams*)
 
     for json in "${teams[@]}"; do
         args=(-CQ -e channels -a -e channel -e name -upe meta_game -upe link -upe title)
+        jshon "${args[@]}" < "$json"
+    done
+
+    channels=("$TMPDIR"/"$argv0"-channels*)
+
+    for json in "${channels[@]}"; do
+        args=(-CQ -e streams -a -e channel -e name -upe game -upe url -upe status)
         jshon "${args[@]}" < "$json"
     done
 
@@ -184,8 +187,6 @@ get_user_picks() {
     declare -n menu_r=$1
     declare -n stream_r=$2
 
-    # Display the number of current streams in bemenu's prompt.
-    bemenu_args+=(-p "Stream ${#stream_r[@]}")
 
     # Using a marker here for column to pretty print the results in columns,
     # here's hoping not many people use this in their titles, generally this
@@ -200,11 +201,11 @@ play_stream() {
 
     shopt -s extglob
     # Squeeze repeated spaces.
-    args=(--no-terminal --title="${title//+( )/ }")
+    args=(--quiet --title="${title//+( )/ }")
 
-    for q in "${quality[@]}"; do
-        args+=(--ytdl-format="$q")
-    done
+    if [[ $quality ]]; then
+        args+=(--ytdl-format="$quality")
+    fi
 
     if ! err=$(mpv "${args[@]}" "$url"); then
         err '%s' "${err:-mpv}"
