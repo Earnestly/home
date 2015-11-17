@@ -1,52 +1,73 @@
-/* XDG_CONFIG_HOME/pentadactyl/chrome.css */
+/* LOCALDIR/cfg/vimperator/chrome.css */
+
+/* ISSUES
+ *      Visible '|' separators between tabs.
+ *      Tabs are no longer interactive with the mouse.
+ *      The scrollbox overflow mechanism isn't completely gone.
+ *      Alignment and padding of the text and icon favours the bottom edge.
+ */
 
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
-/* Get rid of the bottom border */
-#TabsToolbar:after {
-    border-bottom: 0px !important;
+:root {
+    --bg-dark: #2b303b;
+    --bg-light: #65737e;
+    --fg-dark: #c0c5ce;
+    --fg-light: #eff1f5;
+    --tab-height: 20px;
+    --tab-icon-size: 12px;
 }
 
-/* Hide the new curved tab edges */
-.tab-background {
-    opacity: 0 !important;
+tab {
+    font-family: var(--tab-font) !important;
+    color: var(--fg-dark) !important;
+    background: var(--bg-dark) !important;
 }
 
-/* Hide the little graphic seperator between inactive tabs */
-.tabbrowser-tab:before,
-.tabbrowser-tab:after {
-    max-height: 22px !important;
-    visibility: hidden !important;
+#TabsToolbar, #tabbrowser-tabs {
+    height: var(--tab-height) !important;
+    min-height: var(--tab-height) !important;
+    background: var(--bg-dark) !important;
 }
 
-/* Hide the status panel popup, newtab and tabview buttons. */
-statuspanel, #new-tab-button, #tabview-button,
-.tabs-newtab-button, .tab-close-button {
-    display: none !important;
-}
-
-/* Reduce the padding around the contents of a tab */
-.tab-content {
-    padding: 0 0px 2px 2px !important;
-}
-
-#TabsToolbar {
-    -moz-appearance: none !important;
-    background: #dedede !important;
-}
-
-#tabbrowser-tabs {
-    max-height: 22px !important;
-    min-height: 22px !important;
-}
-
-/* Make the tab expand to fill the maximum width */
+/* I want tabs to expand and fill all available width, using a halving strategy
+ * when more tabs are opened.
+ */
 .tabbrowser-tab {
-    max-width: 100% !important;
-    color: #676666 !important;
+    min-width: initial !important;
+    max-width: initial !important;
 }
 
-.tabbrowser-tab[selected] {
-    background: #676666 !important;
-    color: #efefef !important;
+.tabbrowser-tab[selected="true"] {
+    color: var(--fg-light) !important;
+    background: var(--bg-light) !important;
 }
+
+/* Reduce padding around the favicon. */
+#tabbrowser-tabs .tabbrowser-tab .tab-icon-image {
+    margin: 0 5px 0 0 !important;
+    width: var(--tab-icon-size) !important;
+    height: var(--tab-icon-size) !important;
+}
+
+/* Remove padding set aside for the arrows which appear on tab overflow. */
+.tabbrowser-arrowscrollbox > .arrowscrollbox-scrollbox {
+    padding-inline-end: initial !important;
+    padding-inline-start: initial !important;
+}
+
+/* Hide the  background image, which is the curves in this case.  */
+.tab-background { display: none !important; }
+
+/* Hide the mouseover url bar that appears in the lower left corner. */
+statuspanel { display: none !important; }
+
+/* This appears to hide the newtab button in all situations. */
+#new-tab-button { display: none !important; }
+
+/* Hide the right-most dropdown box button. */
+#alltabs-button { display: none !important; }
+
+/* Hide the close button on the tab itself. */
+.tab-close-button { display: none !important; }
+
