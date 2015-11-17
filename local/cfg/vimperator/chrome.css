@@ -72,6 +72,16 @@ tab {
     display: none !important;
 }
 
+/* 
+ * Attempts to make the vimperator statusbar consistent with the tabbar, the
+ * side benefit of this is that ublock's icon is no longer tiny.
+ */
+#liberator-bottombar toolbarbutton { 
+    min-height: var(--tab-height) !important;
+    padding: initial !important;
+    margin: initial !important;
+}
+
 /*
  * Hide the '|' separators between tabs and re-align the number displayed by
  * vimperator's tabnumber setting.
