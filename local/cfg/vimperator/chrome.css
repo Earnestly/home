@@ -1,25 +1,27 @@
 /* LOCALDIR/cfg/vimperator/chrome.css */
 
-/* 
+/*
  * ISSUES
- * 
- * Tabs are no longer interactive with the mouse.
- * The scrollbox overflow mechanism isn't completely gone.
- * The last tab doesn't display vimperator's tabnumber.
+ *
+ * Too many magic numbers as a result of fighting CSS.
+ * Only the middle region of the tab is interactive.
+ * The last tab doesn't display vimperator's tabnumber except the very last.
+ * Closing a tab via the mouse breaks tab layout and leaves gaps.
  */
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
 :root {
-    --bg-dark: #2b303b;
+    --bg-dark: #343d46;
+    --fg-dark: #65737e;
     --bg-light: #65737e;
-    --fg-dark: #c0c5ce;
-    --fg-light: #eff1f5;
+    --fg-light: #c0c5ce;
     --tab-height: 20px;
     --tab-icon-size: 12px;
 }
 
 tab {
-    font-family: var(--tab-font) !important;
+    font-family: "Source Sans Pro Semibold" !important;
+    font-size: 10.2pt !important;
     color: var(--fg-dark) !important;
     background: var(--bg-dark) !important;
 }
@@ -30,13 +32,13 @@ tab {
     background: var(--bg-dark) !important;
 }
 
-/* 
+/*
  * I want tabs to expand and fill all available width, using a halving strategy
  * when more tabs are opened.
  */
 .tabbrowser-tab {
-    min-width: initial !important;
-    max-width: initial !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
 }
 
 .tabbrowser-tab[selected="true"] {
@@ -44,27 +46,52 @@ tab {
     background: var(--bg-light) !important;
 }
 
-/* Reduce padding around the favicon. */
+/* Reduce size and padding around the favicon and throbber. */
+.tab-throbber,
 #tabbrowser-tabs .tabbrowser-tab .tab-icon-image {
-    margin: 0 5px 0 0 !important;
+    margin: 0 5px 10px 0 !important;
     width: var(--tab-icon-size) !important;
     height: var(--tab-icon-size) !important;
 }
 
 /* Improve alignment of text in a tab. */
 .tabbrowser-tab * {
-    margin: -0.5px 0 0 2px !important;
+    margin: -0.4px 0 10px 2px !important;
     padding: initial !important;
 }
 
 /* Remove padding set aside for the arrows which appear on tab overflow. */
 .tabbrowser-arrowscrollbox > .arrowscrollbox-scrollbox {
-    padding-inline-end: initial !important;
     padding-inline-start: initial !important;
+    padding-inline-end: initial !important;
 }
 
-/* Hide the  background image, which is the curves in this case.  */
-.tab-background { display: none !important; }
+/* Remove overflow indicators. */
+.arrowscrollbox-overflow-start-indicator,
+.arrowscrollbox-overflow-end-indicator {
+    display: none !important;
+}
+
+/*
+ * Hide the '|' separators between tabs and re-align the number displayed by
+ * vimperator's tabnumber setting.
+ */
+.tabbrowser-tab::before, .tabbrowser-tab::after {
+    font-family: "Source Sans Pro Semibold" !important;
+    font-size: 10.2pt !important;
+    padding: initial !important;
+    background: none !important;
+}
+
+/*
+ * Hide the  background image, which is the curves in this case.  Use opacity
+ * here to retain mouse interaction.
+ */
+.tab-background {
+    opacity: 0 !important;
+    margin: initial !important;
+    padding: initial !important;
+}
 
 /* Hide the mouseover url bar that appears in the lower left corner. */
 statuspanel { display: none !important; }
@@ -77,6 +104,3 @@ statuspanel { display: none !important; }
 
 /* Hide the close button on the tab itself. */
 .tab-close-button { display: none !important; }
-
-/* Hide the '|' separators between tabs. */
-.tabbrowser-tab::before, .tabbrowser-tab::after { background: none !important; }
