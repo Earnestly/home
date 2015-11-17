@@ -28,15 +28,16 @@ map Q q:
 
 " Settings.
 set cc=80
+set title
 set number
 set hidden
-"set backup " https://github.com/neovim/neovim/issues/3496
+set backup
 set showcmd
 set undofile
 set linebreak
+set nohlsearch
 set scrolloff=1
 set cinoptions+=t0
-set formatoptions+=j
 
 syntax on
 filetype indent plugin on
@@ -59,9 +60,6 @@ if &t_Co > 255 || has('gui_running')
     "colorscheme zenburn
 endif
 
-set guioptions=acM
-set guifont=Inconsolatazi4\ 12
-
 set smartcase
 set ignorecase
 
@@ -75,26 +73,11 @@ set ttimeoutlen=50
 set clipboard=unnamed
 
 " Set directories.
-"set undodir=~/.cache/vim/undo
-"set directory=~/.cache/vim/swap
-"set backupdir=~/.cache/vim/backup
-"set viminfo+=n~/.cache/vim/viminfo
+set backupdir=$XDG_DATA_HOME/nvim/backup
 
-" Fancy arrows are not welcome.
-" let g:no_rust_conceal = 1
-" let g:haskell_conceal = 0
-" 
-" " Make bash the default for `sh` files.
-" let g:is_bash = 1
-" 
 " Use clang when checking C/C++ syntax.
-" let g:syntastic_c_compiler = 'clang'
-" let g:syntastic_c_compiler_options = '-std=c11'
-" let g:syntastic_c_remove_include_errors = 1
-" 
-" let g:syntastic_cpp_compiler = 'clang++'
-" let g:syntastic_cpp_compiler_options = '-std=c++14'
-" let g:syntastic_cpp_remove_include_errors = 1
-" 
+let g:neomake_cpp_clang_args = neomake#makers#ft#c#clang()['args'] + ['-std=c99']
+let g:neomake_cpp_clang_args = neomake#makers#ft#cpp#clang()['args'] + ['-std=c++14']
+
 " " Haskell.
 " let g:syntastic_haskell_hdevtools_args = '-g-Wall'
