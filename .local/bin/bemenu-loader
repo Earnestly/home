@@ -24,10 +24,12 @@ read -r font < "${XDG_CONFIG_HOME:-$HOME/.config}"/dmenu/font
 # Options passed to bemenu.
 bemenu_opts=(
     --fn "$font" -w -i -l "$lines"
-    --tf '#9b859d' --tb '#262626'
-    --nf '#a7a7a7' --nb '#1e1e1e'
-    --hf '#9b859d' --hb '#262626'
-    --scf '#9b859d' --scb '#1e1e1e'
+    --tf '#eff1f5' --tb '#bf616a'
+    --ff '#c0c5ce' --fb '#2b303b'
+    --sf '#bf616a' --sb '#343d46'
+    --nf '#65737e' --nb '#343d46'
+    --hf '#c0c5ce' --hb '#343d46'
+    --scf '#65737e' --scb '#343d46'
     --scrollbar autohide
 )
 
