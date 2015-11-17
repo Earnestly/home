@@ -1,20 +1,19 @@
 # XDG_CONFIG_HOME/zsh/.zprofile
 
+export LOCALDIR=$HOME/local
+# export XDG_DATA_HOME=$LOCALDIR/data
+# export XDG_CONFIG_HOME=$LOCALDIR/cfg
+# export XDG_CACHE_HOME=$LOCALDIR/var/cache
+
+# export PATH=$LOCALDIR/bin:$PATH
+
 export XDG_CACHE_HOME=$HOME/.cache
 export XDG_CONFIG_HOME=$HOME/.config
 export XDG_DATA_HOME=$HOME/.local/share
- 
-# export XDG_CACHE_HOME=$HOME/local/var/cache
-# export XDG_CONFIG_HOME=$HOME/local/cfg
-# export XDG_DATA_HOME=$HOME/local/data
 
 export PATH=$HOME/.local/bin:$PATH
 
 export SLRNHOME=$XDG_CONFIG_HOME/slrn
-
-# https://github.com/mozilla/rr/issues/1455#issuecomment-89714904
-export _RR_TRACE_DIR=$XDG_DATA_HOME/rr
-
 export STACK_ROOT=$XDG_DATA_HOME/stack
 export CARGO_HOME=$XDG_DATA_HOME/cargo
 export GNUPGHOME=$XDG_CONFIG_HOME/gnupg
@@ -55,14 +54,14 @@ export PERL_MB_OPT="--install_base $HOME/.local"
 export GOPATH=$HOME/dev/go
 
 # Xorg and XKB.
-export GTK_IM_MODULE=xim
+#export GTK_IM_MODULE=xim
 export XKB_DEFAULT_LAYOUT=gb
 export XKB_DEFAULT_OPTIONS=compose:ralt,ctrl:nocaps
 export XAUTHORITY=$XDG_RUNTIME_DIR/x11/xauthority
 
-export EDITOR=vim
-export VISUAL=vim
-export SUDO_EDITOR=rvim
+export EDITOR=nvim
+export VISUAL=nvim
+export SUDO_EDITOR='nvim -Z'
 
 export LESS=-RX
 

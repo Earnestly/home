@@ -198,4 +198,4 @@ bindsym XF86AudioPlay exec mpc toggle
 bindsym XF86AudioNext exec mpc next
 bindsym XF86AudioPrev exec mpc prev
 
-bindsym XF86Launch1 exec qutebrowser
+bindsym XF86Launch1 exec firefox
