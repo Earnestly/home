@@ -201,7 +201,8 @@ alias chgrp='chgrp -c --preserve-root'
 alias ls='ls --color=auto --show-control-chars --group-directories-first -AhXF'
 alias ll='ls --color=auto --show-control-chars --group-directories-first -AlhXF'
 
-alias dmesg=dmesg -exL
+alias vi='nvim'
+alias dmesg='dmesg -exL'
 alias weechat='dtach-weechat'
 alias mutt='dtach-mutt'
 alias tmux="tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf"
@@ -212,7 +213,7 @@ alias i="curl -F 'f:1=<-' ix.io"
 alias s="curl -F 'sprunge=<-' sprunge.us"
 alias p="curl -F 'c=@-' https://ptpb.pw"
 alias z="curl -F 'file=@-' https://0x0.st"
-alias xc='xclip -o | i'
+alias xc='xclip -o | p'
 
 # XXX force XDG_CONFIG_HOME where possible.
 alias ncmpcpp="ncmpcpp -c $XDG_CONFIG_HOME/ncmpcpp/ncmpcpp.conf"
