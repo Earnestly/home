@@ -1,12 +1,11 @@
 " ~/.vimperatorrc
 
 " Keep HOME clean.
-set runtimepath=~/.config/vimperator
+set runtimepath=~/local/cfg/vimperator
 
-source ~/.config/vimperator/chrome.css
-
-" ?
-source ~/.config/vimperator/plugins/launchv.js
+source ~/local/cfg/vimperator/chrome.css
+source ~/local/cfg/vimperator/plugins/launchv.js
+source ~/local/cfg/vimperator/plugins/toggle.js
 
 set gui=none,tabs
 set defsearch=ddg
@@ -26,9 +25,6 @@ noremap l 5l
 " Don't put me into insert mode automatically.
 set focuscontent=true
 
-" Toggle bookmark toolbar.
-nmap s :set toolbars=invbookmarks<CR>
-
 " Tab control.
 nmap <A-h> :tabprev<CR>
 nmap <A-l> :tabnext<CR>
@@ -38,30 +34,24 @@ nmap <A-S-l> :tabmove +1<CR>
 " Easily show downloads
 nmap <S-d> :tab downloads<CR>
 
+nmap <A-x> :togglejs<CR>
+
 " Stop <C-j> and <C-k> doing whatever it does.
 nmap <C-j> <nop>
 nmap <C-k> <nop>
 
-" Open the current URL as an argument to yt-dl.
 nmap <S-u> -e :launchv<CR>
+
 nmap <C-l> -e :nohl
 
-" Use vim instead of gvim for now.
-"set editor='termite -e "vim +<line> <file>"'
+" Vimperator doesn't correctly handle non-hacked -e terminals.
+set editor="xterm -e nvim"
 
 " Fix for uBlock menu.
 style -name ublick * #nav-bar * { visibility: visible; }
 
 " Style
 colorscheme vimium_hints
-
-" Custom per-site CSS
-"colorscheme justify
-"colorscheme htdp.org
-"colorscheme azillionmonkeys.com
-"colorscheme learnyouahaskell.com
-"colorscheme realworldhaskell.org
-"colorscheme haskell.org
 
 " Change some default about:configs.
 set! browser.search.defaultenginename=DDG Bangs
@@ -72,6 +62,10 @@ set! network.cookie.cookieBehavior=1
 set! plugins.click_to_play=true
 set! general.smoothScroll=false
 set! plugin.default.state=1
+
+" Popups are back, after all those years trying to get rid of them, now the
+" browsers do it themselves.
+set! reader.parse-on-load.enabled=false
 
 " Look at our precision designed curves, lol.  No.
 set! browser.devedition.theme.enabled=true

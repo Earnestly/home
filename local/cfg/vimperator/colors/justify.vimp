@@ -1,4 +1,4 @@
-" Web designers apparently suck at design.
+" Web designers apparently suck at design
 
 style -name=justify -append * <<EOF
 p { 

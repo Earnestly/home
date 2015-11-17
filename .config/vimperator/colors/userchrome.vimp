@@ -1,7 +1,0 @@
-style -append chrome://* <<EOF
-@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);
-
-#statusbar-display {
-    display: none !important;
-}
-EOF
