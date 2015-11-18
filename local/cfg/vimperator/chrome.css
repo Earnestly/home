@@ -3,6 +3,7 @@
 /*
  * ISSUES
  *
+ * Requires (magic) vimperator's tabnumber to prevent tab overflow scroll box.
  * Too many magic numbers as a result of fighting CSS.
  * Only the middle region of the tab is interactive.
  * The last tab doesn't display vimperator's tabnumber except the very last.
@@ -72,11 +73,11 @@ tab {
     display: none !important;
 }
 
-/* 
+/*
  * Attempts to make the vimperator statusbar consistent with the tabbar, the
  * side benefit of this is that ublock's icon is no longer tiny.
  */
-#liberator-bottombar toolbarbutton { 
+#liberator-bottombar toolbarbutton {
     min-height: var(--tab-height) !important;
     padding: initial !important;
     margin: initial !important;

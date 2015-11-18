@@ -1,11 +1,10 @@
-" ~/.vimperatorrc
+" HOME/.vimperatorrc
 
-" Keep HOME clean.
-set runtimepath=~/local/cfg/vimperator
+set runtimepath=$LOCALDIR/cfg/vimperator
 
-source ~/local/cfg/vimperator/chrome.css
-source ~/local/cfg/vimperator/plugins/launchv.js
-source ~/local/cfg/vimperator/plugins/toggle.js
+source $LOCALDIR/cfg/vimperator/chrome.css
+source $LOCALDIR/cfg/vimperator/plugins/launchv.js
+source $LOCALDIR/cfg/vimperator/plugins/toggle.js
 
 set gui=none,tabs
 set defsearch=ddg
@@ -63,24 +62,20 @@ set! plugins.click_to_play=true
 set! general.smoothScroll=false
 set! plugin.default.state=1
 
-" Popups are back, after all those years trying to get rid of them, now the
-" browsers do it themselves.
-set! reader.parse-on-load.enabled=false
-
-" Look at our precision designed curves, lol.  No.
-set! browser.devedition.theme.enabled=true
-
 " Preferences, mostly added for reproducability from a single configuration.
 set! font.name.monospace.x-western=Inconsolatazi4
 set! font.name.serif.x-western=Georgia
 set! font.minimum-size.x-western=16
+
+" Popups are back, after all those years trying to get rid of them, now the
+" browsers do it themselves.
+set! reader.parse-on-load.enabled=false
 
 " Disable all kinds of additional crap that leaks private data.
 " Straight from the school of enumerating badness.
 set! browser.safebrowsing.downloads.enabled=false
 set! browser.safebrowsing.malware.enabled=false
 set! browser.safebrowsing.enabled=false
-
 set! privacy.trackingprotection.enabled=true
 set! browser.search.suggest.enabled=false
 set! network.http.sendRefererHeader=0
@@ -108,7 +103,6 @@ set! loop.enabled=false
 set! media.peerconnection.enabled=false
 
 " Globally disable javascript.
-set! privacy.trackingprotection.enabled=true
 set! javascript.enabled=false
 
 " Require websites preform safe ssl negotiation.
@@ -116,7 +110,7 @@ set! security.ssl.treat_unsafe_negotiation_as_broken=true
 set! security.ssl.require_safe_negotiation=true
 
 " Try in futility to disable HTML5 video/audio. 
-" Note: Autoplay disable doesn't actually prevent autoplay because that would
+" Note: Disabling autoplay doesn't actually prevent autoplay because that would
 "       be too simple. <https://bugzil.la/659285>
 set! media.autoplay.enabled=false
 set! media.gstreamer.enabled=false
