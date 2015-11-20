@@ -2,12 +2,14 @@
 
 /*
  * ISSUES
- *
- * Requires (magic) vimperator's tabnumber to prevent tab overflow scroll box.
- * Too many magic numbers as a result of fighting CSS.
- * Only the middle region of the tab is interactive.
- * The last tab doesn't display vimperator's tabnumber except the very last.
- * Closing a tab via the mouse breaks tab layout and leaves gaps.
+ * - Requires (magic) vimperator's tabnumber to prevent tab overflow scroll
+ *   box.
+ * - There appears to be more padding between the favicon and text vs. throbber
+ *   and text.
+ * - Too many magic numbers as a result of fighting CSS.
+ * - Only the middle region of the tab is interactive.
+ * - The last tab doesn't display vimperator's tabnumber except the very last.
+ * - Closing a tab via the mouse breaks tab layout and leaves gaps.
  */
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
@@ -27,6 +29,7 @@ tab {
     background: var(--bg-dark) !important;
 }
 
+/* Seems to control actual height of the tabbar. */
 #TabsToolbar, #tabbrowser-tabs {
     height: var(--tab-height) !important;
     min-height: var(--tab-height) !important;
@@ -55,7 +58,7 @@ tab {
     height: var(--tab-icon-size) !important;
 }
 
-/* Improve alignment of text in a tab. */
+/* Try improve alignment of text in a tab. */
 .tabbrowser-tab * {
     margin: -0.4px 0 10px 2px !important;
     padding: initial !important;
@@ -67,7 +70,7 @@ tab {
     padding-inline-end: initial !important;
 }
 
-/* Remove overflow indicators. */
+/* Remove overflow indicators(?). */
 .arrowscrollbox-overflow-start-indicator,
 .arrowscrollbox-overflow-end-indicator {
     display: none !important;
@@ -75,7 +78,7 @@ tab {
 
 /*
  * Attempts to make the vimperator statusbar consistent with the tabbar, the
- * side benefit of this is that ublock's icon is no longer tiny.
+ * side benefit of this is that ublock's icon is no longer tiny (at 20px).
  */
 #liberator-bottombar toolbarbutton {
     min-height: var(--tab-height) !important;

@@ -1,28 +1,39 @@
-" HOME/.vimperatorrc
+" HOME/.vimperatorrc -> LOCALDIR/cfg/vimperator/vimperatorrc
+
+" TODO
+" - Provide some kind of way to open the uBlock panel via a keybind, this will
+"   likely need a javascript function.
+" - Think about better configuration layout, splitting up this file, etc.
+" - Style the statusbar and other vimperator elements.
+" - Preserve hint narrowing in ;F mode.
+"   https://github.com/vimperator/vimperator-labs/issues/332
 
 set runtimepath=$LOCALDIR/cfg/vimperator
 
-source $LOCALDIR/cfg/vimperator/chrome.css
 source $LOCALDIR/cfg/vimperator/plugins/launchv.js
 source $LOCALDIR/cfg/vimperator/plugins/toggle.js
 
-set gui=none,tabs
-set defsearch=ddg
-set noscrollbars
-set tabnumbers
-set hlsearch
+" Style.
+source $LOCALDIR/cfg/vimperator/chrome.css
+colorscheme hints
 
+set hlsearch
+set tabnumbers
 set autocomplete
+set noscrollbars
+set focuscontent
+set defsearch=ddg
+set gui=none,tabs
 set wildmode=list:longest,full
+
+" Vimperator doesn't correctly handle non-hacked -e terminals.
+set editor="xterm -e nvim"
 
 " Speed up scrolling.
 noremap h 5h
 noremap j 5j
 noremap k 5k
 noremap l 5l
-
-" Don't put me into insert mode automatically.
-set focuscontent=true
 
 " Tab control.
 nmap <A-h> :tabprev<CR>
@@ -39,18 +50,17 @@ nmap <A-x> :togglejs<CR>
 nmap <C-j> <nop>
 nmap <C-k> <nop>
 
-nmap <S-u> -e :launchv<CR>
+nmap <S-u> :launchv<CR>
 
-nmap <C-l> -e :nohl
+nmap <C-l> :nohl<CR>
 
-" Vimperator doesn't correctly handle non-hacked -e terminals.
-set editor="xterm -e nvim"
+" For some reason the built-in behaviour of C-c is no longer functional.
+" https://github.com/vimperator/vimperator-labs/issues/325
+nmap <C-c> :stop<CR>
 
-" Fix for uBlock menu.
-style -name ublick * #nav-bar * { visibility: visible; }
-
-" Style
-colorscheme vimium_hints
+" Fix for uBlock panel menu popup.
+" https://github.com/gorhill/uBlock/issues/112
+set! extensions.ublock0.forceLegacyToolbarButton=true
 
 " Change some default about:configs.
 set! browser.search.defaultenginename=DDG Bangs

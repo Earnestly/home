@@ -1,12 +1,12 @@
-// ~/local/cfg/vimperator/plugins/toggle.js
+/* LOCALDIR/cfg/vimperator/plugins/toggle.js */
 
 function togglejs() {
     if(options.getPref("javascript.enabled") == true){
         options.setPref("javascript.enabled", false);
-        liberator.echo("javascript disabled");
+        liberator.echomsg("javascript disabled");
     }else{
         options.setPref("javascript.enabled", true);
-        liberator.echo("javascript enabled");
+        liberator.echomsg("javascript enabled");
     }
 }
 

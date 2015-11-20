@@ -1,9 +1,6 @@
-" Web designers apparently suck at design
-
 style -name=justify -append * <<EOF
 p { 
     text-align: justify !important;
-    text-rendering: optimizeLegibility !important;
     -moz-hyphens: auto !important;
     hyphens: auto !important;
 }
