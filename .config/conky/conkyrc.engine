@@ -1,0 +1,49 @@
+out_to_console yes
+background no
+short_units yes
+max_text_width 0
+out_to_x no
+own_window no
+
+# My locale is already UTF-8.
+override_utf8_locale no
+
+# Don't add spaces anywhere.
+pad_percents 0
+use_spacer none
+
+update_interval 2.0
+
+# Run forever (or will it?)
+total_run_times 0
+
+# Normal
+template0 65737e
+
+# Warning
+template1 bf616a
+
+TEXT
+[\
+${if_mpd_playing}\
+{"full_text":"MPD:${execp mpd-now-playing-conky}",\
+"color":"\#${template0}"},\
+${endif}\
+{"full_text":"VOL:${execp ponymix get-volume}%",\
+"color":"\#${template0}"},\
+{"full_text":"${execp check-mic-mute-conky}",\
+"color":"\#${template0}"},\
+{"full_text":"CPU:${cpu}%",\
+"color":"\#${template0}"},\
+${if_match ${acpitemp} > 90}\
+{"full_text":"TEMP:${acpitemp}C",\
+"color":"\#${template1}"},\
+${endif}\
+{"full_text":"HDD:${fs_free}",\
+"color":"\#${template0}"},\
+${if_up eno}\
+{"full_text":"NET:${addr eno} ${wireless_link_qual wlp3s0}% DN:${downspeedf eno}/UP:${upspeedf eno}",\
+"color":"\#${template0}"},\
+${endif}\
+{"full_text":"${time %A %B %d %H:%M}",\
+"color":"\#${template0}"}],\

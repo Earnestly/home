@@ -2,4 +2,7 @@
 
 printf "%s%s%s" '{"version":1}' '[' '[],'
 
-exec conky -c "$XDG_CONFIG_HOME"/conky/conkyrc
+case $HOSTNAME in
+    teapot) exec conky -c "$XDG_CONFIG_HOME"/conky/conkyrc.teapot ;;
+    engine) exec conky -c "$XDG_CONFIG_HOME"/conky/conkyrc.engine ;;
+esac
