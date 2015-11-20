@@ -1,0 +1,14 @@
+<!-- LOCALDIR/data/mozilla/searchplugins/ddgbangs.xml -->
+
+<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/">
+    <os:ShortName>DDG Bangs</os:ShortName>
+    <os:Description>DDG Bangs</os:Description>
+    <os:InputEncoding>UTF-8</os:InputEncoding>
+
+    <os:Url type="text/html" method="GET" template="https://duckduckgo.com/html/?q=!{searchTerms}"></os:Url>
+
+    <os:Url type="application/x-suggestions+json" method="GET" template="https://duckduckgo.com/ac/">
+        <os:Param name="q" value="{searchTerms}"/>
+        <os:Param name="type" value="list"/>
+    </os:Url>
+</SearchPlugin>
