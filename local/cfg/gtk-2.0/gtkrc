@@ -1,0 +1,9 @@
+# XDG_CONFIG_HOME/gtk-2.0/gtkrc
+
+gtk-font-name = "Source Sans Pro Semibold 10"
+include "numix/gtkrc"
+
+style "gvim" {
+  bg[NORMAL] = "#3f3f3f"
+}
+widget "vim-main-window.*GtkForm" style "gvim"

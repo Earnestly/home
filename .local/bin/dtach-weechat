@@ -1,4 +1,0 @@
-#!/bin/dash
-
-#export LD_PRELOAD="$HOME"/.local/lib/libwcwidth.so
-exec dtach -A "$XDG_RUNTIME_DIR"/weechat weechat

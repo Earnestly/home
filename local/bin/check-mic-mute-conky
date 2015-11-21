@@ -1,0 +1,7 @@
+#!/bin/dash
+# check-mic-mute-conky - hack for conky to conditionally show mic volume
+
+if ! ponymix is-mute -t source -d alsa_input.pci-0000_00_1b.0.analog-stereo; then
+    vol=$(ponymix get-volume -t source -d alsa_input.pci-0000_00_1b.0.analog-stereo)
+    printf 'MIC:%s%%\n' "$vol"
+fi

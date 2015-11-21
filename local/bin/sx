@@ -1,0 +1,47 @@
+#!/bin/bash
+# sx - simpler startx
+
+# Make sure we aren't running in an xserver.
+if [[ $DISPLAY ]]; then
+    exit 1
+fi
+
+readonly confdir=${XDG_CONFIG_HOME:-$HOME/local/cfg}/X11
+readonly logdir=${XDG_CACHE_HOME:-$HOME/local/var/cache/log}/X11
+readonly rundir=$XDG_RUNTIME_DIR/X11
+
+xinitrc=${XINITRC:-$confdir/xinitrc}
+log=/dev/null
+#log=$cachedir/xsession.log
+
+if ! mkdir -p "$confdir" "$cachedir" "$rundir"; then
+    exit 1
+fi
+
+export XAUTHORITY=$rundir/XAuthority
+
+# Such as ICEAuthority.
+unset SESSION_MANAGER
+
+if [[ $XDG_VTNR ]]; then
+    export DISPLAY=:$XDG_VTNR
+else
+    printf 'Apparently XDG_VTNR is not set, bailing out\n' >&2
+    exit 1
+fi
+
+# I blindly add a new entry with xauth as this is stored in a tmpfs and thus
+# destroyed after a reboot.
+xauth -q add "$DISPLAY" . "$(mcookie)" &> /dev/null
+
+serveropts=(
+    vt"$XDG_VTNR" 
+    # Logfile can be only set for rootful servers, this option is ignored for
+    # rootless uses of the Xserver.  What a wonderful piece of software we use.
+    # -logfile "$XDG_DATA_HOME"/../var/log/xorg.$DISPLAY.log
+    -keeptty
+    -nolisten tcp 
+    -auth "$XAUTHORITY"
+)
+
+exec xinit "${1:-$xinitrc}" -- "$DISPLAY" "${serveropts[@]}" "${@:2}" 2> "$log"

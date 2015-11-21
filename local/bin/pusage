@@ -1,0 +1,31 @@
+#!/bin/bash
+# pusage - simple attempt to breakdown the total usage of a process
+
+# I don't do any error checking.  Assumes /proc/config.gz is zipped.
+set -ue
+
+pid=$1
+read -r comm < /proc/"$pid"/comm
+elapsed=$(ps -p "$pid" -o etimes=)
+hz=$(gzip -cd /proc/config.gz | sed -n 's/^CONFIG_HZ=\(.*\)/\1/p')
+
+printf 'Report for %s (%d) @ %dHz\n' "$comm" "$pid" "$hz"
+
+awk -v hz="$hz" -v elapsed="$elapsed" 'END {
+    utime = $14 / hz
+    stime = $15 / hz
+    cutime = $16 / hz
+    sutime = $17 / hz
+    runtime = elapsed
+
+    total_cpu_time = utime + stime + cutime + cstime
+
+    perc_used = (total_cpu_time / runtime) * 100
+    userspace_perc = ((utime + cutime) / runtime) * 100
+    kernelspace_perc = ((stime + cstime) / runtime) * 100
+
+    printf "Process uptime            %s\n", strftime("%H:%M:%S", runtime, 1)
+    printf "Overall CPU usage         %s %.3f%%\n", strftime("%H:%M:%S", total_cpu_time , 1), perc_used
+    printf "Time spent in userspace   %s %.3f%%\n", strftime("%H:%M:%S", utime + cutime / hz, 1), userspace_perc
+    printf "Time spent in kernelspace %s %.3f%%\n", strftime("%H:%M:%S", stime + cstime / hz, 1), kernelspace_perc
+}' /proc/"$pid"/stat

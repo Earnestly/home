@@ -1,0 +1,44 @@
+# XDG_CONFIG_HOME/zathura/zathurarc
+
+# General.
+set adjust-open "width"
+
+set font "Source Sans Pro Semibold 10"
+set guioptions "" 
+
+set window-title-basename "true"
+set window-title-page "true"
+
+# Colours.
+set default-bg "#2b303b"
+set default-fg "#343d46"
+
+set statusbar-fg "#a7adba"
+set statusbar-bg "#343d46"
+
+set inputbar-bg "#2b303b"
+set inputbar-fg "#4f5b66"
+
+set notification-error-bg "#bf616a"
+set notification-error-fg "#2b303b"
+
+set notification-warning-bg "#bf616a"
+set notification-warning-fg "#2b303b"
+
+set highlight-color "#ebcb8b"
+set highlight-active-color "#8fa1b3"
+
+set completion-highlight-fg "#4f5b66"
+set completion-highlight-bg "#96b5b4"
+
+set completion-bg "#4f5b66"
+set completion-fg "#96b5b4"
+
+set notification-bg "#a3be8c"
+set notification-fg "#2b303b"
+
+set recolor-lightcolor "#2b303b"
+set recolor-darkcolor "#dfe1e8" 
+set recolor "true"
+
+#set recolor-keephue "true"

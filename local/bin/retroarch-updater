@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+# retroarch-updater
+
+readonly core_directory=${XDG_CONFIG_HOME:-$HOME/.config}/retroarch/core
+readonly build_directory=$core_directory/build
+
+confirm() {
+    local -l reply
+    local message=$@
+
+    read -p "$message [Y/n] " reply
+    [[ ! $reply || $reply = y?(es) ]]
+}
+
+check() {
+    # global core_directory
+    local repo=$1
+    local core=$2
+
+    # git fetch will return 0 even if nothing was fetched meaning we need to
+    # check regardless, meh.
+    printf -- '\e[1;33m %s\e[0m: Updating...\r' "$repo"
+    git fetch 2> /dev/null
+
+    if [[ $(git rev-parse HEAD) != $(git rev-parse @{upstream}) ]]; then
+        printf -- '\e[1;33m%s\e[0m: Changes found:\n' "$repo"
+        git --no-pager log --oneline --stat ..@{upstream}
+        if confirm 'Rebuild the core?'; then
+            git merge
+            build "$core"
+            return
+        fi
+    else
+        printf -- '\e[1;32m %s\e[0m: Repository up to date.\n' "$repo"
+    fi
+
+    update "$core"
+}
+
+update() {
+    # global core_directory
+    local core=$1
+
+    if [[ ! -e $core_directory/$core ]]; then
+        printf -- '\e[1;33m%s\e[0m: Not found.\n' "$core_directory/$core"
+        if confirm 'Attempt to build it anyway?'; then
+            build "$core"
+        fi
+    fi
+}
+
+build() {
+    # global core_directory
+    local core=$1
+
+    # Libretro let this get out of hand and now we have to suffer for it.
+    # https://github.com/libretro/libretro-super/issues/244
+    apply_hacks "$core"
+
+    if [[ -e Makefile.libretro ]]; then
+        make -f Makefile.libretro
+    elif [[ -e makefile.libretro ]]; then
+        make -f makefile.libretro
+    elif [[ -d libretro ]]; then
+        make -C libretro
+        core=libretro/$core
+    elif [[ -d target-libretro ]]; then
+        make -C target-libretro
+        core=target-libretro/$core
+    fi
+
+    install "$core"
+}
+
+apply_hacks() {
+    local core=$1
+
+    case $core in
+        ppsspp_libretro.so) git submodule update --init lang native ext/armips ;;
+    esac
+}
+
+install() {
+    # Global: core_directory, build_directory
+    local core=$1
+
+    if [[ -e $core ]]; then
+        mv -vf -- "$core" "$core_directory"
+    else
+        printf -- '\e[1;31m%s\e[0m: No core found.  This might be the result of a build failure.\n' "$core"
+        printf -- 'Here is some state information:\n'
+        printf -- '    PWD=%s\n' "$PWD"
+        printf -- '    core=%s\n' "$core"
+        printf -- '    core_directory=%s\n' "$core_directory"
+        printf -- '    build_directory=%s\n' "$build_directory"
+    fi
+}
+
+process_core() {
+    # global build_directory
+    local repo=$1
+    local core=$2
+
+    mkdir -p -- "$build_directory"
+
+    if [[ ! -d $build_directory/$repo ]]; then
+        printf -- '\e[1;33m%s\e[0m: Core not present, attempting to clone...\n' "$repo"
+        git clone --depth 1 git://github.com/libretro/"$repo" "$build_directory/$repo"
+    fi
+
+    (cd "$build_directory/$repo" && check "$repo" "$core")
+}
+
+declare -A cores
+readonly cores=(
+    [pcsx_rearmed]=pcsx_rearmed_libretro.so
+    [mgba]=mgba_libretro.so
+    [snes9x-next]=snes9x_next_libretro.so
+    [nestopia]=nestopia_libretro.so
+    [libretro-fba]=fb_alpha_libretro.so
+    [libretro-ppsspp]=ppsspp_libretro.so
+    [mame]=mame_libretro.so
+)
+
+for core in "${!cores[@]}"; do
+    process_core "$core" "${cores[$core]}"
+done

@@ -1,0 +1,17 @@
+set show-all-if-ambiguous on
+set menu-complete-display-prefix on
+set colored-stats on
+
+# Currently vi-mode doesn't appear to work with history-substring-search-*.
+set editing-mode emacs
+
+# "gg":beginning-of-history
+# "G":end-of-history
+"\e[5~":end-of-history
+"\e[6~":beginning-of-history
+"\M-p":history-substring-search-backward
+"\M-n":history-substring-search-forward
+"\e[A":history-search-backward
+"\e[B":history-search-forward
+"\e[Z":menu-complete-backward
+TAB:menu-complete

@@ -1,0 +1,358 @@
+#!/usr/bin/env bash
+# ghostly - Uses ghostscript to fix pdf files and generate bemenu-loader menus
+
+# requires ghostscript poppler xdg-utils
+
+readonly progn=ghostly
+readonly current_pdf_version=1.7
+readonly library=$HOME/doc/pdf
+readonly TMPDIR=/tmp
+
+usage() {
+    cat >&2 <<EOF
+Usage: ghostly [options] [pdf, dir]
+       ghostly add [options] <pdf>
+       ghostly info [pdf, dir]
+
+Options:
+  -h     This help message
+
+add:
+  -m     Include a custom pdfmark file (Cannot be used with -t)
+  -n     Noclobber, avoid overwriting original document. Generate a .new file
+         instead
+  -o     Output directory (Default: HOME/docs/pdf)
+  -t     Insert a title or overrides any current title if the input is the same
+         file as the output (Cannot be used with -m)
+
+info:
+  <pdf>  Display metadata with pdfinfo
+  -g     Generate a dmenu_loader compatible menu
+  -t     Find pdf documents with missing titles
+
+EOF
+}
+
+puts() {
+    printf -- "$1\n" "${@:2}"
+}
+
+err() {
+    puts "$progn: $@" >&2
+}
+
+is_valid_pdf() {
+    local input=$1
+
+    if ! [[ $input && $(file -biL -- "$input") == application/pdf* ]]; then
+        return 1
+    fi
+}
+
+pdf_version() {
+    local input=$1
+    local k v
+
+    while IFS=: read -r k v; do
+        if [[ $k == "PDF version" ]]; then
+            puts '%1.1f' "$v"
+        fi
+    done < <(pdfinfo "$input")
+}
+
+fsize() {
+    local input=$1
+
+    size=$(stat -c '%s' "$input")
+
+    awk -v size=$size 'BEGIN {
+            printf "%1.1f", size / 1024 / 1024
+    }'
+}
+
+cmp_size() {
+    local rhs=$1
+    local lhs=$2
+
+    awk -v rhs="$rhs" -v lhs="$lhs" 'BEGIN {
+            average = (rhs + lhs) / 2
+            difference = lhs - rhs
+
+            if (difference != 0)
+                percent = (difference / average) * 100
+            else
+                percent = 0
+
+            printf "%1.1f MiB (%d%%)", difference, percent
+    }'
+}
+
+find_pdf_files() {
+    local input=${1%/}
+    local p
+
+    # If we didn't get a directory just assume the file's parent directory.
+    if [[ ! -d $input ]]; then
+        input=${input%/*}
+    fi
+
+    # If we got nothing assume the current working directory.
+    if [[ ! -e $input ]]; then
+        input=$PWD
+    fi
+
+    # Always return absolute paths.
+    if [[ ${input:0:1} != / ]]; then
+        input=$PWD/$input
+    fi
+
+    shopt -s globstar
+
+    for p in "$input"/**/*.pdf; do
+        if is_valid_pdf "$p"; then
+            puts '%s' "$p"
+        fi
+    done
+
+    shopt -u globstar
+}
+
+generate() {
+    local input=$1
+    local title reader pdf_files pdf
+
+    # Try to guess the pdf reader.
+    reader=$(xdg-mime query default application/pdf)
+    reader=${reader%.*}
+
+    puts 'Title=%s' "${title:-Library}"
+    puts 'Command=exec %s\n' "${reader:-llpp}"
+
+    puts 'Scanning %s' "$library" >&2
+
+    mapfile -t pdf_files < <(find_pdf_files "$input")
+
+    for pdf in "${pdf_files[@]}"; do
+        puts 'Processing %s' "${pdf##*$library\/}" >&2
+        read -r _ title < <(pdfinfo "$pdf" 2> /dev/null)
+
+        if [[ -z "$title" ]]; then
+            title="Warning: No title set for ${pdf##*/}"
+        fi
+
+        puts '%s=%s' "$title" "$pdf"
+    done
+}
+
+check_for_titles() {
+    local input=${1%/}
+
+    mapfile -t pdf_files < <(find_pdf_files "$input")
+
+    for pdf in "${pdf_files[@]}"; do
+        read -r _ title < <(pdfinfo "$pdf")
+
+        if [[ ! "$title" ]]; then
+            puts '%s' "$pdf"
+        fi
+    done
+}
+
+run_ghostscript() {
+    # WooOOooOoo.
+    local input=$1
+    local version=$2
+    local pdfmark=$3
+    local output=$4
+    local -a options
+
+    # These options do their best to retain the original quality of the input
+    # pdf while trying to save space.
+
+    # Considerations:
+    #-dAutoFilterGrayImages=false
+    #-dAutoFilterColorImages=false
+    #-dGrayImageFilter=/FlateEncode
+    #-dMonoImageFilter=/FlateEncode
+    #-dColorImageFilter=/FlateEncode
+    options=(
+        -sDEVICE=pdfwrite -dBATCH -dNOPAUSE
+        -dCompatibilityLevel="$version"
+        -sOutputFile="$output"
+        -dAutoRotatePages=/None
+        -dSubsetFonts=true
+        -dCompressFonts=true
+        -dDetectDuplicateImages=true
+        -dDownsampleColorImages=true
+        -dDownsampleGrayImages=true
+        -dDownsampleMonoImages=true
+        "$input"
+    )
+
+    if [[ $pdfmark ]]; then
+        options+=("$pdfmark")
+    fi
+
+    if ! err=$(gs "${options[@]}" 1>&2); then
+        err '%s' "$err"
+
+        if [[ $pdfmark == $TMPDIR/pdfmark ]]; then
+            rm -vf -- "$pdfmark" "$output"
+        else
+            rm -vf -- "$output"
+        fi
+        exit 1
+    fi
+
+    if [[ $pdfmark == $TMPDIR/pdfmark ]]; then
+        rm -vf -- "$pdfmark"
+    fi
+}
+
+info() {
+    local check generate input input_parent_dir
+
+    while (($#)); do
+        case $1 in
+            -t) check=1 ;;
+            -g) generate=1 ;;
+            -h) usage; exit ;;
+            *) input=$1
+        esac
+        shift
+    done
+
+    input_parent_dir=${input%/*}
+
+    if ((generate)); then
+        if [[ -d $input ]]; then
+            generate "$input"
+        else
+            generate "$input_parent_dir"
+        fi
+        exit
+    fi
+
+    if ((check)); then
+        if [[ -d $input ]]; then
+            check_for_titles "$input"
+        else
+            check_for_titles "$input_parent_dir"
+        fi
+        exit
+    fi
+
+    if [[ $input ]]; then
+        if is_valid_pdf "$input"; then
+            pdfinfo "$input"
+        fi
+    else
+        usage
+        exit 1
+    fi
+
+}
+
+add() {
+    local title output input pdfmark noclobber version size_difference 
+    local output_size original_size target_output
+
+    while (($#)); do
+        case $1 in
+            -t) shift; title=$1 ;;
+            -o) shift; output=$1 ;;
+            -m) shift; pdfmark=$1 ;;
+            -n) noclobber=1 ;;
+            -h) usage; exit ;;
+            *) input=$1
+        esac
+        shift
+    done
+
+    if [[ ! $input ]]; then
+        err 'No input document found'
+        exit 1
+    fi
+
+    if ! is_valid_pdf "$input"; then
+        err '%s: Not a valid pdf document' "$input"
+        exit 1
+    fi
+
+    if [[ -d $output ]]; then
+        err '%s: Not a file' "$output"
+        exit 1
+    fi
+
+    # If the set output is a directory then make sure it exists.
+    if [[ $output == */* ]]; then
+        mkdir -p -- "${output%/*}"
+    fi
+
+    # If it's not set then fallback.
+    output=${output:-$library/$input}
+
+    if [[ $title && $pdfmark ]]; then
+        err 'Cannot include both a title and pdfmark'
+        exit
+    fi
+
+    if [[ $pdfmark ]]; then
+        pdfmark=$pdfmark
+    fi
+
+    if [[ $title ]]; then
+        puts '[/Title (%s) /DOCINFO pdfmark' "$title" > "$TMPDIR"/pdfmark
+        pdfmark=$TMPDIR/pdfmark
+    fi
+
+    version=$(pdf_version "$input")
+
+    if [[ ! $version ]]; then
+        err 'Unable to determine pdf version'
+        err 'Assuming latest version (%1.1f)' "$current_pdf_version"
+        version=$current_pdf_version
+    fi
+
+    # Store for a nice comparison report at the end.
+    original_size=$(fsize "$input")
+    target_output=$output.tmp
+
+    run_ghostscript "$input" "$version" "$pdfmark" "$target_output"
+
+    output_size=$(fsize "$target_output")
+    size_difference=$(cmp_size "$original_size" "$output_size")
+    puts 'Size difference %s' "$size_difference"
+
+    if ((noclobber)); then
+        mv -v -- "$target_output" "$output".new
+    else
+        mv -v -- "$target_output" "$output"
+    fi
+}
+
+if ((!$#)); then
+    err 'At least one argument is required'
+    usage
+    exit 1
+fi
+
+case $@ in
+    add*)
+        shift; add "$@"
+        exit
+        ;;
+    info*)
+        shift; info "$@"
+        exit
+        ;;
+    -h*)
+        usage
+        exit
+        ;;
+    *)
+        err '%s: Unexpected option' "$1"
+        usage
+        exit 1
+        ;;
+esac

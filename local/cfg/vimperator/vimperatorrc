@@ -1,4 +1,4 @@
-" HOME/.vimperatorrc -> LOCALDIR/cfg/vimperator/vimperatorrc
+" HOME/local/cfg/vimperator/vimperatorrc
 
 " TODO
 " - Provide some kind of way to open the uBlock panel via a keybind, this will
@@ -8,13 +8,13 @@
 " - Preserve hint narrowing in ;F mode.
 "   https://github.com/vimperator/vimperator-labs/issues/332
 
-set runtimepath=$LOCALDIR/cfg/vimperator
+set runtimepath=$HOME/local/cfg/vimperator
 
-source $LOCALDIR/cfg/vimperator/plugins/launchv.js
-source $LOCALDIR/cfg/vimperator/plugins/toggle.js
+source $HOME/local/cfg/vimperator/plugins/launchv.js
+source $HOME/local/cfg/vimperator/plugins/toggle.js
 
 " Style.
-source $LOCALDIR/cfg/vimperator/chrome.css
+source $HOME/local/cfg/vimperator/chrome.css
 colorscheme hints
 
 set hlsearch
