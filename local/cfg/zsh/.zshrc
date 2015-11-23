@@ -1,7 +1,7 @@
 # XDG_CONFIG_HOME/zsh/.zshrc
 
 # Modules.
-autoload -Uz edit-command-line run-help compinit zmv
+autoload -Uz edit-command-line run-help compinit zmv vcs_info
 zmodload zsh/complist
 compinit
 
@@ -35,36 +35,30 @@ HISTFILE=$XDG_CONFIG_HOME/zsh/.zhistory
 HISTSIZE=25000
 SAVEHIST=$HISTSIZE
 
-export -U PATH="$HOME/local/bin:$PATH"
-
 # Style.
 zstyle ':completion:*' menu select
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' rehash yes
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
-PROMPT='%m %n %#${vimode}%F{green}${branch}%f%F{cyan}%~%f '
+PROMPT='%m %n %#${vimode} %F{green}${repo}%F{cyan}%~%f '
 
 # Functions.
-# All I want is the git branch for now, vcs_info is way overkill to do this.
-function get_git_branch {
-    if [[ -d .git ]]; then
-        read -r branch < .git/HEAD
-        branch=" ${branch##*/} "
-    else
-        branch=" "
-    fi
-}
-
-# Print basic prompt to the window title.
 function precmd {
+    # Print basic prompt to the window title.
     print -Pn "\e];%n %~\a"
-    get_git_branch
+
+    # Get the top level directory for a git repo, strip leading paths and
+    # append a space if the command git rev-parse succeeded otherwise return
+    # nothing, this prevents double-space gaps in the prompt from appearing.
+    # Thanks to irc://freenode/#zsh!llua for the golfing help!
+    repo=${(%):-%(?.${"$(git rev-parse --show-toplevel 2> /dev/null)"##*/} .)}
 }
 
 # Print the current running command's name to the window title.
 function preexec {
     if [[ $TERM == xterm-* ]]; then
+        # Check that the first word doesn't match some common prefixes.
         local cmd=${1[(wr)^(*=*|sudo|exec|ssh|-*)]}
         print -Pn "\e];$cmd:q\a"
     fi
@@ -75,17 +69,6 @@ function zle-line-init zle-keymap-select {
     vimode=${${KEYMAP/vicmd/c}/(main|viins)/i}
     zle reset-prompt
 }
-
-# Simple widget for quoting the current word or the previous if cursor
-# positioned on a blank.
-function quote-word {
-    zle vi-forward-word
-    zle vi-backward-blank-word
-    zle set-mark-command
-    zle vi-forward-blank-word-end
-    zle quote-region
-}
-zle -N quote-word
 
 # Keybinds, use vimode explicitly.
 bindkey -v
@@ -164,9 +147,6 @@ bindkey          '^T' history-incremental-pattern-search-backward
 # Verify search result before accepting.
 bindkey -M isearch '^M' accept-search
 
-# Quote the current or previous word.
-bindkey -M vicmd 'Q' quote-word
-
 # Quick and easy note taking (I should make this into a seperate script).
 function n {
     $EDITOR "${@[@]/#/"$HOME/doc/note/"}"
@@ -228,14 +208,14 @@ alias help='run-help'
 
 # Directory hashes.
 if [[ -d $HOME/dev ]]; then
-    for d in $HOME/dev/*(/); do
-        hash -d ${d##*/}=$d
+    for d in "$HOME"/dev/*(/); do
+        hash -d "${d##*/}"="$d"
     done
 fi
 
 # Enable C-S-t in (vte) termite which opens a new terminal in the same working
 # directory.
-if [[ -n $VTE_VERSION ]]; then
+if [[ $VTE_VERSION ]]; then
     source /etc/profile.d/vte.sh
     __vte_prompt_command
 fi

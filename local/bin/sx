@@ -1,7 +1,7 @@
 #!/bin/bash
 # sx - simpler startx
 
-# Make sure we aren't running in an xserver.
+# Make sure we aren't running in an Xserver.
 if [[ $DISPLAY ]]; then
     exit 1
 fi
@@ -12,9 +12,10 @@ readonly rundir=$XDG_RUNTIME_DIR/X11
 
 xinitrc=${XINITRC:-$confdir/xinitrc}
 log=/dev/null
-#log=$cachedir/xsession.log
+#log=$logdir/xsession.log
 
-if ! mkdir -p "$confdir" "$cachedir" "$rundir"; then
+# Fail early, most of these need to exist.
+if ! mkdir -p "$confdir" "$logdir" "$rundir"; then
     exit 1
 fi
 
@@ -37,8 +38,8 @@ xauth -q add "$DISPLAY" . "$(mcookie)" &> /dev/null
 serveropts=(
     vt"$XDG_VTNR" 
     # Logfile can be only set for rootful servers, this option is ignored for
-    # rootless uses of the Xserver.  What a wonderful piece of software we use.
-    # -logfile "$XDG_DATA_HOME"/../var/log/xorg.$DISPLAY.log
+    # rootless uses of the Xserver.
+    # -logfile "${LOCALDIR:-$HOME/local}/var/log/xorg.$DISPLAY.log"
     -keeptty
     -nolisten tcp 
     -auth "$XAUTHORITY"

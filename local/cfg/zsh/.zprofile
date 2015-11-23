@@ -1,14 +1,11 @@
-# HOME/local/cfg/zsh/.zprofile
+# LOCALDIR/cfg/zsh/.zprofile
 
-export XDG_DATA_HOME="$HOME/local/data"
-export XDG_CONFIG_HOME="$HOME/local/cfg"
-export XDG_CACHE_HOME="$HOME/local/var/cache"
+export LOCALDIR="$HOME/local"
+export XDG_DATA_HOME="$LOCALDIR/data"
+export XDG_CONFIG_HOME="$LOCALDIR/cfg"
+export XDG_CACHE_HOME="$LOCALDIR/var/cache"
 
-# In zsh export is typeset -gx. The -U flag for typeset prevents duplicate
-# values in arrays. Since PATH is tied to path[] with typeset -T, it allows us
-# to export PATH without risk of duplicate entry build up as can happen when
-# one naively combines strings in this manner.
-export -U PATH="$HOME/local/bin:$PATH"
+export PATH="$LOCALDIR/bin:$PATH"
 
 export GNUPGHOME"=$XDG_CONFIG_HOME/gnupg"
 export INPUTRC="$XDG_CONFIG_HOME/inputrc"
@@ -36,15 +33,15 @@ export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:/usr/share/terminfo"
 export UNCRUSTIFY_CONFIG="$XDG_CONFIG_HOME/uncrustify/uncrustify.cfg"
 
 # Chicken libraries.
-export CHICKEN_REPOSITORY="$HOME/local/lib/chicken"
-export CHICKEN_INCLUDE_PATH="$HOME/local/lib/chicken"
+export CHICKEN_REPOSITORY="$LOCALDIR/lib/chicken"
+export CHICKEN_INCLUDE_PATH="$LOCALDIR/lib/chicken"
 
 # Perl libraries.
-export PERL5LIB="$HOME/local/lib/perl5"
-export PERL_MM_OPT="INSTALL_BASE=$HOME/local"
-export PERL_MB_OPT="--install_base $HOME/local"
+export PERL5LIB="$LOCALDIR/lib/perl5"
+export PERL_MM_OPT="INSTALL_BASE=$LOCALDIR"
+export PERL_MB_OPT="--install_base $LOCALDIR"
 
-export GOPATH="$HOME/local/lib/go"
+export GOPATH="$LOCALDIR/lib/go"
 
 # xkbcommon understands XKB environments which us useful as wayland compositors
 # will be able to use them.  The syntax is the same as Xorg's configuration.
@@ -74,7 +71,7 @@ export SDL_AUDIODRIVER="pulse"
 export WINEDLLOVERRIDES="winemenubuilder.exe,mscoree,mshtml=d"
 
 # LS_COLORS (or a valid TERM, which I don't have) is now required for `ls` to
-# use colour.
+# use colour.  https://savannah.gnu.org/forum/forum.php?forum_id=8032
 source <(dircolors "$XDG_CONFIG_HOME/coreutils/dircolors")
 
 # Unused exports, but kept as backups if their need ever arises.

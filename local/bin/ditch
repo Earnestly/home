@@ -195,7 +195,7 @@ get_user_picks() {
 play_stream() {
     local url=$1
     local title=$2
-    local q err args
+    local err args
 
     shopt -s extglob
     # Squeeze repeated spaces.
@@ -233,7 +233,7 @@ declare -A menu stream
 
 mapfile -t urls < <(generate_urls)
 
-if [[ $urls ]]; then
+if [[ ${urls[@]} ]]; then
     parallel_fmap fetch_json urls
 else
     err 'no configuration data found'

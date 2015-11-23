@@ -27,7 +27,7 @@ if ((!status)); then
 fi
 
 # Checkout trunk and clean up left overs.
-if [[ -d "$pkgname" ]]; then
+if [[ -d $pkgname ]]; then
     cd "$pkgname"
     git checkout HEAD:trunk -- .
 fi

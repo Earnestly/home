@@ -1,14 +1,14 @@
-#!/usr/bin/env bash
-# retroarch-updater
+#!/bin/bash
+# retroarch-updater - installs and updates retroarch cores
 
 readonly core_directory=${XDG_CONFIG_HOME:-$HOME/.config}/retroarch/core
 readonly build_directory=$core_directory/build
 
 confirm() {
     local -l reply
-    local message=$@
+    local message=$*
 
-    read -p "$message [Y/n] " reply
+    read -rp "$message [Y/n] " reply
     [[ ! $reply || $reply = y?(es) ]]
 }
 

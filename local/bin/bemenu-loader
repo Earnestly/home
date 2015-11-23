@@ -26,23 +26,23 @@ bemenu_opts=(
     --scrollbar autohide
 )
 
-typeset -a cmd # Some commands might have arguments.
-typeset -A index
+declare -a cmd # Some commands might have arguments.
+declare -A index
 
 title=${title:-Title}
 
-# Read in the configuration file
+# Read in the configuration file.
 if [[ -f $input ]]; then
-    while IFS='=' read k v; do
+    while IFS='=' read -r k v; do
         case $k in
-            '')
-                ;; # ignore blank lines
-            '#'*)
+            '') # Ignore blank lines.
                 ;;
-            'Title')
+            \#*)
+                ;;
+            Title)
                 title=$v
                 ;;
-            'Command')
+            Command)
                 cmd=($v)
                 ;;
             *)

@@ -3,7 +3,7 @@
 
 # requires ghostscript poppler xdg-utils
 
-readonly progn=ghostly
+readonly argv0=ghostly
 readonly current_pdf_version=1.7
 readonly library=$HOME/doc/pdf
 readonly TMPDIR=/tmp
@@ -38,7 +38,7 @@ puts() {
 }
 
 err() {
-    puts "$progn: $@" >&2
+    puts "$argv0: $1" "${@:2}" >&2
 }
 
 is_valid_pdf() {

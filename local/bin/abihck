@@ -164,7 +164,7 @@ create_abi_dump "$pname" "$old_version"
 update_system
 
 new_version=$(print_version "$pname")
-if [[ $new_version == $old_version ]]; then
+if [[ $new_version == "$old_version" ]]; then
     err 'Versions are the same?'
 fi
 

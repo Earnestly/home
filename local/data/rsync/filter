@@ -1,8 +1,5 @@
 # XDG_DATA_HOME/rsync/filter
-
-# Usage:
-# cd
-# rsync -auHAX --partial --info=name,progress2 -m --filter=". $filter" * dest/
+# usage: rsync -auHAX --partial --info=name,progress2 -m --filter=". $XDG_DATA_HOME/rsync/filter" * dest/
 
 # Included directories to search must include all path components for rsync
 # when using the recursive (-r) option (implied by -a).
@@ -10,15 +7,15 @@
 # Include the main directories of build...
 + /build/
 + /build/lab/
-+ /build/maint/
++ /build/aur/
 + /build/pkgbuilds/
 
 # ... and their subdirectories.
 + /build/lab/*
-+ /build/maint/*
++ /build/aur/*
 + /build/pkgbuilds/*
 
-# Included build files and other paraphernalia.
+# Include build files and other paraphernalia but avoid vcs directories.
 + /build/lab/todo.draft
 + /build/lab/PKGBUILD
 + /build/*/*/PKGBUILD
@@ -34,11 +31,12 @@
 + /net/**
 
 + /dev/
++ /dev/**
+
 # XXX This is hosted on github, I don't really trust github, but this is a lot
 #     of stuff to lug around for very little value in my eyes.  I need to
 #     revisit this choice later down the road.
 - .git
-+ /dev/**
 
 # Documents.
 + /doc/
@@ -78,7 +76,7 @@
 + /.mozilla/firefox/**
 
 # This filter is important to keep as well.
-+ filter
++ /local/data/rsync/filter
 
 # Ignore everything else.
 - *

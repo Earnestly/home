@@ -1,4 +1,4 @@
-# ~/.config/dircolors
+# LOCALDIR/cfg/coreutils/dircolors
 
 TERM linux
 TERM rxvt-unicode-256color
