@@ -48,13 +48,13 @@ NOTE: `data` is similar to the traditional `share` but has an expanded
 
 [source, sh]
 ----
-LOCALDIR=$HOME/local
+export LOCALDIR=$HOME/local
 
-XDG_DATA_HOME=$HOME/local/data
-XDG_CONFIG_HOME=$HOME/local/cfg
-XDG_CACHE_HOME=$HOME/local/var/cache
+export XDG_DATA_HOME=$HOME/local/data
+export XDG_CONFIG_HOME=$HOME/local/cfg
+export XDG_CACHE_HOME=$HOME/local/var/cache
 
-PATH=$HOME/local/bin:$PATH
+export PATH=$HOME/local/bin:$PATH
 ----
 
 == Assumptions
