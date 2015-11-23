@@ -50,12 +50,15 @@ tab {
     background: var(--bg-light) !important;
 }
 
-/* Reduce size and padding around the favicon and throbber. */
-.tab-throbber,
+/* Reduce size and padding around the throbber. */
+.tab-throbber {
+    margin: 0 5px 10px 0 !important;
+    width: var(--tab-icon-size) !important;
+    height: var(--tab-icon-size) !important;
+}
+
+/* Hide favicons and such. */
 #tabbrowser-tabs .tabbrowser-tab .tab-icon-image {
-    /* margin: 0 5px 10px 0 !important; */
-    /* width: var(--tab-icon-size) !important; */
-    /* height: var(--tab-icon-size) !important; */
     display: none !important;
 }
 
