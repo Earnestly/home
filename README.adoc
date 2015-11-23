@@ -39,7 +39,7 @@ HOME/local
     └── run -> /run/user/UID
 ----
 
-NOTE: `data` is similar to the traditional share but has an expanded
+NOTE: `data` is similar to the traditional `share` but has an expanded
       scope. It is very much intended to be treated as misc data
       storage. In here you would expect to find things such as git's
       subcommand implementations and other library-like material.
@@ -59,22 +59,16 @@ PATH=$HOME/local/bin:$PATH
 
 == Assumptions
 :sx: https://github.com/Earnestly/dotfiles/blob/master/local/bin/sx
-:system-configs: https://github.com/Earnestly/pkgbuilds/tree/master/system-configs
+:system-config: https://github.com/Earnestly/pkgbuilds/tree/master/system-config
 
 * The shell is zsh compiled with `--enable-etcdir=/etc/zsh` and doesn't
   contain a conflicting `/etc/zsh/zshenv` file.
-
 * The web browser is firefox.
-
 * Xorg is started with {sx}[sx].
-
 * Terminal emulator is https://github.com/thestinger/termite[termite].
-
-* The {system-configs}[system-configs] package is installed for the file
+* The {system-config}[system-config] package is installed for the file
   `/etc/zsh/zshenv` it contains.
-
 * `HOME/local` is a directory and exists.
-
 * `XDG_CONFIG_HOME`, `XDG_CACHE_HOME` and `XDG_DATA_HOME` enviroments are
   xref:Environments[set accordingly].
 
