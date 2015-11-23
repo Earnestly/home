@@ -53,9 +53,10 @@ tab {
 /* Reduce size and padding around the favicon and throbber. */
 .tab-throbber,
 #tabbrowser-tabs .tabbrowser-tab .tab-icon-image {
-    margin: 0 5px 10px 0 !important;
-    width: var(--tab-icon-size) !important;
-    height: var(--tab-icon-size) !important;
+    /* margin: 0 5px 10px 0 !important; */
+    /* width: var(--tab-icon-size) !important; */
+    /* height: var(--tab-icon-size) !important; */
+    display: none !important;
 }
 
 /* Try improve alignment of text in a tab. */
