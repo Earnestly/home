@@ -1,14 +1,17 @@
 = Dotfiles
 :toc: macro
-:sx: https://github.com/Earnestly/dotfiles/blob/master/local/bin/sx
 :xdg: http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
-:system-configs: https://github.com/Earnestly/pkgbuilds/tree/master/system-configs
+:xdg-support: https://wiki.archlinux.org/index.php/XDG_Base_Directory_support
 
 These configurations depends heavily on the {xdg}[XDG Base Directory
 Specification], custom environments and command-line options to relocate
 the default directories in an attempt to essentially remove most
 _dotfiles_ from the system (the irony of this repo name is not lost on
 the author).
+
+See {xdg-support}[XDG Base Directory Support] for a list of suitable
+workarounds and support status for various software. Also consider
+contributing to it.
 
 toc::[]
 
@@ -17,10 +20,11 @@ toc::[]
 We find symmetry with the `/usr/local` tree and replicate it per-user
 but with small changes including common sense which is lacking in the
 Linux FHS. Instead of reinventing everything from scratch, I will build
-on its foundations with some ideas from Plan 9 (`cfg`), looking for
-useful generalisations.
+on its foundations with some ideas from Plan 9 (such as `cfg`), looking
+for useful generalisations.
 
-NOTE: `HOME/local` is hardcoded to bypass bootstrap problems.
+NOTE: `HOME/local` (`LOCALDIR`) is currently hardcoded to bypass
+      bootstrap problems.
 
 ----
 HOME/local
@@ -42,26 +46,37 @@ NOTE: `data` is similar to the traditional share but has an expanded
 
 === Environments
 
-[source,sh]
+[source, sh]
 ----
-PATH=$HOME/local/bin:$PATH
+LOCALDIR=$HOME/local
 
 XDG_DATA_HOME=$HOME/local/data
 XDG_CONFIG_HOME=$HOME/local/cfg
 XDG_CACHE_HOME=$HOME/local/var/cache
+
+PATH=$HOME/local/bin:$PATH
 ----
 
 == Assumptions
+:sx: https://github.com/Earnestly/dotfiles/blob/master/local/bin/sx
+:system-configs: https://github.com/Earnestly/pkgbuilds/tree/master/system-configs
 
-* Shell is zsh.
-* Web browser is firefox.
+* The shell is zsh compiled with `--enable-etcdir=/etc/zsh` and doesn't
+  contain a conflicting `/etc/zsh/zshenv` file.
+
+* The web browser is firefox.
+
 * Xorg is started with {sx}[sx].
+
 * Terminal emulator is https://github.com/thestinger/termite[termite].
+
 * The {system-configs}[system-configs] package is installed for the file
   `/etc/zsh/zshenv` it contains.
+
 * `HOME/local` is a directory and exists.
+
 * `XDG_CONFIG_HOME`, `XDG_CACHE_HOME` and `XDG_DATA_HOME` enviroments are
-  set.
+  xref:Environments[set accordingly].
 
 == Issues
 
