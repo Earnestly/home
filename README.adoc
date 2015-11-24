@@ -50,11 +50,9 @@ NOTE: `data` is similar to the traditional `share` but has an expanded
 ----
 export LOCALDIR=$HOME/local
 
-export XDG_DATA_HOME=$HOME/local/data
-export XDG_CONFIG_HOME=$HOME/local/cfg
-export XDG_CACHE_HOME=$HOME/local/var/cache
-
-export PATH=$HOME/local/bin:$PATH
+export XDG_DATA_HOME=$LOCALDIR/data
+export XDG_CONFIG_HOME=$LOCALDIR/cfg
+export XDG_CACHE_HOME=$LOCALDIR/var/cache
 ----
 
 == Assumptions

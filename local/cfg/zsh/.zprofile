@@ -1,6 +1,7 @@
 # LOCALDIR/cfg/zsh/.zprofile
 
 export LOCALDIR="$HOME/local"
+
 export XDG_DATA_HOME="$LOCALDIR/data"
 export XDG_CONFIG_HOME="$LOCALDIR/cfg"
 export XDG_CACHE_HOME="$LOCALDIR/var/cache"
@@ -24,8 +25,8 @@ export LESSHISTFILE="$XDG_CACHE_HOME/less/history"
 export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc"
 export NOTMUCH_CONFIG="$XDG_CONFIG_HOME/notmuch/notmuchrc"
 
-# XXX Requires code evaluation in an environment, this is not ideal but means
-#     one less symlink and one less dotfile.
+# XXX Requires program code in an environment, this is not ideal but means one
+#     less symlink and one less dotfile.
 export VIMPERATOR_INIT=":source $XDG_CONFIG_HOME/vimperator/vimperatorrc"
 export VIMPERATOR_RUNTIME="$XDG_CONFIG_HOME/vimperator"
 
@@ -43,7 +44,7 @@ export PERL_MB_OPT="--install_base $LOCALDIR"
 
 export GOPATH="$LOCALDIR/lib/go"
 
-# xkbcommon understands XKB environments which us useful as wayland compositors
+# xkbcommon understands XKB environments which is useful as wayland compositors
 # will be able to use them.  The syntax is the same as Xorg's configuration.
 export XKB_DEFAULT_LAYOUT="gb"
 export XKB_DEFAULT_OPTIONS="compose:ralt,ctrl:nocaps"
