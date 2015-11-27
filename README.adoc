@@ -1,85 +1,103 @@
-= Dotfiles
+= DOTFILES
 :toc: macro
 :xdg: http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 :xdg-support: https://wiki.archlinux.org/index.php/XDG_Base_Directory_support
 
-These configurations depends heavily on the {xdg}[XDG Base Directory
+These configurations depend heavily on the {xdg}[XDG Base Directory
 Specification], custom environments and command-line options to relocate
-the default directories in an attempt to essentially remove most
-_dotfiles_ from the system (the irony of this repo name is not lost on
-the author).
+the default directories into a more reasonable structure.
 
-See {xdg-support}[XDG Base Directory Support] for a list of suitable
-workarounds and support status for various software. Also consider
-contributing to it.
+NOTE: See {xdg-support}[XDG Base Directory Support] for a list of
+      workarounds and the support status for various software. Also
+      consider contributing to it. :-)
 
 toc::[]
 
 == General Layout
+:fhs: http://refspecs.linuxfoundation.org/FHS_3.0/fhs-3.0.html
 
-We find symmetry with the `/usr/local` tree and replicate it per-user
-but with small changes including common sense which is lacking in the
-Linux FHS. Instead of reinventing everything from scratch, I will build
-on its foundations with some ideas from Plan 9 (such as `cfg`), looking
-for useful generalisations.
-
-NOTE: `HOME/local` (`LOCALDIR`) is currently hardcoded to bypass
-      bootstrap problems.
+The structure I've chosen is mostly to mimic the `/usr/local` convention
+and {fhs}[FHS]. There are small changes to the naming and meaning of the
+directories but most should be fairly understandable.
 
 ----
 HOME/local
-├── bin
-├── cfg
-├── data
-├── mail
-├── man
-└── var
-    ├── cache
-    ├── log
-    └── run -> /run/user/UID
+|- bin
+|- cfg
+|- data
+|- lib
+`- var
+   `- cache
 ----
 
-NOTE: `data` is similar to the traditional `share` but has an expanded
-      scope. It is very much intended to be treated as misc data
-      storage. In here you would expect to find things such as git's
-      subcommand implementations and other library-like material.
+NOTE: `data` is similar to `share` but more general purpose. Data
+      normally in `share` would appear here along with other
+      library-like or persistent state material.
 
 === Environments
 
 [source, sh]
 ----
-export LOCALDIR=$HOME/local
-
-export XDG_DATA_HOME=$LOCALDIR/data
-export XDG_CONFIG_HOME=$LOCALDIR/cfg
-export XDG_CACHE_HOME=$LOCALDIR/var/cache
+export LOCALDIR="$HOME/local"
+export XDG_DATA_HOME="$LOCALDIR/data"
+export XDG_CONFIG_HOME="$LOCALDIR/cfg"
+export XDG_CACHE_HOME="$LOCALDIR/var/cache"
 ----
 
 == Assumptions
 :sx: https://github.com/Earnestly/dotfiles/blob/master/local/bin/sx
 :system-config: https://github.com/Earnestly/pkgbuilds/tree/master/system-config
 
-* The shell is zsh compiled with `--enable-etcdir=/etc/zsh` and doesn't
-  contain a conflicting `/etc/zsh/zshenv` file.
+These configurations need to make a few unfortunate assumptions about
+the environment, I'll attempt to list the known ones here.
+
+* The shell is zsh build with `--enable-etcdir=/etc/zsh`.
+    - `ZDOTDIR` is set in `/etc/zsh/zshenv`.
+
 * The web browser is firefox.
+    - Hardcoded in configurations when they're unable to reference the
+      `BROWSER` environment.
+
 * Xorg is started with {sx}[sx].
+
 * Terminal emulator is https://github.com/thestinger/termite[termite].
-* The {system-config}[system-config] package is installed for the file
-  `/etc/zsh/zshenv` it contains.
-* `HOME/local` is a directory and exists.
+    - Hardcoded in configurations where they're unable to reference the
+      `TERMINAL` environment.
+
+* The {system-config}[base-config] package is installed.
+    - This mainly provides the `/etc/zsh/zshenv` configuration.
+
+* `HOME/local` is a directory.
+
 * `XDG_CONFIG_HOME`, `XDG_CACHE_HOME` and `XDG_DATA_HOME` enviroments are
-  xref:Environments[set accordingly].
+  xref:Environments[set].
 
 == Issues
+:zsh: http://www.zsh.org/mla/workers/2013/msg00702.html
+:systemd: https://github.com/systemd/systemd/issues/1476
 
 zsh::
-    Even if `ZDOTDIR` is configured, it will hardcode the `.` into the
-    file name, in multiple places, making it difficult to fix in the
-    general case.
+    Zsh is able to relocate its various configurations via `ZDOTDIR`,
+    however the files are all still {zsh}[prefixed with a dot].
+
+    We might need to think about rules for finding e.g. ~/.zsh/zshrc
+    instead of ~/.zsh/.zshrc since the extra dot is pretty unhelpful.
+    (E.g. look for the file without the dot if a parent directory does
+    have a dot at the start. We don't want to look for ~/zshrc, that
+    could easily be problematic.)
 
 vimperator::
-    Requires code evaluation in an environment.
+    Requires code in the `VIMPERATOR_INIT` environment.
 
 llpp::
     Stores history in the configuration file making it difficult to
     share nicely across multiple machines.
+
+systemd::
+    Systemd user sessions started by `user@.service` are {systemd}[not
+    able] to easily inherit per-user environments (that depend on user
+    specific values such as `HOME`) without creating a `systemd --user`
+    wrapper. PAM environments are also unable to provide this. Due to
+    the `user@.service` taking a UID instead of the username, it's not
+    possible to build the environments in the service or via a drop-in
+    configuration.
