@@ -1,4 +1,4 @@
-# XDG_DATA_HOME/rsync/filter
+# LOCALDIR/data/rsync/filter
 # usage: rsync -auHAX --partial --info=name,progress2 -m --filter=". $XDG_DATA_HOME/rsync/filter" * dest/
 
 # Included directories to search must include all path components for rsync
@@ -6,18 +6,19 @@
 
 # Include the main directories of build...
 + /build/
-+ /build/lab/
 + /build/aur/
++ /build/store/
 + /build/pkgbuilds/
 
-# ... and their subdirectories.
-+ /build/lab/*
+# ...and their subdirectories.
 + /build/aur/*
++ /build/store/*
 + /build/pkgbuilds/*
 
-# Include build files and other paraphernalia but avoid vcs directories.
-+ /build/lab/todo.draft
-+ /build/lab/PKGBUILD
+# Include build files and other paraphernalia but avoid vcs mirrors and
+# directories.
++ /build/store/todo.draft
++ /build/store/PKGBUILD
 + /build/*/*/PKGBUILD
 + /build/*/*/*.install
 + /build/*/*/*.patch
@@ -48,7 +49,6 @@
 - /local/cfg/mutt/cache
 - /local/cfg/retroarch/rom
 - /local/cfg/retroarch/core
-- /local/cfg/vimperator/info
 + /local/cfg/**
 
 # Local data.
@@ -58,6 +58,7 @@
 - /local/src
 - /local/data/wine
 - /local/data/games
+- /local/data/vimperator/info
 + /local/**
 
 # Miscellaneous.

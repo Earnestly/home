@@ -1,6 +1,5 @@
-# XDG_CONFIG_HOME/zsh/.zshrc
+# LOCALDIR/cfg/zsh/.zshrc
 
-# Modules.
 autoload -Uz edit-command-line run-help compinit zmv vcs_info
 zmodload zsh/complist
 compinit
@@ -9,7 +8,6 @@ zle -N edit-command-line
 zle -N zle-line-init
 zle -N zle-keymap-select
 
-# Shell options.
 setopt auto_cd \
     glob_dots \
     hist_verify \
@@ -31,7 +29,7 @@ setopt auto_cd \
 
 READNULLCMD=$PAGER
 HELPDIR=/usr/share/zsh/$ZSH_VERSION/help
-HISTFILE=$XDG_CONFIG_HOME/zsh/.zhistory
+HISTFILE=$LOCALDIR/data/zsh/zhistory
 HISTSIZE=25000
 SAVEHIST=$HISTSIZE
 
@@ -187,7 +185,7 @@ alias vi='nvim'
 alias dmesg='dmesg -exL'
 alias weechat='dtach-weechat'
 alias mutt='dtach-mutt'
-alias tmux="tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf"
+alias tmux="tmux -f $LOCALDIR/cfg/tmux/tmux.conf"
 
 alias k='rlwrap k'
 

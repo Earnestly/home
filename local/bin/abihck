@@ -17,20 +17,21 @@ err() {
 replicate_install() {
     local pname=$1
     local version=$2
+    local package=/var/cache/pacman/pkg/"$pname"-"$version"-"$arch".pkg.tar.xz
 
-    if ! bsdtar -xvf /var/cache/pacman/pkg/"$pname"-"$version"-"$arch".pkg.tar.xz -C abi/"$pname"/"$version"; then
-        err 'Extraction failed'
+    if ! bsdtar -xvf "$package" -C abi/"$pname"/"$version"; then
+        err 'extraction failed'
     fi
 }
 
 print_version() {
     local pname=$1
-    expac '%v' "$pname" || err "No version found for $pname"
+    expac '%v' "$pname" || err '%s: no version found' "$pname"
 }
 
 check_package_exists() {
     local pname=$1
-    pacman -T "$pname" || err 'No such package found'
+    pacman -T "$pname" || err 'no such package found'
 }
 
 dump_version() {
@@ -49,7 +50,7 @@ dump_version() {
     )
 
     if ! abi-compliance-checker "${options[@]}"; then
-        err 'Failed to dump first version'
+        err 'failed to dump first version'
     fi
 }
 
@@ -90,7 +91,7 @@ compare_abi_dumps() {
     )
 
     if ! abi-compliance-checker "${options[@]}"; then
-        err 'Failed to compare abi'
+        err 'failed to compare abi'
     fi
 }
 
@@ -114,7 +115,7 @@ check_api_sanity() {
     fi
 
     if ! (cd abi && api-sanity-checker "${options[@]}"); then
-        err 'Failed to check api sanity'
+        err 'failed to check api sanity'
     fi
 }
 
@@ -142,7 +143,7 @@ while (($#)); do
     case $1 in
         -m) makepkg=1 ;;
         -a) shift; arch=$1 ;;
-        -h) puts 'usage: abihck [-m] [-a arch] <package_name>'
+        -h) puts 'usage: abihck [-m] [-a arch] pkgname'
             puts '       -m  Use makepkg and repose update before system update'
             puts '       -a  Select architecture: i686, x86_64 or any (defaults to x86_64)'
             exit ;;
@@ -165,7 +166,7 @@ update_system
 
 new_version=$(print_version "$pname")
 if [[ $new_version == "$old_version" ]]; then
-    err 'Versions are the same?'
+    err 'same versions'
 fi
 
 mkdir -p abi/"$pname"/"$new_version"

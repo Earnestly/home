@@ -1,22 +1,24 @@
 #!/bin/bash
+# cleanup - utility to clear out playlist files with no matching menu entry
 
 dir=${XDG_DATA_HOME:-$HOME/.local/share}/plaid/playlists
 
 in_array() {
-    local i
+	local mark=$1
+	local element
 
-    for i in "${@:2}"; do
-        if [[ $1 == $i ]]; then
+	for element in "${@:2}"; do
+		if [[ $element == "$mark" ]]; then
             return 0
         fi
-    done
-    # No match
-    return 1
+	done
+
+    # Mark not found.
+	return 1
 }
 
-[[ ! -s plaid_menu ]] && exit
+[[ -s plaid_menu ]] || exit
 
-# Build an array of playlists found in the actual dmenu menu
 while IFS='=' read -r k v; do
     if ! [[ $k =~ ^Title|^Command ]]; then
         playlists+=("$v")
@@ -26,8 +28,6 @@ done < plaid_menu
 
 files=("$dir"/*)
 
-# Check if any of the files that exist are also in the menu, remove those which
-# aren't
 for i in "${files[@]}"; do
     if ! in_array "$i" "${playlists[@]}"; then
         rm -vf -- "$i"

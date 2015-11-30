@@ -1,9 +1,5 @@
 " LOCALDIR/nvim/init.vim
 
-" The first directory of the rtp should be the home directory of nvim, under
-" which I'd like to store packages under a more reasonbly named directory.
-"let pkgdir = split(&rtp, ',', 0)[0] . '/packages'
- 
 if empty($LOCALDIR)
     let pkgdir = $HOME . '/local/data' . '/nvim/packages'
 else
@@ -30,7 +26,7 @@ call plug#end()
 
 unlet pkgdir
 
-" Replace ex-mode with vim's more powerful command-line window.
+" Replace ex-mode with vim's command-line window.
 map Q q:
 
 " Settings.

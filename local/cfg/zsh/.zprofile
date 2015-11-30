@@ -28,7 +28,7 @@ export NOTMUCH_CONFIG="$XDG_CONFIG_HOME/notmuch/notmuchrc"
 # XXX Requires program code in an environment, this is not ideal but means one
 #     less symlink and one less dotfile.
 export VIMPERATOR_INIT=":source $XDG_CONFIG_HOME/vimperator/vimperatorrc"
-export VIMPERATOR_RUNTIME="$XDG_CONFIG_HOME/vimperator"
+export VIMPERATOR_RUNTIME="$XDG_DATA_HOME/vimperator"
 
 export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:/usr/share/terminfo"
 export UNCRUSTIFY_CONFIG="$XDG_CONFIG_HOME/uncrustify/uncrustify.cfg"

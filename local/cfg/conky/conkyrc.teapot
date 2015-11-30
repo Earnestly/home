@@ -1,3 +1,5 @@
+# LOCALDIR/cfg/conky/conkyrc.teapot
+
 out_to_console yes
 background no
 short_units yes

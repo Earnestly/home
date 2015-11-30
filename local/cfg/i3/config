@@ -1,4 +1,4 @@
-# XDG_CONFIG_HOME/i3/config
+# LOCALDIR/cfg/i3/config
 
 # Font for window titles and bar.
 font pango: Source Sans Pro Semibold 10

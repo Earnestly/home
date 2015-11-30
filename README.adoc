@@ -1,3 +1,5 @@
+// HOME/README.adoc
+
 = DOTFILES
 :toc: macro
 :xdg: http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
@@ -51,7 +53,7 @@ export XDG_CACHE_HOME="$LOCALDIR/var/cache"
 These configurations need to make a few unfortunate assumptions about
 the environment, I'll attempt to list the known ones here.
 
-* The shell is zsh build with `--enable-etcdir=/etc/zsh`.
+* The shell is zsh built with `--enable-etcdir=/etc/zsh`.
     - `ZDOTDIR` is set in `/etc/zsh/zshenv`.
 
 * The web browser is firefox.

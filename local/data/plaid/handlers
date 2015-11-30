@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Global
 playlist_dir="$XDG_DATA_HOME"/plaid/playlists
 
-# Any of these modules MUST return both of these variables:
+# Any of these handlers MUST return both of these variables:
 # playlist_file -> Path to playlist file
 # title         -> Title of the playlist
 
@@ -61,7 +61,7 @@ handle_youtube() {
 # Speed Demos Archives
 handle_sda() {
     local url="$1"
-    local urls data playlist line
+    local url data playlist line
 
     data=$(elinks -dump -no-numbering "$url")
 
