@@ -8,6 +8,7 @@ export XDG_CACHE_HOME="$LOCALDIR/var/cache"
 
 export PATH="$LOCALDIR/bin:$PATH"
 
+export SVDIR="$LOCALDIR/service"
 export GNUPGHOME"=$XDG_CONFIG_HOME/gnupg"
 export INPUTRC="$XDG_CONFIG_HOME/inputrc"
 export RLWRAP_HOME="$XDG_DATA_HOME/rlwrap"
@@ -17,7 +18,6 @@ export WEECHAT_HOME="$XDG_CONFIG_HOME/weechat"
 export PERL_CPANM_HOME="$XDG_DATA_HOME/cpanm"
 export WINEPREFIX="$XDG_DATA_HOME/wine/default"
 export ELINKS_CONFDIR="$XDG_CONFIG_HOME/elinks"
-
  # https://github.com/jkbrzt/httpie/issues/145
 export HTTPIE_CONFIG_DIR="$XDG_CONFIG_HOME/httpie"
 
