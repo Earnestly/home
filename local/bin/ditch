@@ -4,13 +4,14 @@
 # requires jshon bemenu mpv youtube-dl bash(4.3+)
 # optional notify-send
 
-# XDG_CONFIG_HOME/ditch/teams      list of twitch teams
-# XDG_CONFIG_HOME/ditch/streamers  list of individual streamers
+# XDG_CONFIG_HOME/dmenu/font     single line containing a font description
+# XDG_DATA_HOME/ditch/teams      list of twitch teams
+# XDG_DATA_HOME/ditch/streamers  list of individual streamers
 
 readonly argv0=ditch
-readonly data_dir=${XDG_CONFIG_HOME:-$HOME/.config}/$argv0
+readonly data_dir=${XDG_DATA_HOME:-$HOME/.config}/$argv0
 
-# Prefered quality in ascending order.
+# Preferred quality in descending order.
 readonly quality=High/Medium/best
 
 # Used to store downloaded json.
@@ -21,7 +22,6 @@ readonly lines=20
 
 read -r font < "${XDG_CONFIG_HOME:-$HOME/.config}"/dmenu/font
 
-# Arguments passed to bemenu, the prompt is passed later.
 bemenu_args=(
     --fn "$font" -w -i -l "$lines"
     --tf '#eff1f5' --tb '#bf616a'
@@ -65,9 +65,7 @@ chunk_by() {
         # 1st loop: [{ 1 2 } 3 4 5]  => 1,2,&limit=2
         # 2nd loop: [{ 3 4 } 5]      => 3,4,&limit=2
         # 3rd loop: [{ 5 }]          => 5,&limit=1
-
         puts '&limit=%d' "${#tmp[@]}"
-
         list=("${list_r[@]:chunk}")
         # 1st loop: [ 1 2 { 3 4 5 }] => list = [3 4 5]
         # 2nd loop: [ 3 4 { 5 }]     => list = [5]
@@ -81,7 +79,7 @@ generate_urls() {
     if [[ -s $data_dir/teams ]]; then
         while read -r team; do
             puts '%s' "$team"
-        done < "$data_dir"/teams
+        done < "$data_dir/teams"
     fi
 
     if [[ -s $data_dir/streamers ]]; then
@@ -131,25 +129,21 @@ fetch_json() {
 # Parsed json is printed in series of three lines, the first is the username,
 # then the url to their stream and finally the title.
 parse_json() {
-    local json args channels teams
+    local json args
 
-    teams=("$TMPDIR"/"$argv0"-teams*)
-
-    for json in "${teams[@]}"; do
+    for json in "$TMPDIR/$argv0"-teams*; do
         args=(-CQ -e channels -a -e channel -e name -upe meta_game -upe link -upe title)
         jshon "${args[@]}" < "$json"
     done
 
-    channels=("$TMPDIR"/"$argv0"-channels*)
-
-    for json in "${channels[@]}"; do
+    for json in "$TMPDIR/$argv0"-channels*; do
         args=(-CQ -e streams -a -e channel -e name -upe game -upe url -upe status)
         jshon "${args[@]}" < "$json"
     done
 
     # Make sure we remove the json once we're done so it doesn't interfere with
     # proceeding execution and doesn't clutter up $TMPDIR.
-    rm -f -- "${channels[@]}" "${teams[@]}"
+    rm -f -- "$TMPDIR/$argv0"-*-*.json
 }
 
 build_menu() {
@@ -163,18 +157,15 @@ build_menu() {
         read -r url
         read -r title
     } do
-        # Jshon will return null for keys without values (or missing keys
+        # jshon(1) -C will return null for keys without values (or missing keys
         # entirely), since a valid url can never be null we'll use this as a
         # sentinel for bad values and skip any we find.
         if [[ $url != null ]]; then
 
-            # Manually de-json the title.  XXX This doesn't handle all json
-            # escapes but we don't need to.
+            # Manually de-json the title.
+            # XXX This doesn't handle all json escapes but we don't need to.
             title="${title%\"*}" title="${title#\"}" title="${title//\\/}"
 
-            # The menu is what we will use for displaying via bemenu, we will
-            # later extract the first word from the result which is $name used
-            # as the key in streams to access the $url.
             menu_r["$streamer│$game│$title"]=1
             stream_r["$streamer"]="$url"
         fi
@@ -185,10 +176,10 @@ get_user_picks() {
     declare -n menu_r=$1
     declare -n stream_r=$2
 
-
     # Using a marker here for column to pretty print the results in columns,
     # here's hoping not many people use this in their titles, generally this
-    # hasn't been the case and it won't impact the passing of correct metadata.
+    # hasn't been the case and it won't cause issues as only the first word is
+    # used and that is guaranteed to not contain spaces.
     puts '%s' "${!menu_r[@]}" | column -s '│' -t  | bemenu "${bemenu_args[@]}"
 }
 
@@ -229,17 +220,16 @@ play_if_valid() {
     done
 }
 
-declare -A menu stream
-
 mapfile -t urls < <(generate_urls)
 
-if [[ ${urls[@]} ]]; then
+if ((${#urls} > 0)); then
     parallel_fmap fetch_json urls
 else
     err 'no configuration data found'
     exit 1
 fi
 
+declare -A menu stream
 build_menu menu stream < <(parse_json)
 
 results=$(get_user_picks menu stream)
