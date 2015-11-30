@@ -1,16 +1,12 @@
 # LOCALDIR/data/rsync/filter
-# usage: rsync -auHAX --partial --info=name,progress2 -m --filter=". $XDG_DATA_HOME/rsync/filter" * dest/
+# usage: rsync -auHAX --partial --info=name,progress2 -m --filter=". $LOCALDIR/data/rsync/filter" src/ dest/
 
 # Included directories to search must include all path components for rsync
 # when using the recursive (-r) option (implied by -a).
-
-# Include the main directories of build...
 + /build/
 + /build/aur/
 + /build/store/
 + /build/pkgbuilds/
-
-# ...and their subdirectories.
 + /build/aur/*
 + /build/store/*
 + /build/pkgbuilds/*
@@ -56,14 +52,11 @@
 
 # The git repos are managed elsewhere.
 - /local/src
+
 - /local/data/wine
 - /local/data/games
 - /local/data/vimperator/info
 + /local/**
-
-# Miscellaneous.
-+ /.ghc/
-+ /.ghc/ghci.conf
 
 + /local/mail/
 + /local/mail/**

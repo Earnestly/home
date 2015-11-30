@@ -1,0 +1,8 @@
+#!/bin/sh
+# Get the name of the service from the PWD, this assumes the name of the
+# service is one level above the log directory.
+pwd=${PWD%/*} # $LOCALDIR/service/foo/log
+service=${pwd##*/} # foo
+
+mkdir -p "$LOCALDIR/var/log/$service"
+exec svlogd -tt "$LOCALDIR/var/log/$service"

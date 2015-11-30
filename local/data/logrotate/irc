@@ -3,5 +3,4 @@ missingok
 notifempty
 copytruncate
 
-# I log files to logs/network/{channel,nick}.log
-~/.config/weechat/logs/*/*.log {}
+"~/local/cfg/weechat/logs/*/*.log" {}
