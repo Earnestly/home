@@ -64,6 +64,7 @@ set! extensions.ublock0.forceLegacyToolbarButton=true
 
 " Change some default about:configs.
 set! browser.search.defaultenginename=DDG Bangs
+set! intl.charset.fallback.override=unicode
 set! extensions.checkCompatibility=false
 set! media.peerconnection.enabled=false
 set! middlemouse.contentLoadURL=false
