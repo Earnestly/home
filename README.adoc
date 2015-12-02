@@ -1,5 +1,4 @@
 // HOME/README.adoc
-
 = DOTFILES
 :toc: macro
 :xdg: http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
@@ -48,6 +47,7 @@ export XDG_CACHE_HOME="$LOCALDIR/var/cache"
 
 == Assumptions
 :sx: https://github.com/Earnestly/dotfiles/blob/master/local/bin/sx
+:termite: https://github.com/thestinger/termite
 :system-config: https://github.com/Earnestly/pkgbuilds/tree/master/system-config
 
 These configurations need to make a few unfortunate assumptions about
@@ -62,14 +62,14 @@ the environment, I'll attempt to list the known ones here.
 
 * Xorg is started with {sx}[sx].
 
-* Terminal emulator is https://github.com/thestinger/termite[termite].
+* Terminal emulator is {termite}[termite].
     - Hardcoded in configurations where they're unable to reference the
       `TERMINAL` environment.
 
 * The {system-config}[base-config] package is installed.
     - This mainly provides the `/etc/zsh/zshenv` configuration.
 
-* `HOME/local` is a directory.
+* `HOME/local` is a directory and environment `LOCALDIR` is set to it.
 
 * `XDG_CONFIG_HOME`, `XDG_CACHE_HOME` and `XDG_DATA_HOME` enviroments are
   xref:Environments[set].
@@ -80,13 +80,18 @@ the environment, I'll attempt to list the known ones here.
 
 zsh::
     Zsh is able to relocate its various configurations via `ZDOTDIR`,
-    however the files are all still {zsh}[prefixed with a dot].
-
+    however the files are all still prefixed with a dot and the only
+    solution suggested is quite poor:
++
+[quote, Peter Stephenson, {zsh}]
+____
     We might need to think about rules for finding e.g. ~/.zsh/zshrc
     instead of ~/.zsh/.zshrc since the extra dot is pretty unhelpful.
     (E.g. look for the file without the dot if a parent directory does
     have a dot at the start. We don't want to look for ~/zshrc, that
     could easily be problematic.)
+____
++
 
 vimperator::
     Requires code in the `VIMPERATOR_INIT` environment.
