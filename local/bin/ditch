@@ -9,7 +9,7 @@
 # XDG_DATA_HOME/ditch/streamers  list of individual streamers
 
 readonly argv0=ditch
-readonly data_dir=${XDG_DATA_HOME:-$HOME/.config}/$argv0
+readonly data_dir=${LOCALDIR:-$HOME/local}/data/$argv0
 
 # Preferred quality in descending order.
 readonly quality=High/Medium/best
@@ -20,7 +20,7 @@ readonly TMPDIR=${TMPDIR:-/tmp}
 # Number of entries to display at once.
 readonly lines=20
 
-read -r font < "${XDG_CONFIG_HOME:-$HOME/.config}"/dmenu/font
+read -r font < "${LOCALDIR:-$HOME/local}/cfg/dmenu/font"
 
 bemenu_args=(
     --fn "$font" -w -i -l "$lines"
