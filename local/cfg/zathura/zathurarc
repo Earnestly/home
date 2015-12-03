@@ -9,6 +9,8 @@ set guioptions ""
 set window-title-basename "true"
 set window-title-page "true"
 
+set zoom-step 1
+
 # Colours.
 set default-bg "#2b303b"
 set default-fg "#343d46"
