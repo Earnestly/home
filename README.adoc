@@ -80,8 +80,7 @@ the environment, I'll attempt to list the known ones here.
 
 zsh::
     Zsh is able to relocate its various configurations via `ZDOTDIR`,
-    however the files are all still prefixed with a dot and the only
-    solution suggested is quite poor:
+    however the files are all still prefixed with a dot.
 +
 [quote, Peter Stephenson, {zsh}]
 ____
