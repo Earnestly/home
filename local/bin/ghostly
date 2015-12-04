@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ghostly - Uses ghostscript to fix pdf files and generate bemenu-loader menus
 
-# requires ghostscript poppler xdg-utils
+# requires ghostscript poppler
 
 readonly argv0=ghostly
 readonly current_pdf_version=1.7
@@ -122,8 +122,8 @@ generate() {
     local title reader pdf_files pdf
 
     # Try to guess the pdf reader.
-    reader=$(xdg-mime query default application/pdf)
-    reader=${reader%.*}
+    # reader=$(xdg-mime query default application/pdf)
+    # reader=${reader%.*}
 
     puts 'Title=%s' "${title:-Library}"
     puts 'Command=exec %s\n' "${reader:-llpp}"
