@@ -28,7 +28,7 @@ template1 bf616a
 TEXT
 [\
 ${if_mpd_playing}\
-{"full_text":"MPD:${execp mpd-now-playing-conky}",\
+{"full_text":"MPD:${mpd_title 80}",\
 "color":"\#${template0}"},\
 ${endif}\
 {"full_text":"VOL:${execp ponymix get-volume}%",\
