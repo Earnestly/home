@@ -1,17 +1,16 @@
-" HOME/local/cfg/vimperator/vimperatorrc
+" LOCALDIR/cfg/vimperator/vimperatorrc
 
 " TODO
-" - Provide some kind of way to open the uBlock panel via a keybind, this will
+" * Provide some kind of way to open the uBlock panel via a keybind, this will
 "   likely need a javascript function.
-" - Think about better configuration layout, splitting up this file, etc.
-" - Style the statusbar and other vimperator elements.
-" - Preserve hint narrowing in ;F mode.
+" * Think about better configuration layout, splitting up this file, etc.
+" * Preserve hint narrowing in ;F mode.
 "   https://github.com/vimperator/vimperator-labs/issues/332
 
 set runtimepath=$HOME/local/cfg/vimperator
 
-source $HOME/local/cfg/vimperator/plugins/launchv.js
-source $HOME/local/cfg/vimperator/plugins/toggle.js
+source $LOCALDIR/cfg/vimperator/plugins/launchv.js
+source $LOCALDIR/cfg/vimperator/plugins/toggle.js
 
 " Style.
 source $HOME/local/cfg/vimperator/chrome.css
@@ -62,7 +61,10 @@ nmap <C-c> :stop<CR>
 " https://github.com/gorhill/uBlock/issues/112
 set! extensions.ublock0.forceLegacyToolbarButton=true
 
-" Change some default about:configs.
+" Preferences, mostly added for reproducability from a single configuration.
+set! font.name.monospace.x-western=Inconsolatazi4
+set! font.name.serif.x-western=Georgia
+set! font.minimum-size.x-western=16
 set! browser.search.defaultenginename=DDG Bangs
 set! intl.charset.fallback.override=unicode
 set! extensions.checkCompatibility=false
@@ -73,11 +75,6 @@ set! plugins.click_to_play=true
 set! general.smoothScroll=false
 set! plugin.default.state=1
 
-" Preferences, mostly added for reproducability from a single configuration.
-set! font.name.monospace.x-western=Inconsolatazi4
-set! font.name.serif.x-western=Georgia
-set! font.minimum-size.x-western=16
-
 " Popups are back, after all those years trying to get rid of them, now the
 " browsers do it themselves.
 set! reader.parse-on-load.enabled=false
@@ -87,6 +84,7 @@ set! reader.parse-on-load.enabled=false
 set! browser.safebrowsing.downloads.enabled=false
 set! browser.safebrowsing.malware.enabled=false
 set! browser.safebrowsing.enabled=false
+
 set! privacy.trackingprotection.enabled=true
 set! browser.search.suggest.enabled=false
 set! network.http.sendRefererHeader=0
