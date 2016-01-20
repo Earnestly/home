@@ -22,7 +22,6 @@ font = Inconsolatazi4 12
 
 foreground      = #c0c5ce
 foreground_bold = #c0c5ce
-cursor          = #65737e
 background      = #2b303b
 
 # 16 color space
