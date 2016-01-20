@@ -1,8 +1,20 @@
 #!/bin/bash
 # sx - simpler startx
+# NOTE: This script only takes a single client with no arguments.
 
 # Make sure we aren't running in an Xserver.
 if [[ $DISPLAY ]]; then
+    printf '%s: DISPLAY is already set\n' "$DISPLAY" >&2
+    exit 1
+fi
+
+if [[ ! $XDG_VTNR ]]; then
+    printf 'XDG_VTNR is not available\n' >&2
+    exit 1
+fi
+
+if [[ ! $XDG_RUNTIME_DIR ]]; then
+    printf 'XDG_RUNTIME_DIR is not available\n' >&2
     exit 1
 fi
 
@@ -10,26 +22,22 @@ readonly confdir=${XDG_CONFIG_HOME:-$HOME/local/cfg}/X11
 readonly logdir=${XDG_CACHE_HOME:-$HOME/local/var/cache/log}/X11
 readonly rundir=$XDG_RUNTIME_DIR/X11
 
+# Honour XINITRC as per xinit(1) documentation.
 xinitrc=${XINITRC:-$confdir/xinitrc}
-log=/dev/null
-#log=$logdir/xsession.log
 
-# Fail early, most of these need to exist.
-if ! mkdir -p "$confdir" "$logdir" "$rundir"; then
-    exit 1
-fi
 
+mkdir -p "$confdir" "$logdir" "$rundir"
+
+export DISPLAY=:$XDG_VTNR
 export XAUTHORITY=$rundir/XAuthority
+
+# After days or Xorg running this logfile can become fairly large and as it's
+# almost never needed I just discard it instead.
+log=/dev/null
+#log=$logdir/$DISPLAY.log
 
 # Such as ICEAuthority.
 unset SESSION_MANAGER
-
-if [[ $XDG_VTNR ]]; then
-    export DISPLAY=:$XDG_VTNR
-else
-    printf 'Apparently XDG_VTNR is not set, bailing out\n' >&2
-    exit 1
-fi
 
 # I blindly add a new entry with xauth as this is stored in a tmpfs and thus
 # destroyed after a reboot.
@@ -39,7 +47,7 @@ serveropts=(
     vt"$XDG_VTNR" 
     # Logfile can be only set for rootful servers, this option is ignored for
     # rootless uses of the Xserver.
-    # -logfile "${LOCALDIR:-$HOME/local}/var/log/xorg.$DISPLAY.log"
+    # -logfile "${LOCALDIR:-$HOME/local}"/var/log/xorg."$DISPLAY".log
     -keeptty
     -nolisten tcp 
     -auth "$XAUTHORITY"
