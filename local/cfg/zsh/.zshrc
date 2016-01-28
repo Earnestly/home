@@ -27,21 +27,18 @@ setopt auto_cd \
     hist_ignore_all_dups \
     interactive_comments
 
-READNULLCMD=$PAGER
-HELPDIR=/usr/share/zsh/$ZSH_VERSION/help
-HISTFILE=$LOCALDIR/data/zsh/zhistory
 HISTSIZE=25000
+READNULLCMD=$PAGER
 SAVEHIST=$HISTSIZE
+HISTFILE=$LOCALDIR/data/zsh/zhistory
+HELPDIR=/usr/share/zsh/$ZSH_VERSION/help
+PROMPT='%m %n %#${vimode} %F{green}${repo}%F{cyan}%~%f '
 
-# Style.
 zstyle ':completion:*' menu select
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' rehash yes
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
-PROMPT='%m %n %#${vimode} %F{green}${repo}%F{cyan}%~%f '
-
-# Functions.
 function precmd {
     # Print basic prompt to the window title.
     print -Pn "\e];%n %~\a"
@@ -161,7 +158,6 @@ function nmv {
 }
 compdef "_files -W $HOME/doc/note -/" nmv
 
-# Aliases.
 alias -g ...='../..'
 alias -g ....='../../..'
 alias rr='rm -rvI'
@@ -171,8 +167,6 @@ alias mv='mv -vi'
 alias ln='ln -vi'
 alias mkdir='mkdir -vp'
 alias grep='grep --color=auto'
-
-alias e='emacsclient -t'
 
 alias chmod='chmod -c --preserve-root'
 alias chown='chown -c --preserve-root'
@@ -191,14 +185,13 @@ alias k='rlwrap k'
 
 alias i="curl -F 'f:1=<-' ix.io"
 alias s="curl -F 'sprunge=<-' sprunge.us"
-alias p="curl -F 'c=@-' https://ptpb.pw"
+alias p="curl -F 'c=@-' 'https://ptpb.pw/?u=1'"
 alias z="curl -F 'file=@-' https://0x0.st"
 alias xc='xclip -o | p'
 
-# XXX force XDG_CONFIG_HOME where possible.
-alias ncmpcpp="ncmpcpp -c $XDG_CONFIG_HOME/ncmpcpp/ncmpcpp.conf"
-alias aria2c="aria2c --dht-file-path $XDG_CACHE_HOME/aria2/dht.dat"
-alias gdb="gdb -nh -x $XDG_CONFIG_HOME/gdb/init"
+# XXX Force LOCALDIR where possible.
+alias aria2c="aria2c --dht-file-path $LOCALDIR/var/cache/aria2/dht.dat"
+alias gdb="gdb -nh -x $LOCALDIR/cfg/gdb/init"
 
 # Bash-like help.
 unalias run-help
