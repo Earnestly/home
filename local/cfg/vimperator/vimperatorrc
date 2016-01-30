@@ -75,6 +75,9 @@ set! plugins.click_to_play=true
 set! general.smoothScroll=false
 set! plugin.default.state=1
 
+" Sigh.
+set! xpinstall.signatures.required=false
+
 " Popups are back, after all those years trying to get rid of them, now the
 " browsers do it themselves.
 set! reader.parse-on-load.enabled=false
