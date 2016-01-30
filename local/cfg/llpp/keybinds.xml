@@ -1,4 +1,4 @@
-<!-- HOME/local/cfg/llpp/keybinds.xml -->
+<!-- LOCALDIR/cfg/llpp/keybinds.xml -->
 
 <!-- 
      As llpp stores both configuration and cache data in llpp.conf this file is
@@ -21,10 +21,10 @@
               auto-scroll-step='12'
               horizontal-scroll-step='24'
               case-insensitive-search='true'
-              horizontal-scrollbar-visible='false'
               vertical-scrollbar-visible='false'
+              horizontal-scrollbar-visible='false'
               uri-launcher='$BROWSER &quot;%s&quot;'
-              path-launcher='termite -d &quot;%s&quot;'>
+              path-launcher='$TERMINAL -d &quot;%s&quot;'>
 
         <keymap mode='global'>
             <!-- Use emacs style motion in menus -->
