@@ -1,17 +1,41 @@
 #!/bin/bash
 # asr - download arch linux build files from the svntogit repositories
 
-pkgname=$1
+# requires git pacsift expac 
 
-# A bit of future-proofing.
-urls=('git://projects.archlinux.org/svntogit/packages.git'
-      'git://projects.archlinux.org/svntogit/community.git')
+if ((!$#)); then
+    printf 'usage: asr package\n' >&2
+    exit 1
+fi
 
-status=${#urls[@]}
-for url in "${urls[@]}"; do
+# Before doing anything check if the requested package is provided by something
+# else.
+package=($(pacsift --sync --provides="$1"))
+
+# Give the user the option to pick which package they might be refering to if
+# we get more than one match.
+if ((${#package[@]} > 1)); then
+    select pkg in "${package[@]}"; do
+        package=$pkg
+        package=${pkg#*/} # Remove leading repo/ text.
+        break
+    done
+fi
+
+# Finally check if the package is part of a split-package by checking if it has
+# a pkgbase.
+if e=$(expac -S '%e' "$package"); then
+    package=$e
+fi
+
+repos=('git://projects.archlinux.org/svntogit/packages.git'
+       'git://projects.archlinux.org/svntogit/community.git')
+
+status=${#repos[@]}
+for repo in "${repos[@]}"; do
     # Determine which repository the package exists in.
-    if git ls-remote --exit-code "$url" refs/heads/packages/"$pkgname"; then
-        git clone --no-checkout --branch packages/"$pkgname" --single-branch "$url" "$pkgname"
+    if git ls-remote --exit-code "$repo" refs/heads/packages/"$package"; then
+        git clone --no-checkout --branch packages/"$package" --single-branch "$repo" "$package"
         # Break out if we succeed to avoid duplicate packages being found.
         break
     else
@@ -21,13 +45,11 @@ done
 
 # Fail if we've gone through the array elements without success.
 if ((!status)); then
-    printf '%s: cannot locate package\n' "$pkgname" >&2
-    printf 'Make sure the pkgname is not from a split-package\n' >&2
+    printf '%s: cannot locate package\n' "$package" >&2
     exit 1
 fi
 
 # Checkout trunk and clean up left overs.
-if [[ -d $pkgname ]]; then
-    cd "$pkgname"
+if cd "$package"; then
     git checkout HEAD:trunk -- .
 fi
