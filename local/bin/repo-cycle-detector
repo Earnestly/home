@@ -24,7 +24,7 @@ generate() {
     # value.  The sentinel in this case will be based on the value of $repo.
 
     # https://github.com/falconindy/expac/issues/24
-    expac -S '%r %n:%E' -l ':' < <(pacman -Sql "$repo") | constrain_to "$repo"
+    pacman -Sql "$repo" | expac -S '%r %n:%E' -l ':' | constrain_to "$repo"
 }
 
 parse() {
@@ -38,9 +38,10 @@ parse() {
             $2 = $1
 
         for(i = 1; i <= NF; ++i)
-            printf "%s %s\n", p, $NF
+            printf "%s %s\n", p, $i
     }'
 }
 
 usage "$@"
 generate "$repo" | parse | tsort > /dev/null
+
