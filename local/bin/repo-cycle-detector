@@ -44,4 +44,3 @@ parse() {
 
 usage "$@"
 generate "$repo" | parse | tsort > /dev/null
-

@@ -14,10 +14,12 @@ call plug#begin(pkgdir)
     Plug 'tpope/vim-surround'
     Plug 'tpope/vim-commentary'
     Plug 'alerque/vim-sile', {'for': 'sile'}
+    Plug 'weakish/rcshell.vim', {'for': 'rc'}
     Plug 'rust-lang/rust.vim', {'for': 'rust'}
     Plug 'dleonard0/pony-vim-syntax', {'for': 'pony'}
 
     " Various local packages.
+    Plug pkgdir . '/vim-ada', {'for': 'ada'}
     Plug pkgdir . '/vim-ktap', {'for': 'ktap'}
     Plug pkgdir . '/vim-draft', {'for': 'draft'}
     Plug pkgdir . '/vim-promela', {'for': 'promela'}

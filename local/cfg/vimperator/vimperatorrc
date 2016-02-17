@@ -26,7 +26,7 @@ set gui=none,tabs
 set wildmode=list:longest,full
 
 " Vimperator doesn't correctly handle non-hacked -e terminals.
-set editor="xterm -e nvim"
+set editor=termite-vi
 
 " Speed up scrolling.
 noremap h 5h

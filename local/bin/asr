@@ -17,10 +17,12 @@ package=($(pacsift --sync --provides="$1"))
 if ((${#package[@]} > 1)); then
     select pkg in "${package[@]}"; do
         package=$pkg
-        package=${pkg#*/} # Remove leading repo/ text.
         break
     done
 fi
+
+# Remove leading "repo/" text added by pacsift.
+package=${pkg#*/}
 
 # Finally check if the package is part of a split-package by checking if it has
 # a pkgbase.

@@ -68,6 +68,9 @@
             <map in='f' out='pgdown'/>
             <map in='b' out='pgup'/>
 
+            <!-- Provide a reverse operation for 'space' -->
+            <map in='shift-space' out='del'/>
+
             <map in='tab' out='o'/>
             <map in='f11' out='f'/>
         </keymap>

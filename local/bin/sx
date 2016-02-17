@@ -31,7 +31,7 @@ mkdir -p "$confdir" "$logdir" "$rundir"
 export DISPLAY=:$XDG_VTNR
 export XAUTHORITY=$rundir/XAuthority
 
-# After days or Xorg running this logfile can become fairly large and as it's
+# After days of Xorg running this logfile can become fairly large and as it's
 # almost never needed I just discard it instead.
 log=/dev/null
 #log=$logdir/$DISPLAY.log

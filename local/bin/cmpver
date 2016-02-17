@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # cmpver - pretty print vercmp output
 
 case $(vercmp "$1" "$2") in

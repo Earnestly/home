@@ -5,7 +5,7 @@
 
 yank=(xclip -o)
 put=(xclip -i)
-pastesite=(curl -F 'sprunge=<-' sprunge.us)
+pastesite=(curl -F 'c=@-' https://ptpb.pw/?u=1)
 browser=${BROWSER:-firefox}
 
 read -r font < "${XDG_CONFIG_HOME:-$HOME/.config}"/dmenu/font

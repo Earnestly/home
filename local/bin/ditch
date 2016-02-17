@@ -37,16 +37,16 @@ has() {
     hash "$1" 2> /dev/null
 }
 
-puts() {
+print() {
     printf -- "$1\n" "${@:2}"
 }
 
 err() {
-    puts "$argv0: $1" "${@:2}" >&2
+    print "$argv0: $1" "${@:2}" >&2
 
     if has notify-send; then
         local msg
-        msg=$(puts "$@")
+        msg=$(print "$@")
         notify-send -u critical -- "$argv0" "$msg"
     fi
 }
@@ -55,7 +55,11 @@ chunk_by() {
     declare chunk=$1
     declare -n list_r=$2
 
-    puts "${list_r[@]}" | xargs -n "$chunk" | sed 's/ /,/g; s/$/&\&limit='"$chunk"'/'
+    # I purposefully use &limit=chunk here as a marker later on to separate out
+    # twitch's API versions.  The team (v2) API is exactly the same in terms of
+    # what I want, but the streamers (v3) API changes the key identifiers thus
+    # making it incompatible, for nothing, joyless.
+    print '%s' "${list_r[@]}" | xargs -n "$chunk" | sed "s/ /,/g; s/$/&\&limit=$chunk/"
 }
 
 generate_urls() {
@@ -63,7 +67,7 @@ generate_urls() {
 
     if [[ -s $data_dir/teams ]]; then
         while read -r team; do
-            puts '%s' "$team"
+            print '%s' "$team"
         done < "$data_dir/teams"
     fi
 
@@ -165,7 +169,7 @@ get_user_picks() {
     # here's hoping not many people use this in their titles, generally this
     # hasn't been the case and it won't cause issues as only the first word is
     # used and that is guaranteed to not contain spaces.
-    puts '%s' "${!menu_r[@]}" | column -s '│' -t  | bemenu "${bemenu_args[@]}"
+    print '%s' "${!menu_r[@]}" | column -s '│' -t  | bemenu "${bemenu_args[@]}"
 }
 
 play_stream() {

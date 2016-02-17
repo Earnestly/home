@@ -168,13 +168,6 @@ run_ghostscript() {
 
     # These options do their best to retain the original quality of the input
     # pdf while trying to save space.
-
-    # Considerations:
-    #-dAutoFilterGrayImages=false
-    #-dAutoFilterColorImages=false
-    #-dGrayImageFilter=/FlateEncode
-    #-dMonoImageFilter=/FlateEncode
-    #-dColorImageFilter=/FlateEncode
     options=(
         -sDEVICE=pdfwrite -dBATCH -dNOPAUSE
         -dCompatibilityLevel="$version"
