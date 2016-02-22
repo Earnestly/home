@@ -1,31 +1,26 @@
 # LOCALDIR/cfg/conky/conkyrc.teapot
 
-out_to_console yes
-background no
-short_units yes
-max_text_width 0
-out_to_x no
-own_window no
+conky.config = {
+    out_to_console = true,
+    background = false,
+    short_units = true,
+    max_text_width = 0,
+    out_to_x = false,
+    own_window = false,
 
-# My locale is already UTF-8.
-override_utf8_locale no
+    override_utf8_locale = false,
 
-# Don't add spaces anywhere.
-pad_percents 0
-use_spacer none
+    pad_percents = 0,
+    use_spacer = 'none',
 
-update_interval 2.0
+    update_interval = 2.0,
+    total_run_times = 0,
 
-# Run forever (or will it?)
-total_run_times 0
+    template0 = '65737e',
+    template1 = 'bf616a'
+}
 
-# Normal
-template0 65737e
-
-# Warning
-template1 bf616a
-
-TEXT
+conky.text = [[
 [\
 ${if_mpd_playing}\
 {"full_text":"MPD:${mpd_title 80}",\
@@ -61,3 +56,4 @@ ${endif}\
 ${endif}\
 {"full_text":"${time %A %B %d %H:%M}",\
 "color":"\#${template0}"}],\
+]]
