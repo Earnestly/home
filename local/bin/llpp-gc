@@ -1,0 +1,13 @@
+#!/bin/bash
+# llpp-gc - remove llpp.conf history entries for resources that no longer exist
+
+# requires xmlstarlet
+
+readonly cfg=${LOCALDIR:-$HOME/local}/cfg/llpp/llpp.conf
+
+while read -r res; do
+    if [[ ! -e $res ]]; then
+        printf 'Removing: %s\n' "$res"
+        xmlstarlet ed -O -L -d "//llppconfig/doc[@path='$res']" "$cfg"
+    fi
+done < <(xmlstarlet sel -T -t -m //llppconfig/doc/@path -v . -n "$cfg")
