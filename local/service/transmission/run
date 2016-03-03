@@ -1,2 +1,2 @@
 #!/bin/sh
-exec 2>&1 transmission-daemon -f
+exec transmission-daemon -f --log-error 2>&1
