@@ -8,26 +8,29 @@ if ((!$#)); then
     exit 1
 fi
 
+package=$1
+
 # Before doing anything check if the requested package is provided by something
 # else.
-package=($(pacsift --sync --provides="$1"))
+providers=($(pacsift --sync --provides="$package"))
 
 # Give the user the option to pick which package they might be refering to if
 # we get more than one match.
-if ((${#package[@]} > 1)); then
-    select pkg in "${package[@]}"; do
+if ((${#providers[@]} > 1)); then
+    select pkg in "${providers[@]}"; do
         package=$pkg
         break
     done
+    # Remove leading "repo/" text added by pacsift.
+    package=${pkg#*/}
 fi
-
-# Remove leading "repo/" text added by pacsift.
-package=${pkg#*/}
 
 # Finally check if the package is part of a split-package by checking if it has
 # a pkgbase.
-if e=$(expac -S '%e' "$package"); then
-    package=$e
+pkgbase=$(expac -S '%e' "$package")
+
+if [[ $pkgbase != '(null)' ]]; then
+    package=$pkgbase
 fi
 
 repos=('git://projects.archlinux.org/svntogit/packages.git'
@@ -41,7 +44,7 @@ for repo in "${repos[@]}"; do
         # Break out if we succeed to avoid duplicate packages being found.
         break
     else
-        ((status--))
+        ((--status))
     fi
 done
 
