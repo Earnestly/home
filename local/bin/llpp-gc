@@ -3,7 +3,9 @@
 
 # requires xmlstarlet
 
-# Do not use this with llpp -gc, llpp-gc is designed as an independent tool.
+# Do not use this with llpp -gc, llpp-gc is an independent tool.
+
+set +e
 
 readonly cfg=${LOCALDIR:-$HOME/local}/cfg/llpp/llpp.conf
 
@@ -11,7 +13,7 @@ while read -r f; do
     # Remove any result which doesn't exist or isn't an absolute path otherwise
     # llpp's behaviour could change depending on its working directory.
     if [[ ! -e $f ]] || [[ $f != /* ]]; then
-        printf 'Removing: %s\n' "$f" >&2
+        printf 'Removed: %s\n' "$f" >&2
         xmlstarlet ed -O -L -d "//llppconfig/doc[@path='$f']" "$cfg"
     fi
 done < <(xmlstarlet sel -T -t -m //llppconfig/doc/@path -v . -n "$cfg")
