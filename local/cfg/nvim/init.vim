@@ -76,6 +76,10 @@ set clipboard=unnamed
 " Set directories.
 set backupdir=$XDG_DATA_HOME/nvim/backup
 
+" Prevent neomake reporting its exit status and suppressing the write message.
+" https://github.com/benekastah/neomake/issues/238
+let neomake_verbose = 0
+
 " Use clang when checking C/C++ syntax.
 let g:neomake_cpp_clang_args = neomake#makers#ft#c#clang()['args'] + ['-std=c99']
 let g:neomake_cpp_clang_args = neomake#makers#ft#cpp#clang()['args'] + ['-std=c++11']
