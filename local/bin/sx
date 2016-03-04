@@ -2,6 +2,7 @@
 # sx - simpler startx
 
 # requires svlogd xorg>=1.18
+# An svlogd implementation can be found in busybox.
 
 # This script doesn't allow passing arguments to the Xserver.  Instead edit
 # this file if different options are necessary.
@@ -12,21 +13,26 @@ if [[ $DISPLAY ]]; then
     exit 1
 fi
 
-if [[ ! $XDG_VTNR ]]; then
-    printf 'XDG_VTNR is not available\n' >&2
+if ! tty=$(fgconsole); then
     exit 1
 fi
 
 if [[ ! $XDG_RUNTIME_DIR ]]; then
-    printf 'XDG_RUNTIME_DIR is not available\n' >&2
-    exit 1
+    rundir=${TMPDIR:-/tmp}/run/$USER;
+
+    if mkdir -pm 0700 "$rundir"; then
+        XDG_RUNTIME_DIR="$rundir"
+    else
+        printf '%s: Failed to create directory\n' "$rundir"
+        exit 1
+    fi
 fi
 
 readonly localdir=${LOCALDIR:-$HOME/local}
 
 readonly cfgdir=$localdir/cfg/X11
-readonly logdir=$localdir/var/log/X11/xinit.$XDG_VTNR
-readonly logfile=$localdir/var/log/X11/xserver.$XDG_VTNR
+readonly logdir=$localdir/var/log/X11/xinit.$tty
+readonly logfile=$localdir/var/log/X11/xserver.$tty
 readonly rundir=$XDG_RUNTIME_DIR/X11
 
 # Honour XINITRC as per xinit(1) documentation.
@@ -34,7 +40,7 @@ xinitrc=${XINITRC:-$cfgdir/xinitrc}
 
 mkdir -p "$cfgdir" "$logdir" "$rundir"
 
-export DISPLAY=:$XDG_VTNR
+export DISPLAY=:$tty
 export XAUTHORITY=$rundir/XAuthority
 
 # Such as ICEAuthority.
@@ -42,12 +48,13 @@ unset SESSION_MANAGER
 
 # I can blindly add a new entry with xauth as this is stored in a tmpfs
 # (RUNTIME_DIR) which is destroyed after a reboot.
-xauth -q add "$DISPLAY" . "$(mcookie)" &> /dev/null
+xauth -q add "$DISPLAY" . "$(mcookie)" 2> /dev/null
 
 # * Since Xorg 1.17 the -nolisten command has been removed:
 #   https://cgit.freedesktop.org/xorg/xserver/commit/?id=cc59be38b
 
-# * -keeptty is now implicitly enabled when we run the Xserver on the same tty:
+# * -keeptty is now implicitly enabled when we run the Xserver on the same tty,
+#   however it still needs to be explicitly set for whatever reason.
 #   https://cgit.freedesktop.org/xorg/xserver/commit/?id=6b79f28f5
-args=(vt"$XDG_VTNR" -auth "$XAUTHORITY" -logfile "$logfile")
+args=(vt"$tty" -keeptty -auth "$XAUTHORITY" -logfile "$logfile")
 exec xinit "${@:-$xinitrc}" -- "$DISPLAY" "${args[@]}" |& svlogd -tt "$logdir"
