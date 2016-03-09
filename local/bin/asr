@@ -40,7 +40,7 @@ status=${#repos[@]}
 for repo in "${repos[@]}"; do
     # Determine which repository the package exists in.
     if git ls-remote --exit-code "$repo" refs/heads/packages/"$package"; then
-        git clone --no-checkout --branch packages/"$package" --single-branch "$repo" "$package"
+        git clone -nb packages/"$package" --single-branch "$repo" "$package"
         # Break out if we succeed to avoid duplicate packages being found.
         break
     else
