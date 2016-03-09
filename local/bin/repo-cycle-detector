@@ -38,7 +38,7 @@ parse() {
             $2 = $1
 
         for(i = 1; i <= NF; ++i)
-            printf "%s %s\n", p, $i
+            print p, $i
     }'
 }
 
