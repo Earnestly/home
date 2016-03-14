@@ -1,2 +1,2 @@
 #!/bin/sh
-exec 2>&1 pulseaudio
+exec pulseaudio 2>&1

@@ -13,28 +13,27 @@ cursor_blink = off
 cursor_shape = block
 scrollback_lines = 10000
 search_wrap = true
-
 font = Inconsolatazi4 12
 
 [colors]
 # Base16 Ocean
 # Scheme: Chris Kempson (http://chriskempson.com)
 
-foreground      = #c0c5ce
+foreground = #c0c5ce
 foreground_bold = #c0c5ce
-background      = #2b303b
+background = #2b303b
 
 # 16 color space
-color0  = #2b303b
-color1  = #bf616a
-color2  = #a3be8c
-color3  = #ebcb8b
-color4  = #8fa1b3
-color5  = #b48ead
-color6  = #96b5b4
-color7  = #c0c5ce
-color8  = #65737e
-color9  = #bf616a
+color0 = #2b303b
+color1 = #bf616a
+color2 = #a3be8c
+color3 = #ebcb8b
+color4 = #8fa1b3
+color5 = #b48ead
+color6 = #96b5b4
+color7 = #c0c5ce
+color8 = #65737e
+color9 = #bf616a
 color10 = #a3be8c
 color11 = #ebcb8b
 color12 = #8fa1b3

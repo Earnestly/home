@@ -90,7 +90,7 @@ set! browser.safebrowsing.enabled=false
 
 set! privacy.trackingprotection.enabled=true
 set! browser.search.suggest.enabled=false
-set! network.http.sendRefererHeader=0
+set! network.http.sendRefererHeader=1
 set! network.prefetch-next=false
 set! browser.pocket.enabled=false
 set! geo.enabled=false

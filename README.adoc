@@ -1,12 +1,11 @@
-// HOME/README.adoc
 = DOTFILES
 :toc: macro
 :xdg: http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 :xdg-support: https://wiki.archlinux.org/index.php/XDG_Base_Directory_support
 
 These configurations depend heavily on the {xdg}[XDG Base Directory
-Specification], custom environments and command-line options to relocate
-the default directories into a more reasonable structure.
+Specification], custom environments, and command-line options to relocate
+the default directories and files into a more reasonable structure.
 
 NOTE: See {xdg-support}[XDG Base Directory Support] for a list of
       workarounds and the support status for various software. Also
@@ -28,12 +27,13 @@ HOME/local
 |- data
 |- lib
 `- var
-   `- cache
+   |- cache
+   `- log
 ----
 
-NOTE: `data` is similar to `share` but more general purpose. Data
-      normally in `share` would appear here along with other
-      library-like or persistent state material.
+NOTE: `data` is similar to `share` but more general purpose. Data normally
+      in `share` would appear here along with other library-like or
+      persistent state material.
 
 === Environments
 
