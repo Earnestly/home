@@ -10,7 +10,7 @@
 
 # Make sure we aren't already running in an Xserver.
 if [[ $DISPLAY ]]; then
-    printf '%s: DISPLAY is already set\n' "$DISPLAY" >&2
+    printf 'DISPLAY already set\n' >&2
     exit 1
 fi
 
@@ -31,11 +31,6 @@ if ! mkdir -p "$cfgdir" "$logdir"; then
 fi
 
 export DISPLAY=:$tty
-
-# Give the localuser access to the Xserver using the Server Interpreted method
-# (Xsecurity(7)) which uses my user's UID via SO_PEERCRED to mediate access to 
-# the Xserver socket.
-xhost +si:localuser:"$USER"
 
 # * Since Xorg 1.17 the -nolisten command has been removed:
 #   https://cgit.freedesktop.org/xorg/xserver/commit/?id=cc59be38b
