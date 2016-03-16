@@ -1,8 +1,8 @@
-# XDG_CONFIG_HOME/X11/xcompose
+# LOCALDIR/cfg/X11/XCompose
 
 include "%S/en_US.UTF-8/Compose"
 
-# Prefix 'm': Mathematical symbols
+# Prefix 'm' mathematical symbols.
 <Multi_key> <m> <d> : "Δ"
 <Multi_key> <m> <e> : "ϵ"
 <Multi_key> <m> <E> : "∃"
@@ -22,24 +22,22 @@ include "%S/en_US.UTF-8/Compose"
 <Multi_key> <m> <s> : "𝑠"
 <Multi_key> <m> <x> : "𝑥"
 <Multi_key> <m> <y> : "𝑦"
- Multi_key> <m> <less> : "↜"
-<Multi_key> <m> <minus> : "↭"
-<Multi_key> <m> <greater> : "↝"
 <Multi_key> <m> <bar> <underscore> : "⊥"
 <Multi_key> <m> <asciitilde> <asciitilde> : "≈"
 
-# Quotes
+# Quotes.
 <Multi_key> <bracketleft> <apostrophe> : "｢"
 <Multi_key> <bracketright> <apostrophe> : "｣"
+<Multi_key> <less> <parenleft> : "⟨"
+<Multi_key> <greater> <parenright> : "⟩"
 
-# Easier grammar
+# Easier grammar.
 <Multi_key> <semicolon> <apostrophe> : "’"
 <Multi_key> <colon> <apostrophe> : "‘"
 
-# Misc
+# Misc.
 <Multi_key> <colon> <bar> <bar> : "ಠ_ಠ"
 <Multi_key> <less> <3> : "❤"
-
 <Multi_key> <bar> <asciicircum> : "↑"
 <Multi_key> <bar> <v> : "↓"
 
