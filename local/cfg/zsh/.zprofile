@@ -48,7 +48,7 @@ export GOPATH="$LOCALDIR/lib/go"
 # will be able to use them.  The syntax is the same as Xorg's configuration.
 export XKB_DEFAULT_LAYOUT="gb"
 export XKB_DEFAULT_OPTIONS="compose:ralt,ctrl:nocaps"
-export XAUTHORITY="$XDG_RUNTIME_DIR/X11/XAuthority"
+#export XAUTHORITY="$XDG_RUNTIME_DIR/X11/XAuthority"
 
 # A recent change in GTK now hardcodes HOME/.XCompose but will look for
 # "Compose" in XDG_CONFIG_HOME/gtk-3.0/Compose.
