@@ -4,13 +4,6 @@
 set +e
 repo=$1
 
-usage() {
-    if ((!$#)); then
-        printf 'usage: repo-cycle-detector repo\n' >&2
-        exit 1
-    fi
-}
-
 constrain_to() {
     repo=$1
     awk -v repo="^$repo" '$1 ~ repo { print $2 }'
@@ -42,5 +35,9 @@ parse() {
     }'
 }
 
-usage "$@"
+if ((!$#)); then
+    printf 'usage: repo-cycle-detector repo\n' >&2
+    exit 1
+fi
+
 generate "$repo" | parse | tsort > /dev/null
