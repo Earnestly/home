@@ -39,7 +39,7 @@ check() {
     if [[ $(git rev-parse HEAD) != $(git rev-parse @{upstream}) ]]; then
         printf '\e[1;33m%s\e[0m: changes found:\n' "$repo"
         git --no-pager log --oneline --stat ..@{upstream}
-        if confirm 'Rebuild the core?'; then
+        if confirm "Rebuild $core?"; then
             if git merge; then
                 build "$core"
             fi
