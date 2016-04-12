@@ -1,0 +1,100 @@
+Dotfiles <https://github.com/Earnestly/dotfiles>
+
+INTRODUCTION
+
+  These configurations depend heavily on the XDG Base Directory
+  Specification, custom environments, and command-line options to relocate
+  the default directories and files into a more reasonable structure.
+  
+GENERAL LAYOUT
+
+  The structure I've chosen is mostly to mimic the /usr/local convention
+  and the FHS. There are small changes to the naming and meaning of the
+  directories based on Plan 9 but most should be fairly understandable.
+
+    HOME/local (LOCALDIR)
+    |- bin
+    |- cfg
+    |- data
+    |- lib
+    `- var
+       |- cache
+       `- log
+
+    Note that the data directory is similar to share but deliberately more
+    general. Data normally in share would appear here along with other
+    architecture independent library-like or persistent state.
+
+ENVIRONMENTS
+
+  LOCALDIR=$HOME/local
+  XDG_DATA_HOME=$LOCALDIR/data
+  XDG_CONFIG_HOME=$LOCALDIR/cfg
+  XDG_CACHE_HOME=$LOCALDIR/var/cache
+
+ASSUMPTIONS
+  
+  These configurations need to make a few unfortunate assumptions about
+  the environment, I'll attempt to list the known ones here.
+  
+  - The shell is zsh built with --enable-etcdir=/etc/zsh.
+
+    The ZDOTDIR environment configured as HOME/local/cfg/zsh in
+    /etc/zsh/zshenv, the LOCALDIR environment is not available at this
+    point.
+  
+  - The web browser is firefox.
+
+    Firefox is hard-coded in some configurations when they're unable to
+    reference the BROWSER environment.
+  
+  - The Xorg server is started with a simple sx script:
+
+    <https://github.com/Earnestly/dotfiles/blob/master/local/bin/sx>
+  
+  - Terminal emulator used is termite: <https://github.com/thestinger/termite>
+    
+    Termite is hard-coded in configurations where they're unable to
+    reference the TERMINAL environment.
+  
+  - The system-config package is installed.
+
+    <https://github.com/Earnestly/pkgbuilds/tree/master/system-config>
+  
+  - HOME/local is a directory and the environment LOCALDIR refers to it.
+  
+  - XDG_CONFIG_HOME, XDG_CACHE_HOME and XDG_DATA_HOME environments are
+    correctly configured as defined in ENVIRONMENTS.
+  
+ISSUES
+  - zsh
+
+    Zsh is able to relocate its various configurations via ZDOTDIR,
+    however the files are all still prefixed with a dot.
+
+    <http://www.zsh.org/mla/workers/2013/msg00702.html>
+
+      > We might need to think about rules for finding e.g. ~/.zsh/zshrc
+      > instead of ~/.zsh/.zshrc since the extra dot is pretty unhelpful.
+      > (E.g. look for the file without the dot if a parent directory does
+      > have a dot at the start. We don't want to look for ~/zshrc, that
+      > could easily be problematic.)
+
+  - vimperator
+    Requires code in the VIMPERATOR_INIT environment.
+
+  - llpp
+
+    Stores history in the configuration file making it difficult to
+    share nicely across multiple machines.
+
+  - systemd
+
+    Systemd user sessions started by user@.service are not able to
+    easily inherit per-user environments (that depend on user specific
+    values such as HOME) without creating a systemd --user wrapper. PAM
+    environments are also unable to provide this. Due to the user@.service
+    taking a UID instead of the username, it's not possible to build the
+    environments in the service or via a drop-in configuration.
+
+    <https://github.com/systemd/systemd/issues/1476>
