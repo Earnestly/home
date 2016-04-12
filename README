@@ -5,6 +5,8 @@ INTRODUCTION
   These configurations depend heavily on the XDG Base Directory
   Specification, custom environments, and command-line options to relocate
   the default directories and files into a more reasonable structure.
+
+  See <https://wiki.archlinux.org/index.php/XDG_Base_Directory_support>
   
 GENERAL LAYOUT
 
@@ -67,6 +69,7 @@ ASSUMPTIONS
     correctly configured as defined in ENVIRONMENTS.
   
 ISSUES
+
   - zsh
 
     Zsh is able to relocate its various configurations via ZDOTDIR,
@@ -81,6 +84,7 @@ ISSUES
       > could easily be problematic.)
 
   - vimperator
+
     Requires code in the VIMPERATOR_INIT environment.
 
   - llpp
