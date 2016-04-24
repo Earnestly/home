@@ -33,8 +33,8 @@ if [[ $pkgbase != '(null)' ]]; then
     package=$pkgbase
 fi
 
-repos=('git://projects.archlinux.org/svntogit/packages.git'
-       'git://projects.archlinux.org/svntogit/community.git')
+repos=('https://git.archlinux.org/svntogit/packages.git'
+       'https://git.archlinux.org/svntogit/community.git')
 
 status=${#repos[@]}
 for repo in "${repos[@]}"; do
