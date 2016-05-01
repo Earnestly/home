@@ -109,7 +109,7 @@ parse_json() {
     declare json args
 
     for json in "$TMPDIR/$argv0"-channels*; do
-        args=(-CQ -e streams -a -e channel -e name -upe game -upe url -upe status)
+        args=(-CQ -e streams -a -e viewers -upe channel -e name -upe game -upe url -upe status -u)
         jshon "${args[@]}" < "$json"
     done
 
@@ -121,9 +121,10 @@ parse_json() {
 create_menu() {
     declare -n menu_r=$1
     declare -n stream_r=$2
-    declare streamer game url title
+    declare viewers streamer game url title
 
     while {
+        read -r viewers
         read -r streamer
         read -r game
         read -r url
@@ -133,12 +134,7 @@ create_menu() {
         # entirely), since a valid url can never be null we'll use this as a
         # sentinel for bad values and skip any we find.
         if [[ $url != null ]]; then
-
-            # Manually de-json the title.
-            # XXX This doesn't handle all json escapes but we don't need to.
-            title="${title%\"*}" title="${title#\"}" title="${title//\\/}"
-
-            menu_r["$streamer│$game│$title"]=1
+            menu_r["$streamer│$game│($viewers) $title"]=1
             stream_r["$streamer"]="$url"
         fi
     done
@@ -152,7 +148,7 @@ get_user_picks() {
     # here's hoping not many people use this in their titles, generally this
     # hasn't been the case and it won't cause issues as only the first word is
     # used and that is guaranteed to not contain spaces.
-    print '%s' "${!menu_r[@]}" | column -s '│' -t  | bemenu "${bemenu_args[@]}"
+    print '%s' "${!menu_r[@]}" | column -s '│' -t  | sort -t '(' -sk 2,2rn | bemenu "${bemenu_args[@]}"
 }
 
 play_stream() {
