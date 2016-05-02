@@ -23,9 +23,9 @@ GENERAL LAYOUT
        |- cache
        `- log
 
-    Note that the data directory is similar to share but deliberately more
-    general. Data normally in share would appear here along with other
-    architecture independent library-like or persistent state.
+  Note that the data directory is similar to share but deliberately more
+  general. Data normally in share would appear here along with other
+  architecture independent library-like files or persistent state.
 
 ENVIRONMENTS
 
@@ -42,22 +42,12 @@ ASSUMPTIONS
   - The shell is zsh built with --enable-etcdir=/etc/zsh.
 
     The ZDOTDIR environment configured as HOME/local/cfg/zsh in
-    /etc/zsh/zshenv, the LOCALDIR environment is not available at this
-    point.
+    /etc/zsh/zshenv as the LOCALDIR environment is not available at
+    this point.
   
-  - The web browser is firefox.
-
-    Firefox is hard-coded in some configurations when they're unable to
-    reference the BROWSER environment.
-  
-  - The Xorg server is started with a simple sx script:
+  - The Xorg server is started with a custom sx script.
 
     <https://github.com/Earnestly/dotfiles/blob/master/local/bin/sx>
-  
-  - Terminal emulator used is termite: <https://github.com/thestinger/termite>
-    
-    Termite is hard-coded in configurations where they're unable to
-    reference the TERMINAL environment.
   
   - The system-config package is installed.
 
