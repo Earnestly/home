@@ -42,11 +42,9 @@ ${if_up wlp3s0}\
 {"full_text":"NET:${wireless_essid wlp3s0} ${wireless_link_qual wlp3s0}% DN:${downspeedf wlp3s0}/UP:${upspeedf wlp3s0}",\
 "color":"\#${template0}"},\
 ${endif}\
-${if_smapi_bat_installed 0}\
-${if_match ${smapi_bat_perc 0} < 25}\
-{"full_text":"BAT:${smapi_bat_perc 0}%",\
+${if_match ${battery_percent} < 25}\
+{"full_text":"BAT:${battery_percent}%",\
 "color":"\#${template1}"},\
-${endif}\
 ${endif}\
 ${if_smapi_bat_installed 0}\
 ${if_match ${smapi_bat_temp 0} > 35}\
