@@ -28,6 +28,13 @@
 + net/**
 
 + dev/
+- dev/research/distro
+
+# Kobo-Reader is a large git repo <https://github.com/kobolabs/Kobo-Reader>.
+- dev/research/reader/Kobo-Reader
+
++ dev/research/distro/clfs/src/**
++ dev/research/distro/lfs/src/**
 + dev/**
 
 # XXX This is hosted on github, I don't really trust github, but this is a lot
@@ -65,11 +72,6 @@
 
 + .ssh/
 + .ssh/**
-
-# XXX Not sure if I want to backup the entire tree but might as well for now.
-+ .mozilla/
-+ .mozilla/firefox/
-+ .mozilla/firefox/**
 
 # This filter is important to keep as well.
 + local/data/rsync/filter
