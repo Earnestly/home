@@ -189,8 +189,9 @@ alias p="curl -F 'c=@-' 'https://ptpb.pw/?u=1'"
 alias z="curl -F 'file=@-' https://0x0.st"
 alias xc='xclip -o | p'
 
-# XXX Force LOCALDIR where possible.
+# XXX Enforce LOCALDIR where possible.
 alias aria2c="aria2c --dht-file-path $LOCALDIR/var/cache/aria2/dht.dat"
+alias petite="petite --eehistory $LOCALDIR/data/chezscheme/history"
 alias gdb="gdb -nh -x $LOCALDIR/cfg/gdb/init"
 
 # Bash-like help.
