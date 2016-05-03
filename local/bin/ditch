@@ -20,7 +20,7 @@ readonly TMPDIR=${TMPDIR:-/tmp}
 # Number of entries to display at once.
 readonly lines=30
 
-read -r font < "${LOCALDIR:-$HOME/local}/cfg/dmenu/font"
+read -r font < "${LOCALDIR:-$HOME/local}"/cfg/dmenu/font
 
 bemenu_args=(
     --fn "$font" -w -i -l "$lines"
@@ -108,8 +108,11 @@ fetch_json() {
 parse_json() {
     declare json args
 
+    args=(-CQ
+          -e streams -a
+          -e viewers -upe channel -e name -upe game -upe url -upe status -u)
+
     for json in "$TMPDIR/$argv0"-channels*; do
-        args=(-CQ -e streams -a -e viewers -upe channel -e name -upe game -upe url -upe status -u)
         jshon "${args[@]}" < "$json"
     done
 
@@ -148,7 +151,7 @@ get_user_picks() {
     # here's hoping not many people use this in their titles, generally this
     # hasn't been the case and it won't cause issues as only the first word is
     # used and that is guaranteed to not contain spaces.
-    print '%s' "${!menu_r[@]}" | column -s '│' -t  | sort -t '(' -sk 2,2rn | bemenu "${bemenu_args[@]}"
+    print '%s' "${!menu_r[@]}" | column -s '│' -t  | sort -t '(' -sk 2,2rn
 }
 
 play_stream() {
@@ -176,12 +179,10 @@ play_if_valid() {
     while read -r streamer title; do
         [[ ! $title ]] && title="$streamer"
 
-        # Check if the selection actually matches a stream.
         if [[ ${stream_r[$streamer]} ]]; then
             url=${stream_r[$streamer]}
         else
-            err '%s: cannot find associated stream' "$streamer"
-            exit 1
+            url=https://twitch.tv/$streamer
         fi
 
         play_stream "$url" "$title" &
@@ -219,7 +220,7 @@ case $1 in
         declare -A menu stream
         create_menu menu stream < <(parse_json)
 
-        results=$(get_user_picks menu stream)
+        results=$(get_user_picks menu stream | bemenu "${bemenu_args[@]}")
 
         if [[ $results ]]; then
             play_if_valid stream <<< "$results"
