@@ -15,7 +15,7 @@ set $mod mod4
 floating_modifier $mod
 
 # Terminal.
-bindsym $mod+Return exec termite
+bindsym $mod+Return exec $TERMINAL
 
 # Brightness control.
 #bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 2
@@ -199,4 +199,4 @@ bindsym XF86AudioPlay exec mpc toggle
 bindsym XF86AudioNext exec mpc next
 bindsym XF86AudioPrev exec mpc prev
 
-bindsym XF86Launch1 exec firefox
+bindsym XF86Launch1 exec $BROWSER
