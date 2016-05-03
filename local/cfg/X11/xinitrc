@@ -1,8 +1,21 @@
 #!/bin/sh
+# LOCALDIR/cfg/X11/xinitrc
+
+# NOTE
+#   xinitrc is explicitly spawned using /bin/sh via xinit, with this in mind I
+#   will keep the script itself POSIX-with-local sh.
+
+# This is here to prevent the creation of HOME/.dbus/session-bus/ by software
+# using libdbus.  XXX: I now get four(!) dbus-daemon processes but once killed
+# they at least don't return.  Perhaps this needs to be handled much earlier
+# than xinit.
+if [ ! "$DBUS_SESSION_BUS_ADDRESS" ]; then
+    eval "$(dbus-launch --sh-syntax)"
+fi
 
 # Give the localuser access to the Xserver using the Server Interpreted method
-# (Xsecurity(7)) which uses my user's UID via SO_PEERCRED to mediate access to 
-# the Xserver socket.
+# (see Xsecurity(7)) which uses my user's UID via SO_PEERCRED to mediate access
+# to the Xserver socket (/tmp/.X11-unix/Xn).
 xhost +si:localuser:"$USER"
 
 xsetroot -mod 16 16 -fg '#343d46' -bg '#2b303b'
