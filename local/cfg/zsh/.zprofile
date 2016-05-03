@@ -18,17 +18,13 @@ export WEECHAT_HOME="$XDG_CONFIG_HOME/weechat"
 export PERL_CPANM_HOME="$XDG_DATA_HOME/cpanm"
 export WINEPREFIX="$XDG_DATA_HOME/wine/default"
 export ELINKS_CONFDIR="$XDG_CONFIG_HOME/elinks"
- # https://github.com/jkbrzt/httpie/issues/145
+
+# <https://github.com/jkbrzt/httpie/issues/145>
 export HTTPIE_CONFIG_DIR="$XDG_CONFIG_HOME/httpie"
 
 export LESSHISTFILE="$XDG_CACHE_HOME/less/history"
 export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc"
 export NOTMUCH_CONFIG="$XDG_CONFIG_HOME/notmuch/notmuchrc"
-
-# XXX Requires program code in an environment, this is not ideal but means one
-#     less symlink and one less dotfile.
-export VIMPERATOR_INIT=":source $XDG_CONFIG_HOME/vimperator/vimperatorrc"
-export VIMPERATOR_RUNTIME="$XDG_DATA_HOME/vimperator"
 
 export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:/usr/share/terminfo"
 export UNCRUSTIFY_CONFIG="$XDG_CONFIG_HOME/uncrustify/uncrustify.cfg"
@@ -48,11 +44,13 @@ export GOPATH="$LOCALDIR/lib/go"
 # will be able to use them.  The syntax is the same as Xorg's configuration.
 export XKB_DEFAULT_LAYOUT="gb"
 export XKB_DEFAULT_OPTIONS="compose:ralt,ctrl:nocaps"
+ 
+# See ~/local/cfg/X11/xinitrc
 #export XAUTHORITY="$XDG_RUNTIME_DIR/X11/XAuthority"
 
 # A recent change in GTK now hardcodes HOME/.XCompose but will look for
 # "Compose" in XDG_CONFIG_HOME/gtk-3.0/Compose.
-# https://git.gnome.org/browse/gtk+/commit/?id=a41f02f9b1843e0f00
+# <https://git.gnome.org/browse/gtk+/commit/?id=a41f02f9b1843e0f00>
 export GTK_IM_MODULE="xim"
 export XCOMPOSEFILE="$XDG_CONFIG_HOME/X11/XCompose"
 
@@ -71,8 +69,8 @@ export SDL_AUDIODRIVER="pulse"
 # Disable initial installation of Mono and Gecko; prevent .desktop creation.
 export WINEDLLOVERRIDES="winemenubuilder.exe,mscoree,mshtml=d"
 
-# LS_COLORS (or a valid TERM, which I don't have) is now required for `ls` to
-# use colour.  https://savannah.gnu.org/forum/forum.php?forum_id=8032
+# LS_COLORS (or a valid TERM, which I don't have) is now required for ls to
+# use colour.  <https://savannah.gnu.org/forum/forum.php?forum_id=8032>
 source <(dircolors "$XDG_CONFIG_HOME/coreutils/dircolors")
 
 # Unused exports, but kept as backups if their need ever arises.
@@ -83,3 +81,8 @@ source <(dircolors "$XDG_CONFIG_HOME/coreutils/dircolors")
 # export GIMP2_DIRECTORY="$XDG_CONFIG_HOME/gimp"
 # export CABAL_CONFIG="$XDG_DATA_HOME/cabal/config"
 # export GUILE_HISTORY="$XDG_CONFIG_HOME/guile/history"
+ 
+# XXX Requires program code in an environment, this is not ideal but means one
+#     less symlink and one less dotfile.
+# export VIMPERATOR_INIT=":source $XDG_CONFIG_HOME/vimperator/vimperatorrc"
+# export VIMPERATOR_RUNTIME="$XDG_DATA_HOME/vimperator"

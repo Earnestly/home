@@ -1,7 +1,0 @@
-style -name=justify -append * <<EOF
-p { 
-    text-align: justify !important;
-    -moz-hyphens: auto !important;
-    hyphens: auto !important;
-}
-EOF
