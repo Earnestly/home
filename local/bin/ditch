@@ -110,7 +110,7 @@ parse_json() {
 
     args=(-CQ
           -e streams -a
-          -e viewers -upe channel -e name -upe game -upe url -upe status -u)
+          -e viewers -upe channel -e name -upe game -upe url -upe status)
 
     for json in "$TMPDIR/$argv0"-channels*; do
         jshon "${args[@]}" < "$json"
@@ -137,7 +137,7 @@ create_menu() {
         # entirely), since a valid url can never be null we'll use this as a
         # sentinel for bad values and skip any we find.
         if [[ $url != null ]]; then
-            menu_r["$streamer│$game│($viewers) $title"]=1
+            menu_r["$streamer│$game│($viewers) ${title//[\"\\]/}"]=1
             stream_r["$streamer"]="$url"
         fi
     done
@@ -151,7 +151,7 @@ get_user_picks() {
     # here's hoping not many people use this in their titles, generally this
     # hasn't been the case and it won't cause issues as only the first word is
     # used and that is guaranteed to not contain spaces.
-    print '%s' "${!menu_r[@]}" | column -s '│' -t  | sort -t '(' -sk 2,2rn
+    print '%s' "${!menu_r[@]}" | column -s '│' -t | sort -srnk 2,2 -t '('
 }
 
 play_stream() {
