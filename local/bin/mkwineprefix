@@ -1,14 +1,17 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # mkwineprefix - creates a sane wine prefix
 
-# Unlinks all directories pointing at the users home, remaps z: to /mnt
-# instead of / and disables winemenubuilder to prevent .desktop/mime pollution
+# Unlinks all directories pointing at the users home, optionally remaps z: to
+# /mnt instead of / and disables winemenubuilder to prevent .desktop/mime
+# pollution
 
 # TODO complete a mechanism to load external registery snippets
 
+readonly argv0=mkwineprefix
+
 usage() {
-    cat <<EOF
-usage: mkwineprefix [options] prefix
+    cat >&2 <<!
+usage: mkwineprefix [-amgrh] prefix
 
 options
     -a arch  Architecture, 32 or 64 (Default: 32)
@@ -19,13 +22,18 @@ options
 
 prefix
     The path to the prefix, pwd prepended if not absolute.
-EOF
+!
+}
+
+errx() {
+    declare -i r=$1
+    printf -- "%s: $2" "$argv0" "${@:3}" >&2
+    exit "$r"
 }
 
 # We need at least one argument.
-if ((!$#)); then
-    usage
-    exit 1
+if (($# == 0)); then
+    errx 1 'usage: mkwineprefix [-amgrh] prefix\n'
 fi
 
 while (($#)); do
@@ -43,41 +51,23 @@ while (($#)); do
     shift
 done
 
+case $arch in
+    '') arch=32 ;;
+    32) export WINEARCH=win32 ;;
+    64) export WINEARCH=win64 ;;
+    *)  errx 1 '%s: invalid architecture (32 or 64)\n' "$arch"
+esac
 
-# Make sure we get a valid architecture, if we don't assume 32.
-if [[ ! $arch ]]; then
-    arch=32
-fi
+case $prefix in
+    '') errx 1 'no prefix\n' ;;
+    /*) export WINEPREFIX="$PWD/$prefix" ;;
+    *)  export WINEPREFIX="$prefix"
+esac
 
-# If arch was set to something make sure it's valid.
-if [[ $arch != @(32|64) ]]; then
-    printf 'No valid architectures found, can only be 32 or 64\n' >&2
-    exit 1
-fi
-
-if ((arch == 32)); then
-    export WINEARCH=win32
-else
-    export WINEARCH=win64
-fi
-
-# Check that we got something for the prefix.
-if [[ ! $prefix ]]; then
-    printf 'No prefix was found, bailing\n' >&2
-    exit 1
-fi
-
-# Make sure it's an absolute path by prepending PWD.
-if [[ ${prefix:0:1} != / ]]; then
-    export WINEPREFIX="$PWD/$prefix"
-else
-    export WINEPREFIX="$prefix"
-fi
-
-# Check if the prefix already exists, is this even necessary?
+# Check if the prefix already exists using dosdevices as a sentinel
+# XXX Is this really necessary?
 if [[ -d $WINEPREFIX/dosdevices ]]; then
-    printf 'Found a dosdevices directory.  The prefix probably already exists\n' >&2
-    exit 1
+    errx 1 '%s: prefix already exists\n' "$WINEPREFIX"
 fi
 
 # Enable both if set by unsetting overrides.
@@ -99,7 +89,7 @@ wineboot -i
 # being mounted there for installation purposes.
 if ((remap_z)); then
     if [[ -d $WINEPREFIX/dosdevices/z: ]]; then
-        rm -r "$WINEPREFIX"/dosdevices/z:
+        rm -- "$WINEPREFIX"/dosdevices/z:
 
         # Recreate it and point to /mnt instead of /.
         ln -sf /mnt "$WINEPREFIX"/dosdevices/z:
@@ -107,9 +97,9 @@ if ((remap_z)); then
 fi
 
 # Remove all the symlinks pointing at the user home directory.
-# Note: Since a prefix is always going to be Windows XP we don't need to test
-#       for windows 7+ directories during the creation of a prefix using this
-#       script.
+# Note: Since a prefix is always going to be created as Windows XP we don't
+#       need to test for windows 7+ directories.  This would only matter if
+#       we were going to modify extant prefixes.
 for dir in Desktop 'My Documents' 'My Music' 'My Pictures' 'My Videos'; do
     rm "$WINEPREFIX"/drive_c/users/"$USER"/"$dir"
     mkdir -p "$WINEPREFIX"/drive_c/users/"$USER"/"$dir"
@@ -123,7 +113,6 @@ printf 'export %s\n' "$WINEPREFIX"
 # [HKEY_CURRENT_USER\Control Panel\Colors]
 # "Background"="33 33 33"
 # EOF
-
 
 # cat > "$WINEPREFIX"/virtual_desktop.reg <<EOF
 # REGEDIT4
