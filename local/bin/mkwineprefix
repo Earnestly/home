@@ -11,7 +11,7 @@ readonly argv0=mkwineprefix
 
 usage() {
     cat >&2 <<!
-usage: mkwineprefix [-amgrh] prefix
+usage: mkwineprefix [-a] [-m] [-g] [-r] [-h] prefix
 
 options
     -a arch  Architecture, 32 or 64 (Default: 32)
@@ -33,7 +33,7 @@ errx() {
 
 # We need at least one argument.
 if (($# == 0)); then
-    errx 1 'usage: mkwineprefix [-amgrh] prefix\n'
+    errx 1 'usage: mkwineprefix [-a] [-m] [-g] [-r] [-h] prefix\n'
 fi
 
 while (($#)); do
