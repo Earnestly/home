@@ -4,14 +4,14 @@
 # requires jshon bemenu mpv youtube-dl bash(4.3+)
 # optional notify-send
 
-# XDG_CONFIG_HOME/dmenu/font     single line containing a font description
-# XDG_DATA_HOME/ditch/teams      list of twitch teams
-# XDG_DATA_HOME/ditch/streamers  list of individual streamers
+# LOCALDIR/cfg/dmenu/font        single line containing a font description
+# LOCALDIR/data/ditch/teams      list of twitch teams
+# LOCALDIR/data/ditch/streamers  list of individual streamers
 
 readonly argv0=ditch
 readonly data_dir=${LOCALDIR:-$HOME/local}/data/$argv0
 
-# Preferred quality in descending order.
+# Preferred quality in descending order, unset to use mpv/youtube-dl default.
 readonly quality=High/Medium/best
 
 # Used to store downloaded json.
@@ -52,7 +52,7 @@ err() {
 }
 
 chunk_by() {
-    declare chunk=$1
+    declare -i chunk=$1
     declare -n list_r=$2
 
     # I purposefully use &limit=chunk here as a marker later on to separate out
@@ -138,7 +138,7 @@ create_menu() {
         # sentinel for bad values and skip any we find.
         if [[ $url != null ]]; then
             menu_r["$streamer│$game│($viewers) ${title//[\"\\]/}"]=1
-            stream_r["$streamer"]="$url"
+            stream_r[$streamer]=$url
         fi
     done
 }
@@ -177,11 +177,15 @@ play_if_valid() {
     declare streamer title url
 
     while read -r streamer title; do
-        [[ ! $title ]] && title="$streamer"
+        if [[ ! $title ]]; then
+            title=$streamer
+        fi
 
+        # XXX This is likely not necessary; the fallback could become the norm
         if [[ ${stream_r[$streamer]} ]]; then
             url=${stream_r[$streamer]}
         else
+            # Fallback.
             url=https://twitch.tv/$streamer
         fi
 
