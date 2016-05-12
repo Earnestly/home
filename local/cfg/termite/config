@@ -16,44 +16,46 @@ search_wrap = true
 font = Inconsolatazi4 12
 
 [colors]
-# Base16 Ocean
-# Scheme: Chris Kempson (http://chriskempson.com)
+# Base16 Yesterday Night
+# Scheme: FroZnShiva (https://github.com/FroZnShiva)
 
-foreground = #c0c5ce
-foreground_bold = #c0c5ce
-background = #2b303b
+foreground      = #dfe1e8
+foreground_bold = #dfe1e8
+background      = #343d46
 
 # 16 color space
-color0 = #2b303b
-color1 = #bf616a
-color2 = #a3be8c
-color3 = #ebcb8b
-color4 = #8fa1b3
-color5 = #b48ead
-color6 = #96b5b4
-color7 = #c0c5ce
-color8 = #65737e
-color9 = #bf616a
-color10 = #a3be8c
-color11 = #ebcb8b
-color12 = #8fa1b3
-color13 = #b48ead
-color14 = #96b5b4
-color15 = #eff1f5
+color0  = #343d46
+color1  = #cc6666
+color2  = #b5bd68
+color3  = #f0c674
+color4  = #81a2be
+color5  = #b294bb
+color6  = #8abeb7
+color7  = #dfe1e8
+color8  = #a7adba
+color9  = #cc6666
+color10 = #b5bd68
+color11 = #f0c674
+color12 = #81a2be
+color13 = #b294bb
+color14 = #8abeb7
+color15 = #ffffff
 
 # 256 color space
-color16 = #d08770
-color17 = #ab7967
-color18 = #343d46
-color19 = #4f5b66
-color20 = #a7adba
-color21 = #dfe1e8
+color16 = #de935f
+color17 = #a3685a
+color18 = #4f5b66
+color19 = #65737e
+color20 = #c0c5ce
+color21 = #eff1f5
 
 [hints]
-#font = Monospace 12
-#foreground = #dcdccc
-#background = #3f3f3f
-#padding = 2
-#border = #3f3f3f
-#border_width = 0.5
-#roundness = 2.0
+font = Source Sans Pro Semibold, Italic 10
+foreground = #1c1c1c
+background = #ffc524
+active_foreground = #1c1c1c
+active_background = #88ff00
+padding = 2
+border = #1c1c1c
+border_width = 0.5
+roundness = 1.0
