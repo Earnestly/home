@@ -31,6 +31,11 @@ HISTSIZE=25000
 READNULLCMD=$PAGER
 SAVEHIST=$HISTSIZE
 HISTFILE=$LOCALDIR/data/zsh/zhistory
+
+# As we can't track directories alone with git and zsh won't make the needful
+# directories either, we make them ourselves instead.
+mkdir -p "$HISTFILE:h"
+
 HELPDIR=/usr/share/zsh/$ZSH_VERSION/help
 PROMPT='%m %n %#${vimode} %F{green}${repo}%F{cyan}%~%f '
 
