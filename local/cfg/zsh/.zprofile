@@ -2,32 +2,32 @@
 
 export LOCALDIR="$HOME/local"
 
+export PATH="$LOCALDIR/bin:$PATH"
+
 export XDG_DATA_HOME="$LOCALDIR/data"
 export XDG_CONFIG_HOME="$LOCALDIR/cfg"
 export XDG_CACHE_HOME="$LOCALDIR/var/cache"
 
-export PATH="$LOCALDIR/bin:$PATH"
-
 export SVDIR="$LOCALDIR/service"
-export GNUPGHOME"=$XDG_CONFIG_HOME/gnupg"
-export INPUTRC="$XDG_CONFIG_HOME/inputrc"
-export RLWRAP_HOME="$XDG_DATA_HOME/rlwrap"
-export DVDCSS_CACHE="$XDG_CACHE_HOME/dvdcss"
-export TIGRC_USER="$XDG_CONFIG_HOME/tig/tigrc"
-export WEECHAT_HOME="$XDG_CONFIG_HOME/weechat"
-export PERL_CPANM_HOME="$XDG_DATA_HOME/cpanm"
-export WINEPREFIX="$XDG_DATA_HOME/wine/default"
-export ELINKS_CONFDIR="$XDG_CONFIG_HOME/elinks"
+export GNUPGHOME"=$LOCALDIR/cfg/gnupg"
+export INPUTRC="$LOCALDIR/cfg/inputrc"
+export RLWRAP_HOME="$LOCALDIR/data/rlwrap"
+export DVDCSS_CACHE="$LOCALDIR/cfg/dvdcss"
+export TIGRC_USER="$LOCALDIR/cfg/tig/tigrc"
+export WEECHAT_HOME="$LOCALDIR/cfg/weechat"
+export PERL_CPANM_HOME="$LOCALDIR/cfg/cpanm"
+export WINEPREFIX="$LOCALDIR/cfg/wine/default"
+export ELINKS_CONFDIR="$LOCALDIR/cfg/elinks"
 
 # <https://github.com/jkbrzt/httpie/issues/145>
-export HTTPIE_CONFIG_DIR="$XDG_CONFIG_HOME/httpie"
+export HTTPIE_CONFIG_DIR="$LOCALDIR/cfg/httpie"
 
-export LESSHISTFILE="$XDG_CACHE_HOME/less/history"
-export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc"
-export NOTMUCH_CONFIG="$XDG_CONFIG_HOME/notmuch/notmuchrc"
+export LESSHISTFILE="$LOCALDIR/var/cache/less/history"
+export GTK2_RC_FILES="$LOCALDIR/cfg/gtk-2.0/gtkrc"
+export NOTMUCH_CONFIG="$LOCALDIR/cfg/notmuch/notmuchrc"
 
-export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:/usr/share/terminfo"
-export UNCRUSTIFY_CONFIG="$XDG_CONFIG_HOME/uncrustify/uncrustify.cfg"
+export TERMINFO_DIRS="$LOCALDIR/data/terminfo:/usr/share/terminfo"
+export UNCRUSTIFY_CONFIG="$LOCALDIR/cfg/uncrustify/uncrustify.cfg"
 
 # Chicken libraries.
 export CHICKEN_REPOSITORY="$LOCALDIR/lib/chicken"
@@ -52,7 +52,7 @@ export XKB_DEFAULT_OPTIONS="compose:ralt,ctrl:nocaps"
 # "Compose" in XDG_CONFIG_HOME/gtk-3.0/Compose.
 # <https://git.gnome.org/browse/gtk+/commit/?id=a41f02f9b1843e0f00>
 export GTK_IM_MODULE="xim"
-export XCOMPOSEFILE="$XDG_CONFIG_HOME/X11/XCompose"
+export XCOMPOSEFILE="$LOCALDIR/cfg/X11/XCompose"
 
 # General exports.
 export EDITOR="nvim"
@@ -71,7 +71,11 @@ export WINEDLLOVERRIDES="winemenubuilder.exe,mscoree,mshtml=d"
 
 # LS_COLORS (or a valid TERM, which I don't have) is now required for ls to
 # use colour.  <https://savannah.gnu.org/forum/forum.php?forum_id=8032>
-source <(dircolors "$XDG_CONFIG_HOME/coreutils/dircolors")
+source <(dircolors "$LOCALDIR/cfg/coreutils/dircolors")
+ 
+# Nvidia specific, I should include this under conditional hostname expansion.
+export __GL_SHADER_DISK_CACHE_PATH="$LOCALDIR/var/cache/nvidia/"
+export CUDA_CACHE_PATH="$LOCALDIR/var/cache/nvidia"
 
 # Unused exports, but kept as backups if their need ever arises.
 # export SLRNHOME="$XDG_CONFIG_HOME/slrn"
