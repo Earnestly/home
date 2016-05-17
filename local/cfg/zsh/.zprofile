@@ -42,7 +42,7 @@ export GOPATH="$LOCALDIR/lib/go"
 
 # xkbcommon understands XKB environments which is useful as wayland compositors
 # will be able to use them.  The syntax is the same as Xorg's configuration.
-export XKB_DEFAULT_LAYOUT="gb"
+export XKB_DEFAULT_LAYOUT="us"
 export XKB_DEFAULT_OPTIONS="compose:ralt,ctrl:nocaps"
  
 # See ~/local/cfg/X11/xinitrc
