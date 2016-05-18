@@ -74,7 +74,7 @@ set ttimeoutlen=50
 set clipboard=unnamed
 
 " Set directories.
-set backupdir=$LOCALDIR/data/nvim/backup
+set backupdir=$XDG_DATA_HOME/nvim/backup
 
 " Prevent neomake reporting its exit status and suppressing the write message.
 " https://github.com/benekastah/neomake/issues/238
