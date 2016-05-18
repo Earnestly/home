@@ -76,6 +76,12 @@ set clipboard=unnamed
 " Set directories.
 set backupdir=$LOCALDIR/data/nvim/backup
 
+" XXX Vim doesn't mkdir the backupdir path (bug?) so let's do that ourselves
+" instead.
+if !isdirectory($LOCALDIR . "/data/nvim/backup")
+    call mkdir($LOCALDIR . "/data/nvim/backup", "p")
+endif
+
 " Prevent neomake reporting its exit status and suppressing the write message.
 " https://github.com/benekastah/neomake/issues/238
 let neomake_verbose = 0
