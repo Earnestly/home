@@ -55,13 +55,13 @@ case $arch in
     '') arch=32 ;;
     32) export WINEARCH=win32 ;;
     64) export WINEARCH=win64 ;;
-    *)  errx 1 '%s: invalid architecture (32 or 64)\n' "$arch"
+    *)  errx 1 '%s: invalid architecture (32 or 64)\n' "$arch" ;;
 esac
 
 case $prefix in
     '') errx 1 'no prefix\n' ;;
-    /*) export WINEPREFIX="$PWD/$prefix" ;;
-    *)  export WINEPREFIX="$prefix"
+    /*)  export WINEPREFIX="$prefix" ;;
+    [!/]*) export WINEPREFIX="$PWD/$prefix" ;;
 esac
 
 # Check if the prefix already exists using dosdevices as a sentinel
@@ -81,8 +81,8 @@ else
     export WINEDLLOVERRIDES="winemenubuilder.exe,mscoree,mshtml=d"
 fi
 
-# Initialise the prefix.
-wineboot -i
+# Initialise the prefix now so we can fix it before any work is done with it.
+wine wineboot -i || exit
 
 # Remap Z: which limits what wine can see, the default / gives access to
 # everything the user does.  Selecting /mnt as an alternative due to most isos
@@ -106,7 +106,7 @@ for dir in Desktop 'My Documents' 'My Music' 'My Pictures' 'My Videos'; do
 done
 
 # Return a useful string users may copy for this prefix.
-printf 'export %s\n' "$WINEPREFIX"
+printf 'export WINEPREFIX=%s\n' "$WINEPREFIX"
 
 # cat > "$WINEPREFIX"/colors.reg <<EOF
 # REGEDIT4
