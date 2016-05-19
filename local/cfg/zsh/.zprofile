@@ -72,10 +72,6 @@ export WINEDLLOVERRIDES="winemenubuilder.exe,mscoree,mshtml=d"
 # LS_COLORS (or a valid TERM, which I don't have) is now required for ls to
 # use colour.  <https://savannah.gnu.org/forum/forum.php?forum_id=8032>
 source <(dircolors "$LOCALDIR/cfg/coreutils/dircolors")
- 
-# Nvidia specific, I should include this under conditional hostname expansion.
-export __GL_SHADER_DISK_CACHE_PATH="$LOCALDIR/var/cache/nvidia/"
-export CUDA_CACHE_PATH="$LOCALDIR/var/cache/nvidia"
 
 # Unused exports, but kept as backups if their need ever arises.
 # export SLRNHOME="$XDG_CONFIG_HOME/slrn"
