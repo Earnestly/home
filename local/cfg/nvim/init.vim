@@ -15,8 +15,8 @@ call plug#begin(pkgdir)
     Plug 'tpope/vim-commentary'
     Plug 'alerque/vim-sile', {'for': 'sile'}
     Plug 'weakish/rcshell.vim', {'for': 'rc'}
+    Plug 'jakwings/vim-pony', {'for': 'pony'}
     Plug 'rust-lang/rust.vim', {'for': 'rust'}
-    Plug 'dleonard0/pony-vim-syntax', {'for': 'pony'}
 
     " Various local packages.
     Plug pkgdir . '/vim-ada', {'for': 'ada'}
