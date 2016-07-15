@@ -60,7 +60,7 @@ esac
 # Use a counter to increment any occurances of a match, if we've gone through
 # the entire file without a match, append a new entry
 while IFS='=' read -r k v; do
-   if [[ $k == $title && $v == $playlist_file ]]; then
+   if [[ $k == "$title" && $v == "$playlist_file" ]]; then
        ((occurs++))
    fi
 done < "$bemenu_file"
@@ -71,11 +71,5 @@ if ((!occurs)); then
 fi
 
 if [[ $title && $playlist_file ]]; then
-    mpv_opts=(
-        --save-position-on-quit
-        --playlist="$playlist_file"
-        --title="$title"
-    )
-
-    exec mpv "${mpv_opts[@]}"
+    exec mpv --no-terminal --save-position-on-quit --playlist="$playlist_file" --title="$title"
 fi

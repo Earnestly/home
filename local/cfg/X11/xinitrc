@@ -6,9 +6,7 @@
 #   will keep the script itself POSIX-with-local sh.
 
 # This is here to prevent the creation of HOME/.dbus/session-bus/ by software
-# using libdbus.  XXX: I now get four(!) dbus-daemon processes but once killed
-# they at least don't return.  Perhaps this needs to be handled much earlier
-# than xinit.
+# using libdbus.
 if [ ! "$DBUS_SESSION_BUS_ADDRESS" ]; then
     eval "$(dbus-launch --sh-syntax)"
 fi

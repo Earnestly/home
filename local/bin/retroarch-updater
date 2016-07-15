@@ -77,8 +77,7 @@ build() {
     # global core_directory
     local core=$1
 
-    # Libretro let this get out of hand and now we have to suffer for it.
-    # https://github.com/libretro/libretro-super/issues/244
+    # <https://github.com/libretro/libretro-super/issues/244>
     applyhacks "$core"
 
     if [[ -e Makefile.libretro ]]; then

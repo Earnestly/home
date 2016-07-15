@@ -29,4 +29,4 @@ fi
 # to find all possible packages.
 
 # See <https://github.com/falconindy/expac/issues/24>
-expac -S '%n:%E' -l ':' /dev/stdin < <(pacsift --exact --repo="$1") | parse | tsort > /dev/null
+expac -S '%n:%E' -l ':' - < <( pacsift --exact --repo="$1") | parse | tsort > /dev/null

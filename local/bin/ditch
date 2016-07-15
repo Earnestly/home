@@ -55,10 +55,6 @@ chunk_by() {
     declare -i chunk=$1
     declare -n list_r=$2
 
-    # I purposefully use &limit=chunk here as a marker later on to separate out
-    # twitch's API versions.  The team (v2) API is exactly the same in terms of
-    # what I want, but the streamers (v3) API changes the key identifiers thus
-    # making it incompatible, for nothing, joyless.
     print '%s' "${list_r[@]}" | xargs -n "$chunk" | sed "s/ /,/g; s/$/&\&limit=$chunk/"
 }
 
@@ -82,7 +78,7 @@ generate_urls() {
 
 # Runs a function over the each element of an array in the background and waits
 # for all to complete before returning.
-parallel_fmap() {
+parallel_apply() {
     declare func=$1
     declare -n array_r=$2
 
@@ -215,7 +211,7 @@ case $1 in
         mapfile -t urls < <(generate_urls)
 
         if ((${#urls} > 0)); then
-            parallel_fmap fetch_json urls
+            parallel_apply fetch_json urls
         else
             err 'no configuration data found'
             exit 1
