@@ -20,6 +20,9 @@ readonly TMPDIR=${TMPDIR:-/tmp}
 # Number of entries to display at once.
 readonly lines=30
 
+# Thanks youtube-dl!
+readonly client_id=jzkbprff40iqj646a697cyrvl0zt2m6
+
 read -r font < "${LOCALDIR:-$HOME/local}"/cfg/dmenu/font
 
 bemenu_args=(
@@ -94,9 +97,10 @@ parallel_apply() {
 fetch_json() {
     declare a=$1
     declare stream data
+    declare url=https://api.twitch.tv/kraken/streams?channel=$a
 
     data=$(mktemp -t "$argv0"-channels-XXX.json)
-    curl -s "https://api.twitch.tv/kraken/streams?channel=$a" > "$data"
+    curl -sH "Client-ID: $client_id" "$url"  > "$data"
 }
 
 # Parsed json is printed in series of three lines, the first is the username,
