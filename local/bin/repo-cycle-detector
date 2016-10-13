@@ -25,8 +25,4 @@ fi
 
 # The format is formally package:dependency0:dependency1:..:dependency(n)
 
-# We feed expac explicitly from /dev/stdin as otherwise expac will attempt
-# to find all possible packages.
-
-# See <https://github.com/falconindy/expac/issues/24>
 expac -S '%n:%E' -l ':' - < <( pacsift --exact --repo="$1") | parse | tsort > /dev/null
