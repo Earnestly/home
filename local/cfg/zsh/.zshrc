@@ -1,6 +1,6 @@
 # LOCALDIR/cfg/zsh/.zshrc
 
-autoload -Uz edit-command-line run-help compinit zmv vcs_info
+autoload -Uz edit-command-line run-help compinit zmv
 zmodload zsh/complist
 compinit
 
@@ -59,7 +59,7 @@ function precmd {
 function preexec {
     if [[ $TERM == xterm-* ]]; then
         # Check that the first word doesn't match some common prefixes.
-        local cmd=${1[(wr)^(*=*|sudo|exec|ssh|-*)]}
+        local cmd=${1[(wr)^(*=*|doas|sudo|exec|ssh|-*)]}
         print -Pn "\e];$cmd:q\a"
     fi
 }
