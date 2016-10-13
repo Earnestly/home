@@ -46,11 +46,9 @@ ASSUMPTIONS
     this point.
   
   - The Xorg server is started with a custom sx script.
-
     <https://github.com/Earnestly/dotfiles/blob/master/local/bin/sx>
   
   - The system-config package is installed.
-
     <https://github.com/Earnestly/pkgbuilds/tree/master/system-config>
   
   - HOME/local is a directory and the environment LOCALDIR refers to it.
@@ -65,13 +63,13 @@ ISSUES
     Zsh is able to relocate its various configurations via ZDOTDIR,
     however the files are all still prefixed with a dot.
 
-    <http://www.zsh.org/mla/workers/2013/msg00702.html>
-
       > We might need to think about rules for finding e.g. ~/.zsh/zshrc
       > instead of ~/.zsh/.zshrc since the extra dot is pretty unhelpful.
       > (E.g. look for the file without the dot if a parent directory does
       > have a dot at the start. We don't want to look for ~/zshrc, that
       > could easily be problematic.)
+
+    <http://www.zsh.org/mla/workers/2013/msg00702.html>
 
   - vimperator
 
@@ -90,5 +88,4 @@ ISSUES
     environments are also unable to provide this. Due to the user@.service
     taking a UID instead of the username, it's not possible to build the
     environments in the service or via a drop-in configuration.
-
     <https://github.com/systemd/systemd/issues/1476>
