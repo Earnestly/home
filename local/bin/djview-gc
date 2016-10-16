@@ -7,7 +7,6 @@ readonly cfg=${XDG_CONFIG_HOME:-$HOME/.config}/DjVuLibre/DjView.conf
 
 recentfiles() {
     gawk '
-<<<<<<< HEAD
         BEGIN {
             FPAT = "file://[^?]+"
         }
@@ -18,18 +17,6 @@ recentfiles() {
                 print $i
             }
         }' "$cfg"
-=======
-        BEGIN { 
-            FPAT = "file://[^?]+"
-        } 
-
-        /recentFiles/ { 
-            for(i = 1; i <= NF; ++i){ 
-            sub("file://", "", $i);
-            print $i
-        }
-    }' "$cfg"
->>>>>>> fb0319a55a1e771ac61a4bb1167aa8da895951a2
 }
 
 while read -r f; do
