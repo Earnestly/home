@@ -1,0 +1,45 @@
+#!/bin/bash
+# djview-gc - remove DjView.conf history entries for resources that no longer exist
+
+# requires gawk
+
+readonly cfg=${XDG_CONFIG_HOME:-$HOME/.config}/DjVuLibre/DjView.conf
+
+recentfiles() {
+    gawk '
+<<<<<<< HEAD
+        BEGIN {
+            FPAT = "file://[^?]+"
+        }
+
+        /recentFiles/ {
+            for(i = 1; i <= NF; ++i){
+                sub("file://", "", $i);
+                print $i
+            }
+        }' "$cfg"
+=======
+        BEGIN { 
+            FPAT = "file://[^?]+"
+        } 
+
+        /recentFiles/ { 
+            for(i = 1; i <= NF; ++i){ 
+            sub("file://", "", $i);
+            print $i
+        }
+    }' "$cfg"
+>>>>>>> fb0319a55a1e771ac61a4bb1167aa8da895951a2
+}
+
+while read -r f; do
+    # The file is guaranteed to be absolute here.
+    if [[ ! -e $f ]]; then
+        # The format used in recentFiles is as follows:
+        #   "file:///name.djvu[?djvuopts&keyword=value&...]", "file://..."
+
+        # NOTE: commas are allowed in the djvuopts string.
+        sed -i "s:\(, \)\\?\"file\://$f\?\([^\"]\)*\"\(, \)\?::" "$cfg"
+        printf 'removed %s\n' "$f" >&2
+    fi
+done < <(recentfiles)
