@@ -37,7 +37,7 @@ fi
 # a pkgbase.
 pkgbase=$(expac -S '%e' "$package")
 
-if [[ $pkgbase != '(null)' ]]; then
+if [[ $pkgbase != '(null)'* ]]; then
     package=$pkgbase
 fi
 
