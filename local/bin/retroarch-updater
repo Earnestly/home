@@ -6,9 +6,9 @@ readonly build_directory=$core_directory/build
 readonly -A cores=(
     [pcsx_rearmed]=pcsx_rearmed_libretro.so
     [mgba]=mgba_libretro.so
-    [snes9x-next]=snes9x_next_libretro.so
+    [snes9x-next]=snes9x2010_libretro.so
     [nestopia]=nestopia_libretro.so
-    [libretro-fba]=fb_alpha_libretro.so
+    [libretro-fba]=fbalpha_libretro.so
     [libretro-ppsspp]=ppsspp_libretro.so
     #[mame]=mame_libretro.so
 )
