@@ -72,13 +72,13 @@ fi
 
 # Enable both if set by unsetting overrides.
 if ((with_mono & with_gecko)); then
-    export WINEDLLOVERRIDES="winemenubuilder.exe=d"
+    export WINEDLLOVERRIDES='winemenubuilder.exe=d'
 elif ((with_mono)); then
-    export WINEDLLOVERRIDES="winemenubuilder.exe,mshtml=d"
+    export WINEDLLOVERRIDES='winemenubuilder.exe,mshtml=d'
 elif ((with_gecko)); then
-    export WINEDLLOVERRIDES="winemenubuilder.exe,mscoree=d"
+    export WINEDLLOVERRIDES='winemenubuilder.exe,mscoree=d'
 else
-    export WINEDLLOVERRIDES="winemenubuilder.exe,mscoree,mshtml=d"
+    export WINEDLLOVERRIDES='winemenubuilder.exe,mscoree,mshtml=d'
 fi
 
 # Initialise the prefix now so we can fix it before any work is done with it.
@@ -108,20 +108,19 @@ done
 # Return a useful string users may copy for this prefix.
 printf 'export WINEPREFIX=%s\n' "$WINEPREFIX"
 
-# cat > "$WINEPREFIX"/colors.reg <<EOF
+# cat > "$WINEPREFIX"/colors.reg <<!
 # REGEDIT4
 # [HKEY_CURRENT_USER\Control Panel\Colors]
 # "Background"="33 33 33"
-# EOF
+# !
 
-# cat > "$WINEPREFIX"/virtual_desktop.reg <<EOF
+# cat > "$WINEPREFIX"/virtual_desktop.reg <<!
 # REGEDIT4
-
 # [HKEY_CURRENT_USER\Software\Wine\Explorer]
 # "Desktop"="Default"
 # [HKEY_CURRENT_USER\Software\Wine\Explorer\Desktops]
 # "Default"="1024x786"
-# EOF
+# !
 
 # wine regedit /S "$WINEPREFIX"/colors.reg
 # wine regedit /S "$WINEPREFIX"/virtual_desktop.reg
