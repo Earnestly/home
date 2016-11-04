@@ -1,12 +1,13 @@
 #!/bin/bash
 # ghostfiles - track ghostfiles
 
-# A word on usage: This script simply creates a list of all unowned packages on
-# the filesystem.  After the user has manually validated the command can be run
-# at a later date to generate a new list which is compared for any new entries.
+# A word on usage: This script simply creates a list of all unowned files on
+# the / filesystem.  After the user has manually validated the list the command
+# can be run at a later date to generate a new list which is compared for any
+# new entries.
 
-# At this point if you're content with the additional files, mv the latest list
-# to the known list to update it.
+# At this point if one is content with the additional files then one can mv
+# the latest list to the known list thereby updating it.
 
 readonly datadir=${LOCALDIR:-$HOME/local}/data/ghostfiles
 readonly known=$datadir/known
