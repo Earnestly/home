@@ -1,0 +1,36 @@
+#!/bin/bash
+# ghostfiles - track ghostfiles
+
+# A word on usage: This script simply creates a list of all unowned packages on
+# the filesystem.  After the user has manually validated the command can be run
+# at a later date to generate a new list which is compared for any new entries.
+
+# At this point if you're content with the additional files, mv the latest list
+# to the known list to update it.
+
+readonly datadir=${LOCALDIR:-$HOME/local}/data/ghostfiles
+readonly known=$datadir/known
+readonly latest=$datadir/latest
+
+exclude=(-path /var/cache -o -path /var/lib/pacman -o -path /var/log/journal)
+
+findorphans() {
+    # pacman -q doesn't suppress the error message attached to the file when
+    # used with -Qo, so we capture stderr and remove the messages in post.
+    sudo find / -xdev \( "${exclude[@]}" \) -prune -o -exec pacman -Qo '{}' + \
+        2>&1 > /dev/null | sed 's/error: No package owns //'
+}
+
+mkdir -p "$datadir"
+
+if [[ ! -s $known ]]; then
+    printf 'Generating %s, this may take awhile\n' "$known" >&2
+    findorphans > "$known"
+    printf 'Review %s\n' "$known" >&2
+    exit
+fi
+
+printf 'Generating %s for comparison with %s\n' "$latest" "$known" >&2
+
+findorphans > "$latest"
+grep -Fxvf "$known" "$latest"
