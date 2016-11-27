@@ -16,7 +16,7 @@ recentfiles() {
                 sub("file://", "", $i);
                 print $i
             }
-        }' "$cfg"
+        }'
 }
 
 while read -r f; do
@@ -29,4 +29,4 @@ while read -r f; do
         sed -i "s:\(, \)\\?\"file\://$f\?\([^\"]\)*\"\(, \)\?::" "$cfg"
         printf 'removed %s\n' "$f" >&2
     fi
-done < <(recentfiles)
+done < <(recentfiles < "$cfg")
