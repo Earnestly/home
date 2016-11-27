@@ -20,9 +20,8 @@ readonly TMPDIR=${TMPDIR:-/tmp}
 # Number of entries to display at once.
 readonly lines=30
 
-# Thanks youtube-dl!
-# Backup: rfbp97unyyikyzw1y9cy87iii29lgjk
-readonly client_id=jzkbprff40iqj646a697cyrvl0zt2m6
+# Backup: jzkbprff40iqj646a697cyrvl0zt2m6 (youtube-dl)
+readonly client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
 
 read -r font < "${LOCALDIR:-$HOME/local}"/cfg/dmenu/font
 
@@ -104,8 +103,9 @@ fetch_json() {
     curl -sH "Client-ID: $client_id" "$url"  > "$data"
 }
 
-# Parsed json is printed in series of three lines, the first is the username,
-# then the url to their stream and finally the title.
+# Parsed json is printed in series of six lines, the first is the number of
+# viewers on which we can order the results then the streamer, game being
+# played, url to their stream, and finally the title of the stream.
 parse_json() {
     declare json args
 
