@@ -59,8 +59,8 @@ case $arch in
 esac
 
 case $prefix in
-    '') errx 1 'no prefix\n' ;;
-    /*)  export WINEPREFIX="$prefix" ;;
+    '')    errx 1 'no prefix\n' ;;
+    /*)    export WINEPREFIX="$prefix" ;;
     [!/]*) export WINEPREFIX="$PWD/$prefix" ;;
 esac
 
