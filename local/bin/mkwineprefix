@@ -82,7 +82,9 @@ else
 fi
 
 # Initialise the prefix now so we can fix it before any work is done with it.
-wine wineboot -i || exit
+if ! wine wineboot -i; then
+    exit
+fi
 
 # Remap Z: which limits what wine can see, the default / gives access to
 # everything the user does.  Selecting /mnt as an alternative due to most isos
