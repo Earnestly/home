@@ -100,7 +100,7 @@ fetch_json() {
     declare url=https://api.twitch.tv/kraken/streams?channel=$a
 
     data=$(mktemp -t "$argv0"-channels-XXX.json)
-    curl -sH "Client-ID: $client_id" "$url"  > "$data"
+    curl -sH "Client-ID: $client_id" "$url" > "$data"
 }
 
 # Parsed json is printed in series of six lines, the first is the number of
@@ -202,11 +202,10 @@ case $1 in
         if [[ -s $data_dir/teams ]]; then
             while read -r t; do
                 print 'processing %s' "$t" >&2
-
                 # As an API for listing all channels belonging to a team isn't
                 # available anymore, we simply scrape in the meantime until it
                 # is fixed.  <https://github.com/justintv/Twitch-API/issues/99>
-                curl -s "https://www.twitch.tv/team/$t" | sed -rn '/member_name/ { s/.*>(.*)<.*/\1/p }'
+                curl -s "https://api.twitch.tv/kraken/teams/$t/?client_id=$client_id&api_version=5" | jshon -e users -a -e url -u
             done < "$data_dir"/teams >> "$data_dir"/streamers
 
             sort -u "$data_dir"/streamers -o "$data_dir"/streamers
