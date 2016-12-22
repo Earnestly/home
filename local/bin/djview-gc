@@ -1,32 +1,48 @@
-#!/bin/bash
-# djview-gc - remove DjView.conf history entries for resources that no longer exist
+#!/usr/bin/env python3
 
-# requires gawk
+import os
+import sys
+import configparser
+from urllib.parse import urlparse
 
-readonly cfg=${XDG_CONFIG_HOME:-$HOME/.config}/DjVuLibre/DjView.conf
 
-recentfiles() {
-    gawk '
-        BEGIN {
-            FPAT = "file://[^?]+"
-        }
+def main():
+    localdir = os.environ.get('LOCALDIR')
 
-        /recentFiles/ {
-            for(i = 1; i <= NF; ++i){
-                sub("file://", "", $i);
-                print $i
-            }
-        }'
-}
+    if localdir is None or not os.path.isabs(localdir):
+        localdir = os.path.expanduser('~/local')
 
-while read -r f; do
-    # The file is guaranteed to be absolute here.
-    if [[ ! -e $f ]]; then
-        # The format used in recentFiles is as follows:
-        #   "file:///name.djvu[?djvuopts&keyword=value&...]", "file://..."
+    config = os.path.join(localdir, 'cfg', 'DjVuLibre/DjView.conf')
 
-        # NOTE: commas are allowed in the djvuopts string.
-        sed -i "s:\(, \)\\?\"file\://$f\?\([^\"]\)*\"\(, \)\?::" "$cfg"
-        printf 'removed %s\n' "$f" >&2
-    fi
-done < <(recentfiles < "$cfg")
+    ini = configparser.ConfigParser(allow_no_value=True)
+    ini.optionxform = str  # Preserve case in keys
+
+    ini.read(config)
+
+    if not ini.sections():
+        sys.exit('{0}: Empty file'.format(config))
+
+    recentfiles = ini['General']['recentFiles'].replace(', ', ' ')
+    urls = [u for u in [u.strip() for u in recentfiles.split('"')] if u]
+
+    survivors = []
+
+    for url in urls:
+        r = urlparse(url)
+        path = r.path
+        query = r.query
+        scheme = r.scheme
+
+        if not os.path.isfile(path):
+            print('Removing {0}'.format(path))
+        else:
+            survivors.extend(['"' + scheme + '://' + path + '?' + query + '"'])
+
+    ini['General']['recentFiles'] = ",".join(survivors)
+
+    with open(config, 'w') as cfg:
+        ini.write(cfg)
+
+
+if __name__ == '__main__':
+    main()
