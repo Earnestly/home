@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# djview-gc - remove DjView.conf history entries for files which no longer exist 
 
 import os
 import sys
@@ -22,23 +23,20 @@ def main():
     if not ini.sections():
         sys.exit('{0}: Empty file'.format(config))
 
-    recentfiles = ini['General']['recentFiles'].replace(', ', ' ')
-    urls = [u for u in [u.strip() for u in recentfiles.split('"')] if u]
+    recentfiles = ini['General']['recentFiles']
+    urls = [u.strip('"') for u in recentfiles.split(', ')]
 
-    survivors = []
+    conserve = []
 
     for url in urls:
         r = urlparse(url)
-        path = r.path
-        query = r.query
-        scheme = r.scheme
 
-        if not os.path.isfile(path):
-            print('Removing {0}'.format(path))
+        if os.path.isfile(r.path):
+            conserve.extend(['"' + r.scheme + '://' + r.path + '?' + r.query + '"'])
         else:
-            survivors.extend(['"' + scheme + '://' + path + '?' + query + '"'])
+            print('Removing entry: {0}'.format(r.path))
 
-    ini['General']['recentFiles'] = ",".join(survivors)
+    ini['General']['recentFiles'] = ",".join(conserve)
 
     with open(config, 'w') as cfg:
         ini.write(cfg)
