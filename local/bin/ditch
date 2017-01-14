@@ -23,19 +23,6 @@ readonly lines=30
 # Backup: jzkbprff40iqj646a697cyrvl0zt2m6 (youtube-dl)
 readonly client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
 
-read -r font < "${LOCALDIR:-$HOME/local}"/cfg/dmenu/font
-
-bemenu_args=(
-    --fn "$font" -w -i -l "$lines"
-    --tf '#eff1f5' --tb '#bf616a'
-    --ff '#c0c5ce' --fb '#2b303b'
-    --sf '#bf616a' --sb '#343d46'
-    --nf '#65737e' --nb '#343d46'
-    --hf '#c0c5ce' --hb '#343d46'
-    --scf '#65737e' --scb '#343d46'
-    -p 'STREAM' --scrollbar autohide
-)
-
 has() {
     hash "$1" 2> /dev/null
 }
@@ -224,7 +211,7 @@ case $1 in
         declare -A menu stream
         create_menu menu stream < <(parse_json)
 
-        results=$(get_user_picks menu stream | bemenu "${bemenu_args[@]}")
+        results=$(get_user_picks menu stream | menu -l "$lines" -p 'STREAM')
 
         if [[ $results ]]; then
             play_if_valid stream <<< "$results"
