@@ -22,7 +22,7 @@ bindsym $mod+Return exec $TERMINAL
 #bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 2
 
 # Kill focused window.
-bindsym $mod+Shift+q kill
+bindsym $mod+q kill
 
 # Change focus.
 bindsym $mod+h focus left
