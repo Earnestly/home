@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# djview-gc - remove DjView.conf history entries for files which no longer exist 
+# djview-gc - remove DjView.conf history entries for files which no longer exist
 
 import os
 import sys
@@ -7,40 +7,40 @@ import configparser
 from urllib.parse import urlparse
 
 
-def main():
+def localdir(*args) -> str:
     localdir = os.environ.get('LOCALDIR')
 
     if localdir is None or not os.path.isabs(localdir):
         localdir = os.path.expanduser('~/local')
 
-    config = os.path.join(localdir, 'cfg', 'DjVuLibre/DjView.conf')
-
-    ini = configparser.ConfigParser(allow_no_value=True)
-    ini.optionxform = str  # Preserve case in keys
-
-    ini.read(config)
-
-    if not ini.sections():
-        sys.exit('{0}: Empty file'.format(config))
-
-    recentfiles = ini['General']['recentFiles']
-    urls = [u.strip('"') for u in recentfiles.split(', ')]
-
-    conserve = []
-
-    for url in urls:
-        r = urlparse(url)
-
-        if os.path.isfile(r.path):
-            conserve.extend(['"' + r.scheme + '://' + r.path + '?' + r.query + '"'])
-        else:
-            print('Removing entry: {0}'.format(r.path))
-
-    ini['General']['recentFiles'] = ",".join(conserve)
-
-    with open(config, 'w') as cfg:
-        ini.write(cfg)
+    return os.path.join(localdir, *args)
 
 
-if __name__ == '__main__':
-    main()
+config = localdir('cfg/DjVuLibre/DjView.conf')
+
+ini = configparser.ConfigParser(allow_no_value=True)
+
+# Preserve case in keys
+ini.optionxform = str
+ini.read(config)
+
+if not ini.sections():
+    sys.exit('{0}: Empty file'.format(config))
+
+recentfiles = ini['General']['recentFiles']
+urls = [u.strip('"') for u in recentfiles.split(', ')]
+
+conserve = []
+
+for url in urls:
+    r = urlparse(url)
+
+    if os.path.isfile(r.path):
+        conserve.extend(['"' + r.scheme + '://' + r.path + '?' + r.query + '"'])
+    else:
+        print('Removing entry: {0}'.format(r.path))
+
+ini['General']['recentFiles'] = ",".join(conserve)
+
+with open(config, 'w') as cfg:
+    ini.write(cfg)
