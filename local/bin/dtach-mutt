@@ -1,2 +1,2 @@
-#!/bin/dash
-exec dtach -A "$XDG_RUNTIME_DIR"/mutt mutt -F "$XDG_CONFIG_HOME"/mutt/muttrc
+#!/bin/sh
+exec dtach -A "$XDG_RUNTIME_DIR"/mutt -E mutt -F "$XDG_CONFIG_HOME"/mutt/muttrc
