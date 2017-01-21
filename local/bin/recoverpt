@@ -105,11 +105,11 @@ Example Usage:
     exit
 fi
 
-
 if [[ ! -b $1 ]]; then
     printf 'usage: recoverpt device\n' >&2
     exit 1
 fi
+
 lsblk -no kname "$1" | { 
     read -r dev
 
