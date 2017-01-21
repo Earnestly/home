@@ -12,6 +12,6 @@ while read -r f; do
     # llpp's behaviour could change depending on its working directory.
     if [[ ! -e $f ]] || [[ $f != /* ]]; then
         xmlstarlet ed -O -L -d "//llppconfig/doc[@path='$f']" "$cfg"
-        printf 'removed %s\n' "$f" >&2
+        printf 'Removed entry: %s\n' "$f" >&2
     fi
 done < <(xmlstarlet sel -T -t -m //llppconfig/doc/@path -v . -n "$cfg")

@@ -71,7 +71,7 @@ if [[ -d $WINEPREFIX/dosdevices ]]; then
 fi
 
 # Enable both if set by unsetting overrides.
-if ((with_mono & with_gecko)); then
+if ((with_mono && with_gecko)); then
     export WINEDLLOVERRIDES='winemenubuilder.exe=d'
 elif ((with_mono)); then
     export WINEDLLOVERRIDES='winemenubuilder.exe,mshtml=d'
@@ -83,7 +83,7 @@ fi
 
 # Initialise the prefix now so we can fix it before any work is done with it.
 if ! wine wineboot -i; then
-    exit
+    errx 1 'wineboot\n'
 fi
 
 # Remap Z: which limits what wine can see, the default / gives access to

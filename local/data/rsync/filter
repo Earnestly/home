@@ -21,11 +21,8 @@
 + build/*/*/*.diff
 + build/*/*/*.txt
 
-# Exclude the net/torrents directory first and include everything else
-# recursively (**).
-+ net/
-- net/torrents
-+ net/**
+# Exclude net downloads
+- net
 
 + dev/
 - dev/research/distro

@@ -4,7 +4,6 @@
 # requires svlogd xorg>=1.18
 
 # An svlogd implementation can be found in busybox:
-
 #   % ln -s /bin/busybox ~/local/bin/svlogd
 
 # This script doesn't allow passing arguments to the Xserver.  Instead edit

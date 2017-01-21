@@ -2,7 +2,7 @@
 
 read -r font < "${LOCALDIR:-$HOME/local}"/cfg/dmenu/font
 
-bemenu \
+exec bemenu \
     --tf '#eff1f5' --tb '#bf616a' \
     --ff '#c0c5ce' --fb '#2b303b' \
     --sf '#bf616a' --sb '#343d46' \

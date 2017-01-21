@@ -7,7 +7,7 @@ INTRODUCTION
   the default directories and files into a more reasonable structure.
 
   See <https://wiki.archlinux.org/index.php/XDG_Base_Directory_support>
-  
+
 GENERAL LAYOUT
 
   The structure I've chosen is mostly to mimic the /usr/local convention
@@ -20,7 +20,7 @@ GENERAL LAYOUT
     |- data
     |- lib
     `- var
-       |- cache
+       |- cache
        `- log
 
   Note that the data directory is similar to share but deliberately more
@@ -35,27 +35,27 @@ ENVIRONMENTS
   XDG_CACHE_HOME=$LOCALDIR/var/cache
 
 ASSUMPTIONS
-  
+
   These configurations need to make a few unfortunate assumptions about
   the environment, I'll attempt to list the known ones here.
-  
+
   - The shell is zsh built with --enable-etcdir=/etc/zsh.
 
     The ZDOTDIR environment configured as HOME/local/cfg/zsh in
     /etc/zsh/zshenv as the LOCALDIR environment is not available at
     this point.
-  
+
   - The Xorg server is started with a custom sx script.
     <https://github.com/Earnestly/dotfiles/blob/master/local/bin/sx>
-  
+
   - The system-config package is installed.
     <https://github.com/Earnestly/pkgbuilds/tree/master/system-config>
-  
+
   - HOME/local is a directory and the environment LOCALDIR refers to it.
-  
+
   - XDG_CONFIG_HOME, XDG_CACHE_HOME and XDG_DATA_HOME environments are
     correctly configured as defined in ENVIRONMENTS.
-  
+
 ISSUES
 
   - zsh

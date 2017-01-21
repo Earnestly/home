@@ -1,10 +1,10 @@
 #!/bin/bash
 # repo-cycle-detector - attempt to detect cycles in pacman repos
 
-set +e
-
 parse() {
     # We assume a package name cannot contain this FS.
+    # The format we're parsing is:
+    #   package:dependency0:dependency1:..:dependency(n)
     awk -F : '{ 
         p = $1
 
@@ -22,7 +22,5 @@ if ((!$#)); then
     printf 'usage: repo-cycle-detector repo\n' >&2
     exit 1
 fi
-
-# The format is formally package:dependency0:dependency1:..:dependency(n)
 
 expac -S '%n:%E' -l ':' - < <( pacsift --exact --repo="$1") | parse | tsort > /dev/null
