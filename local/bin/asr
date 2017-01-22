@@ -37,7 +37,7 @@ else
         error '%s: Base package for %s\n' "$pkgbase" "$package"
     fi
 
-    if pacman -T "$package"; then
+    if ! pacman -T "$package" > /dev/null; then
         error '%s: Not available in official repositories\n' "$package"
     fi
 fi
