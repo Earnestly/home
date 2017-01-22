@@ -11,7 +11,7 @@ headers() {
 
         END {
             print "label:", label
-            
+
             # Some MBR disks dont have a label-id
             if(label_id && label == "dos")
                     print "label-id: 0x" label_id
@@ -87,7 +87,7 @@ WARNING:
 Notes:
     This tool won't be able to recover the bootable flag or GPT attributes.
     If these are needed simply append them to the desired device fields.
-    
+
     For example:
 
         /dev/sda1 : ..., name="...", attrs="LegacyBIOSBootable", bootable
@@ -113,7 +113,7 @@ if [[ ! -b $1 ]]; then
     exit 1
 fi
 
-lsblk -no kname "$1" | { 
+lsblk -no kname "$1" | {
     read -r dev
 
     # For some reason this value is not available from udevadm info.
