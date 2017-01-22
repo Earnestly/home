@@ -1,10 +1,16 @@
 #!/bin/bash
 # asr - download arch linux build files from the svntogit repositories
 
-# requires git pacsift expac
+# requires git expac pacman
+
+readonly argv0=asr
+
+error() {
+    printf -- "%s: $1" "$argv0" "${@:2}" > /dev/stderr
+}
 
 if [[ ! $1 ]]; then
-    printf 'usage: asr package\n' >&2
+    error 'usage: asr package\n'
     exit 1
 fi
 
@@ -22,13 +28,16 @@ for repo in "${repos[@]}"; do
     fi
 done
 
-if cd "$package"; then
+if cd "$package" 2> /dev/null; then
     git checkout HEAD:trunk -- .
 else
-    pkgbase=$(expac -S %e "$package")
-    printf '%s: Could not find package\n' "$package" >&2
+    error '%s: Could not find package\n' "$package"
 
-    if [[ $pkgbase != '(null)'* ]]; then
-        printf '%s might be part of the %s split-package\n' "$package" "$pkgbase" >&2
+    if pkgbase=$(expac -S %e "$package"); then
+        error '%s: Base package for %s\n' "$pkgbase" "$package"
+    fi
+
+    if pacman -T "$package"; then
+        error '%s: Not available in official repositories\n' "$package"
     fi
 fi
