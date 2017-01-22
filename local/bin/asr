@@ -3,50 +3,12 @@
 
 # requires git pacsift expac
 
-if ((!$#)); then
+if [[ ! $1 ]]; then
     printf 'usage: asr package\n' >&2
     exit 1
 fi
 
 package=$1
-
-# First see if we can get any exact matches as only listing providers can miss
-# them.
-providers=($(pacsift --sync --name "$package"))
-
-# Fallback on searching for providers instead, this is necessary for most perl
-# packages.
-if [[ ! ${providers[*]} ]]; then
-    providers=($(pacsift --sync --provides="$package"))
-fi
-
-# Give the user the option to pick which package they might be refering to if
-# we get more than one match.
-if ((${#providers[@]} > 1)); then
-    select pkg in "${providers[@]}"; do
-        package=$pkg
-        break
-    done
-    # Remove leading "repo/" text added by pacsift.
-    package=${pkg#*/}
-else
-    package=${providers#*/}
-fi
-
-# Finally check if the package is part of a split-package by checking if it has
-# a pkgbase.
-pkgbase=$(expac -S '%e' "$package")
-
-if [[ $pkgbase != '(null)'* ]]; then
-    package=$pkgbase
-fi
-
-# At this point if package is still not set we must have failed to find
-# anything.
-if [[ ! $package ]]; then
-    printf '%s: cannot locate package\n' "$1" >&2
-    exit 1
-fi
 
 repos=('git://projects.archlinux.org/svntogit/packages.git'
        'git://projects.archlinux.org/svntogit/community.git')
@@ -62,4 +24,11 @@ done
 
 if cd "$package"; then
     git checkout HEAD:trunk -- .
+else
+    pkgbase=$(expac -S %e "$package")
+    printf '%s: Could not find package\n' "$package" >&2
+
+    if [[ $pkgbase != '(null)'* ]]; then
+        printf '%s might be part of the %s split-package\n' "$package" "$pkgbase" >&2
+    fi
 fi
