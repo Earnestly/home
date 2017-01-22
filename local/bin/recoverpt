@@ -34,10 +34,11 @@ headers() {
 partitions() {
     awk -F= '
     function unescape(s) {
-        # Escape the backslash to prevent it being stripped from the string as
-        # we pass it to getline through a pipe.  E.g. \x20 => \\x20
-        gsub(/\\/, "\\\\", s)
-        "systemd-escape -u " s | getline s
+        # XXX Cannot use systemd-escape(1) here as it will convert - to / which
+        #     is incorrect for "x86-64".  Instead only spaces (\x20) will be
+        #     supported until others are needed.  All current GPT partition
+        #     type names seem to be ASCII anyway.
+        gsub(/\\\\x20/, " ", s)
         return s
     }
 
