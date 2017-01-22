@@ -1,7 +1,7 @@
 #!/bin/bash
 # recoverpt - attempts to recover the partition table from the running kernel
 
-# requires awk udevadm lsblk
+# requires awk udevadm lsblk systemd-escape
 
 headers() {
     awk -F= -v size="$1" '
@@ -33,10 +33,12 @@ headers() {
 
 partitions() {
     awk -F= '
-    # FIXME: Only handles \x20 escapes from systemd-escape(1)
-    function escape(x) {
-        gsub("\\\\x20", " ", x)
-        return x
+    function unescape(s) {
+        # Escape the backslash to prevent it being stripped from the string as
+        # we pass it to getline through a pipe.  E.g. \x20 => \\x20
+        gsub(/\\/, "\\\\", s)
+        "systemd-escape -u " s | getline s
+        return s
     }
 
     # Bail if we are dealing with device mapper devices.
@@ -67,7 +69,7 @@ partitions() {
         #     printf ", attrs=\"%s\"", attrs
 
         if(name)
-            printf ", name=\"%s\"", escape(name)
+            printf ", name=\"%s\"", unescape(name)
 
         print ""
     }'
