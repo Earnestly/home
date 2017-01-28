@@ -1,9 +1,9 @@
 #!/bin/bash
 # recoverpt - attempts to recover the partition table from the running kernel
 
-# requires awk udevadm lsblk systemd-escape
+# requires awk udevadm lsblk
 
-headers() {
+recover_header() {
     awk -F= -v size="$1" '
         /TABLE_TYPE/ { label = $2 }
         /TABLE_UUID/ { label_id = $2 }
@@ -31,7 +31,7 @@ headers() {
         }'
 }
 
-partitions() {
+recover_partition() {
     awk -F= '
     function unescape(s) {
         # XXX Cannot use systemd-escape(1) here as it will convert - to / which
@@ -119,9 +119,9 @@ lsblk -no kname "$1" | {
     # For some reason this value is not available from udevadm info.
     read -r size < /sys/class/block/"$dev"/size
 
-    udevadm info --query=property --name /dev/"$dev" | headers "$size"
+    udevadm info --query=property --name /dev/"$dev" | recover_header "$size"
 
     while read -r dev; do
-        udevadm info --query=property --name /dev/"$dev" | partitions
+        udevadm info --query=property --name /dev/"$dev" | recover_partition
     done
 }
