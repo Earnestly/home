@@ -59,7 +59,7 @@ function precmd {
 function preexec {
     if [[ $TERM == xterm-* ]]; then
         # Check that the first word doesn't match some common prefixes.
-        local cmd=${1[(wr)^(*=*|doas|sudo|exec|ssh|-*)]}
+        local cmd=${1[(wr)^(*=*|trickle|rlwrap|doas|sudo|exec|ssh|-*)]}
         print -Pn "\e];$cmd:q\a"
     fi
 }
@@ -188,8 +188,8 @@ alias tmux="tmux -f $LOCALDIR/cfg/tmux/tmux.conf"
 
 alias k='rlwrap k'
 
-alias i="curl -F 'f:1=<-' ix.io"
-alias s="curl -F 'sprunge=<-' sprunge.us"
+alias i="curl -F 'f:1=@-' ix.io"
+alias s="curl -F 'sprunge=@-' sprunge.us"
 alias p="curl -F 'c=@-' 'https://ptpb.pw/?u=1'"
 alias z="curl -F 'file=@-' https://0x0.st"
 alias xc='xclip -o | p'
