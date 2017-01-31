@@ -38,7 +38,7 @@ recover_partition() {
         #     is incorrect for "x86-64".  Instead only spaces (\x20) will be
         #     supported until others are needed.  All current GPT partition
         #     type names seem to be ASCII anyway.
-        gsub(/\\\\x20/, " ", s)
+        gsub(/\\x20/, " ", s)
         return s
     }
 
