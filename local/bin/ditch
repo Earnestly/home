@@ -1,219 +1,103 @@
-#!/bin/bash
+#!/bin/sh --
 # ditch - create a menu using the twitch team and stream APIs
 
-# requires jshon bemenu mpv youtube-dl bash(4.3+)
-# optional notify-send
+# requires awk jq curl menu mpv youtube-dl
 
 # LOCALDIR/cfg/dmenu/font        single line containing a font description
-# LOCALDIR/data/ditch/teams      list of twitch teams
 # LOCALDIR/data/ditch/streamers  list of individual streamers
 
-readonly argv0=ditch
-readonly data_dir=${LOCALDIR:-$HOME/local}/data/$argv0
+argv0=ditch
+data_dir=${LOCALDIR:-$HOME/local}/data/$argv0
+TMPDIR=${TMPDIR:-/tmp}
 
-# Preferred quality in descending order, unset to use mpv/youtube-dl default.
-readonly quality=High/Medium/best
+# Number of entries to display in the menu.
+lines=30
 
-# Used to store downloaded json.
-readonly TMPDIR=${TMPDIR:-/tmp}
-
-# Number of entries to display at once.
-readonly lines=30
-
+# I don't care about making these API keys public, use it if you want.
 # Backup: jzkbprff40iqj646a697cyrvl0zt2m6 (youtube-dl)
-readonly client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
+client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
 
-has() {
-    hash "$1" 2> /dev/null
+# Make sure we remove the json once we're done so it doesn't interfere with
+# proceeding execution and doesn't clutter up $TMPDIR.
+trap 'rm -f -- "$TMPDIR/$argv0"-????.json' EXIT
+
+chunkurls() {
+    # Twitch allows up to a 100 streamers in a single query when the limit is
+    # raised using &limit=100.  This awk script chops up the list of streamers
+    # into chunks of 100, each comma separated.
+    awk -v apiurl="https://api.twitch.tv/kraken/streams?channel=" '
+    BEGIN{
+        i = 1
+    }
+
+    (NR % 100){
+        ORS=","
+        print $0
+        i++
+    }
+
+    !(NR % 100){
+        ORS="\n"
+        print $0 "&limit=" i
+        printf apiurl
+        i = 1
+    }
+
+    END{
+        ORS="\n"
+        print "&limit=" i - 1
+    }'
 }
 
-print() {
-    printf -- "$1\n" "${@:2}"
+readjson() {
+    # Using '│' as a marker here for column to pretty print the results in
+    # columns, assuming not many people use this particular sentinel in their
+    # titles.  From experience this hasn't been the case.  In either case it
+    # won't break functionality as only the first word is needed which itself
+    # is guaranteed to have no spaces or high unicode plane codepoints.
+    jq -r '.streams[] |
+          "\(.channel.name)│\(.channel.game)│(\(.viewers)) \(.channel.status)"'
 }
 
-err() {
-    print "$argv0: $1" "${@:2}" >&2
+# NOTE: This leaves the responsibility of multi-tasking potentially many
+#       processes to the kernel.  Neither gnu parallel(1) or xargs(1) proved to
+#       be very capable of this without complication and awkwardness, and
+#       neither were much faster.
+pulljson() {
+    local tmp url
 
-    if has notify-send; then
-        local msg
-        msg=$(print "$@")
-        notify-send -u critical -- "$argv0" "$msg"
-    fi
-}
-
-chunk_by() {
-    declare -i chunk=$1
-    declare -n list_r=$2
-
-    print '%s' "${list_r[@]}" | xargs -n "$chunk" | sed "s/ /,/g; s/$/&\&limit=$chunk/"
-}
-
-generate_urls() {
-    declare team list chunk nelem
-
-    if [[ -s $data_dir/streamers ]]; then
-        mapfile -t list < "$data_dir"/streamers
-
-        # Twitch lets us use a maximum of 100 streamers per query.
-        chunk=100
-        nelem=${#list[@]}
-
-        if ((nelem < chunk)); then
-            chunk_by "$nelem" list
-        else
-            chunk_by "$chunk" list
-        fi
-    fi
-}
-
-# Runs a function over the each element of an array in the background and waits
-# for all to complete before returning.
-parallel_apply() {
-    declare func=$1
-    declare -n array_r=$2
-
-    for i in "${array_r[@]}"; do
-        "$func" "$i" &
+    while read -r url; do
+        tmp=$(mktemp -t "$argv0"-XXXX.json)
+        curl -sH "Client-ID: $client_id" "$url" | readjson > "$tmp" &
     done
 
+    # Wait for all our processes to end before continuing.
     wait
 }
 
-# Download the json associated with a twitch team name or comma separated list
-# of streamers, with &limit= appended to the end.
-fetch_json() {
-    declare a=$1
-    declare stream data
-    declare url=https://api.twitch.tv/kraken/streams?channel=$a
+stream() {
+    local streamer
 
-    data=$(mktemp -t "$argv0"-channels-XXX.json)
-    curl -sH "Client-ID: $client_id" "$url" > "$data"
-}
-
-# Parsed json is printed in series of six lines, the first is the number of
-# viewers on which we can order the results then the streamer, game being
-# played, url to their stream, and finally the title of the stream.
-parse_json() {
-    declare json args
-
-    args=(-CQ
-          -e streams -a
-          -e viewers -upe channel -e name -upe game -upe url -upe status)
-
-    for json in "$TMPDIR/$argv0"-channels*; do
-        jshon "${args[@]}" < "$json"
-    done
-
-    # Make sure we remove the json once we're done so it doesn't interfere with
-    # proceeding execution and doesn't clutter up $TMPDIR.
-    rm -f -- "$TMPDIR/$argv0"-channels-*.json
-}
-
-create_menu() {
-    declare -n menu_r=$1
-    declare -n stream_r=$2
-    declare viewers streamer game url title
-
-    while {
-        read -r viewers
-        read -r streamer
-        read -r game
-        read -r url
-        read -r title
-    } do
-        # jshon(1) -C will return null for keys without values (or missing keys
-        # entirely), since a valid url can never be null we'll use this as a
-        # sentinel for bad values and skip any we find.
-        if [[ $url != null ]]; then
-            menu_r["$streamer│$game│($viewers) ${title//[\"\\]/}"]=1
-            stream_r[$streamer]=$url
+    while read -r streamer _; do
+        if [ "$streamer" ]; then
+            # Background mpv here in order to support multi-selection from the
+            # menus.
+            mpv https://twitch.tv/"$streamer" &
         fi
     done
 }
 
-get_user_picks() {
-    declare -n menu_r=$1
-    declare -n stream_r=$2
+if [ ! -s "$data_dir"/streamers ]; then
+    printf '%s: Empty or missing streamer list\n' "$data_dir"/streamers >&2
+    exit 1
+fi
 
-    # Using a marker here for column to pretty print the results in columns,
-    # here's hoping not many people use this in their titles, generally this
-    # hasn't been the case and it won't cause issues as only the first word is
-    # used and that is guaranteed to not contain spaces.
-    print '%s' "${!menu_r[@]}" | column -s '│' -t | sort -srnk 2,2 -t '('
-}
+# By splitting the pipeline in two we can create all our pre-formatted files in
+# parallel in one half and do all the rendering and selection handling in the
+# second without complication.
+chunkurls < "$data_dir"/streamers | pulljson
 
-play_stream() {
-    declare url=$1
-    declare title=$2
-    declare err args
+# Sort based on viewer count
+column -s '│' -t "$TMPDIR/$argv0"-????.json | sort -srnk 2,2 -t '(' | menu -l "$lines" -p 'STREAM' | stream
 
-    shopt -s extglob
-    # Squeeze repeated spaces.
-    args=(--quiet --title="MPV:${title//+( )/ }")
-
-    if [[ $quality ]]; then
-        args+=(--ytdl-format="$quality")
-    fi
-
-    if ! err=$(mpv "${args[@]}" "$url"); then
-        err '%s' "${err:-mpv}"
-    fi
-}
-
-play_if_valid() {
-    declare -n stream_r=$1
-    declare streamer title url
-
-    while read -r streamer title; do
-        if [[ ! $title ]]; then
-            title=$streamer
-        fi
-
-        # XXX This is likely not necessary; the fallback could become the norm
-        if [[ ${stream_r[$streamer]} ]]; then
-            url=${stream_r[$streamer]}
-        else
-            # Fallback.
-            url=https://twitch.tv/$streamer
-        fi
-
-        play_stream "$url" "$title" &
-    done
-}
-
-case $1 in
-    -u)
-        # Basic option added simply so I can update any teams now and then,
-        # they're fairly static so this shouldn't need to be run very often.
-        # XXX I don't, and won't, deal with cache invalidation here.
-        if [[ -s $data_dir/teams ]]; then
-            while read -r t; do
-                print 'processing %s' "$t" >&2
-                # As an API for listing all channels belonging to a team isn't
-                # available anymore, we simply scrape in the meantime until it
-                # is fixed.  <https://github.com/justintv/Twitch-API/issues/99>
-                curl -s "https://api.twitch.tv/kraken/teams/$t/?client_id=$client_id&api_version=5" | jshon -e users -a -e url -u
-            done < "$data_dir"/teams >> "$data_dir"/streamers
-
-            sort -u "$data_dir"/streamers -o "$data_dir"/streamers
-        fi
-        ;;
-    *)
-        mapfile -t urls < <(generate_urls)
-
-        if ((${#urls} > 0)); then
-            parallel_apply fetch_json urls
-        else
-            err 'no configuration data found'
-            exit 1
-        fi
-
-        declare -A menu stream
-        create_menu menu stream < <(parse_json)
-
-        results=$(get_user_picks menu stream | menu -l "$lines" -p 'STREAM')
-
-        if [[ $results ]]; then
-            play_if_valid stream <<< "$results"
-        fi
-esac
+exit
