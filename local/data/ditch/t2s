@@ -7,13 +7,13 @@ data_dir=${LOCALDIR:-$HOME/local}/data/$argv0
 # Backup: jzkbprff40iqj646a697cyrvl0zt2m6 (youtube-dl)
 client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
 
-if [ ! -s "$data_dir"/teams ]; then		
+if [ ! -s "$data_dir"/teams ]; then
     printf -- '%s: Empty or missing teams file\n' "$data_dir"/teams >&2
     exit 1
 fi
 
-while read -r t; do		
-    printf -- 'processing %s\n' "$t" >&2		
+while read -r t; do
+    printf -- 'processing %s\n' "$t" >&2
 
     # https://github.com/justintv/Twitch-API/issues/99
     apiurl="https://api.twitch.tv/kraken/teams/$t/?client_id=$client_id&api_version=5"
