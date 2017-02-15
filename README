@@ -45,7 +45,7 @@ ASSUMPTIONS
     /etc/zsh/zshenv as the LOCALDIR environment is not available at
     this point.
 
-  - The Xorg server is started with a custom sx script.
+  - The Xorg server is started with a custom script.
     <https://github.com/Earnestly/dotfiles/blob/master/local/bin/sx>
 
   - The system-config package is installed.
@@ -70,10 +70,6 @@ ISSUES
       > could easily be problematic.)
 
     <http://www.zsh.org/mla/workers/2013/msg00702.html>
-
-  - vimperator
-
-    Requires code in the VIMPERATOR_INIT environment.
 
   - llpp
 
