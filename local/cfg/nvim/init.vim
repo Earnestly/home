@@ -1,10 +1,14 @@
 " LOCALDIR/nvim/init.vim
 
 if empty($LOCALDIR)
-    let pkgdir = $HOME . '/local/data' . '/nvim/packages'
+    let localdir = $HOME . '/local'
 else
-    let pkgdir = $LOCALDIR . '/data' . '/nvim/packages'
+    let localdir = $LOCALDIR
 endif
+
+let pkgdir = localdir . '/data/nvim/packages'
+
+call mkdir(pkgdir, "p")
 
 call plug#begin(pkgdir)
     Plug 'benekastah/neomake'
@@ -73,14 +77,11 @@ set ttimeoutlen=50
 " Use the Xorg's primary buffer as default register.
 set clipboard=unnamed
 
-" Set directories.
-set backupdir=$LOCALDIR/data/nvim/backup
+let &backupdir = localdir . '/data/nvim/backup'
 
 " XXX Vim doesn't mkdir the backupdir path (bug?) so let's do that ourselves
 " instead.
-if !isdirectory($LOCALDIR . "/data/nvim/backup")
-    call mkdir($LOCALDIR . "/data/nvim/backup", "p")
-endif
+call mkdir(&backupdir, "p")
 
 " Prevent neomake reporting its exit status and suppressing the write message.
 " https://github.com/benekastah/neomake/issues/238
