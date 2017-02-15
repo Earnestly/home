@@ -6,8 +6,10 @@
 # LOCALDIR/cfg/dmenu/font        single line containing a font description
 # LOCALDIR/data/ditch/streamers  list of individual streamers
 
+# If the streamers file doesn't exist then fall back on stdin.
+
 argv0=ditch
-data_dir=${LOCALDIR:-$HOME/local}/data/$argv0
+data=${LOCALDIR:-$HOME/local}/data/$argv0/streamers
 TMPDIR=${TMPDIR:-/tmp}
 
 # Number of entries to display in the menu.
@@ -19,27 +21,28 @@ client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
 
 # Make sure we remove the json once we're done so it doesn't interfere with
 # proceeding execution and doesn't clutter up $TMPDIR.
-trap 'rm -f -- "$TMPDIR/$argv0"-????.json' EXIT
+trap 'rm -f -- "$TMPDIR/$argv0"-*.json' EXIT
 
 chunkurls() {
     # Twitch allows up to a 100 streamers in a single query when the limit is
     # raised using &limit=100.  This awk script chops up the list of streamers
-    # into chunks of 100, each comma separated.
-    awk -v apiurl="https://api.twitch.tv/kraken/streams?channel=" '
+    # into chunks of 100, each comma separated and appends the &limit= with an
+    # appropriate value.
+    awk -v interval=100 '
     BEGIN{
         i = 1
     }
 
-    (NR % 100){
+    (NR % interval){
         ORS=","
         print $0
         i++
     }
 
-    !(NR % 100){
+    !(NR % interval){
         ORS="\n"
         print $0 "&limit=" i
-        printf apiurl
+        printf "https://api.twitch.tv/kraken/streams?channel="
         i = 1
     }
 
@@ -62,7 +65,7 @@ readjson() {
 # NOTE: This leaves the responsibility of multi-tasking potentially many
 #       processes to the kernel.  Neither gnu parallel(1) or xargs(1) proved to
 #       be very capable of this without complication and awkwardness, and
-#       neither were much faster.
+#       neither were faster.
 pulljson() {
     local tmp url
 
@@ -82,22 +85,21 @@ stream() {
         if [ "$streamer" ]; then
             # Background mpv here in order to support multi-selection from the
             # menus.
-            mpv https://twitch.tv/"$streamer" &
+            mpv --quiet https://twitch.tv/"$streamer" &
         fi
     done
 }
 
-if [ ! -s "$data_dir"/streamers ]; then
-    printf '%s: Empty or missing streamer list\n' "$data_dir"/streamers >&2
-    exit 1
+if [ ! -s "$data" ]; then
+    printf -- '%s: Empty or missing streamers file\n' "$data" >&2
+    data=/dev/stdin
 fi
 
 # By splitting the pipeline in two we can create all our pre-formatted files in
 # parallel in one half and do all the rendering and selection handling in the
 # second without complication.
-chunkurls < "$data_dir"/streamers | pulljson
+chunkurls < "$data" | pulljson
 
 # Sort based on viewer count
-column -s '│' -t "$TMPDIR/$argv0"-????.json | sort -srnk 2,2 -t '(' | menu -l "$lines" -p 'STREAM' | stream
-
+column -s '│' -t "$TMPDIR/$argv0"-*.json | sort -srnk 2,2 -t '(' | menu -l "$lines" -p 'STREAM' | stream
 exit
