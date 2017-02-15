@@ -61,8 +61,14 @@ set expandtab
 
 if &t_Co > 255 || has('gui_running')
     set background=dark
+    " set termguicolors
     let base16colorspace=256
-    colorscheme base16-ocean
+    colorscheme base16-yesterdaynight
+
+    " By default my theme highlights the matching bracket with a lighter
+    " colour, while darkening the cursor, causing me endless confusion.  Using
+    " standout reverses the effect.
+    hi MatchParen cterm=standout
 endif
 
 set smartcase
