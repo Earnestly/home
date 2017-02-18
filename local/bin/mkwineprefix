@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh --
 # mkwineprefix - creates a sane wine prefix
 
 # Unlinks all directories pointing at the users home, optionally remaps z: to
@@ -7,7 +7,7 @@
 
 # TODO complete a mechanism to load external registery snippets
 
-readonly argv0=mkwineprefix
+argv0=mkwineprefix
 
 usage() {
     cat >&2 <<!
@@ -26,56 +26,58 @@ prefix
 }
 
 errx() {
-    declare -i r=$1
     printf -- "%s: $2" "$argv0" "${@:3}" >&2
-    exit "$r"
+    exit "$1"
 }
 
 # We need at least one argument.
-if (($# == 0)); then
+if [ "$#" -eq 0 ]; then
     errx 1 'usage: mkwineprefix [-a arch] [-m] [-g] [-r] [-h] prefix\n'
 fi
 
-while (($#)); do
+while true; do
     case $1 in
-        -a) shift; arch=$1 ;;
+        --) shift; break ;;
+        -a) shift; arch=$1
+            case $arch in
+                '') arch=32 ;;
+                32) export WINEARCH=win32 ;;
+                64) export WINEARCH=win64 ;;
+                *)  errx 1 '%s: invalid architecture (32 or 64)\n' "$arch" ;;
+            esac ;;
         -g) with_gecko=1 ;;
         -m) with_mono=1 ;;
         -r) remap_z=1 ;;
         -h) usage
             exit
             ;;
-        *)  prefix=$1
-            ;;
+        -?) errx 1 '%s: unknown option\n' "$1" ;;
+        *)  break
     esac
     shift
 done
 
-case $arch in
-    '') arch=32 ;;
-    32) export WINEARCH=win32 ;;
-    64) export WINEARCH=win64 ;;
-    *)  errx 1 '%s: invalid architecture (32 or 64)\n' "$arch" ;;
-esac
+prefix=$1
 
-case $prefix in
-    '')    errx 1 'no prefix\n' ;;
-    /*)    export WINEPREFIX="$prefix" ;;
-    [!/]*) export WINEPREFIX="$PWD/$prefix" ;;
-esac
+if ! prefix=$(readlink -f "$prefix"); then
+   errx 1 '%s: unable to determine canonical path\n' "$1"
+fi
 
-# Check if the prefix already exists using dosdevices as a sentinel
-# XXX Is this really necessary?
-if [[ -d $WINEPREFIX/dosdevices ]]; then
-    errx 1 '%s: prefix already exists\n' "$WINEPREFIX"
+export WINEPREFIX="$prefix"
+
+# Check if the prefix already exists using dosdevices as a sentinel.  If it
+# does simply return the prefix location and exit.
+if [ -d "$WINEPREFIX"/dosdevices ]; then
+    printf -- '%s\n' "$WINEPREFIX"
+    errx 0 '%s: prefix already exists\n' "$WINEPREFIX"
 fi
 
 # Enable both if set by unsetting overrides.
-if ((with_mono && with_gecko)); then
+if [ "$with_mono" ] && [ "$with_gecko" ]; then
     export WINEDLLOVERRIDES='winemenubuilder.exe=d'
-elif ((with_mono)); then
+elif [ "$with_mono" ]; then
     export WINEDLLOVERRIDES='winemenubuilder.exe,mshtml=d'
-elif ((with_gecko)); then
+elif [ "$with_gecko" ]; then
     export WINEDLLOVERRIDES='winemenubuilder.exe,mscoree=d'
 else
     export WINEDLLOVERRIDES='winemenubuilder.exe,mscoree,mshtml=d'
@@ -83,18 +85,18 @@ fi
 
 # Initialise the prefix now so we can fix it before any work is done with it.
 if ! wine wineboot -i; then
-    errx 1 'wineboot\n'
+    errx "$?" 'wineboot\n'
 fi
 
 # Remap Z: which limits what wine can see, the default / gives access to
 # everything the user does.  Selecting /mnt as an alternative due to most isos
 # being mounted there for installation purposes.
-if ((remap_z)); then
-    if [[ -d $WINEPREFIX/dosdevices/z: ]]; then
-        rm -- "$WINEPREFIX"/dosdevices/z:
+if [ "$remap_z" ]; then
+    if [ -d "$WINEPREFIX"/dosdevices/z: ]; then
+        rm -f -- "$WINEPREFIX"/dosdevices/z:
 
         # Recreate it and point to /mnt instead of /.
-        ln -sf /mnt "$WINEPREFIX"/dosdevices/z:
+        ln -sf -- /mnt "$WINEPREFIX"/dosdevices/z:
     fi
 fi
 
@@ -103,12 +105,12 @@ fi
 #       need to test for windows 7+ directories.  This would only matter if
 #       we were going to modify extant prefixes.
 for dir in Desktop 'My Documents' 'My Music' 'My Pictures' 'My Videos'; do
-    rm "$WINEPREFIX"/drive_c/users/"$USER"/"$dir"
-    mkdir -p "$WINEPREFIX"/drive_c/users/"$USER"/"$dir"
+    rm -rf -- "$WINEPREFIX"/drive_c/users/"$USER"/"$dir"
+    mkdir -p -- "$WINEPREFIX"/drive_c/users/"$USER"/"$dir"
 done
 
-# Return a useful string users may copy for this prefix.
-printf 'export WINEPREFIX=%s\n' "$WINEPREFIX"
+# Return the created prefix.
+printf -- '%s\n' "$WINEPREFIX"
 
 # cat > "$WINEPREFIX"/colors.reg <<!
 # REGEDIT4
