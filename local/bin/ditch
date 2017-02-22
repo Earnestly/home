@@ -3,21 +3,20 @@
 
 # requires awk jq curl menu mpv youtube-dl
 
-# LOCALDIR/cfg/dmenu/font        single line containing a font description
 # LOCALDIR/data/ditch/streamers  list of individual streamers
 
 # If the streamers file doesn't exist then fall back on stdin.
 
-argv0=ditch
-data=${LOCALDIR:-$HOME/local}/data/$argv0/streamers
-TMPDIR=${TMPDIR:-/tmp}
+readonly argv0=ditch
+readonly data=${LOCALDIR:-$HOME/local}/data/$argv0/streamers
+readonly TMPDIR=${TMPDIR:-/tmp}
 
 # Number of entries to display in the menu.
-lines=30
+readonly lines=30
 
 # I don't care about making these API keys public, use it if you want.
 # Backup: jzkbprff40iqj646a697cyrvl0zt2m6 (youtube-dl)
-client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
+readonly client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
 
 # Make sure we remove the json once we're done so it doesn't interfere with
 # proceeding execution and doesn't clutter up $TMPDIR.
