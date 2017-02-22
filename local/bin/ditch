@@ -80,8 +80,10 @@ pulljson() {
     local tmp url
 
     while read -r url; do
-        tmp=$(mktemp -t "$argv0"-XXXX.json)
-        curl -sH "Client-ID: $client_id" "$url" | readjson > "$tmp" &
+        if [ "$url" ]; then
+            tmp=$(mktemp -t "$argv0"-XXXX.json)
+            curl -sH "Client-ID: $client_id" "$url" | readjson > "$tmp" &
+        fi
     done
 
     # Wait for all our processes to end before continuing.
@@ -93,15 +95,13 @@ stream() {
 
     while read -r streamer _; do
         if [ "$streamer" ]; then
-            # Background mpv here in order to support multi-selection from the
-            # menus.
+            # Background mpv here in order to support multi-selection.
             mpv --quiet https://twitch.tv/"$streamer" &
         fi
     done
 }
 
-if [ ! -s "$data" ]; then
-    printf -- '%s: Empty or missing streamers file\n' "$data" >&2
+if [ ! -s "$data" ] || [ "$1" = '-' ]; then
     data=/dev/stdin
 fi
 
@@ -110,6 +110,7 @@ fi
 # second without complication.
 chunkurls < "$data" | pulljson
 
-# Sort based on viewer count
-column -s '│' -t "$TMPDIR/$argv0"-*.json | sort -srnk 2,2 -t '(' | menu -l "$lines" -p 'STREAM' | stream
+# Sort based on viewer count.
+column -s '│' -t "$TMPDIR/$argv0"-*.json | sort -srnk 2,2 -t '(' |\
+    menu --ifne -l "$lines" -p 'STREAM' | stream
 exit
