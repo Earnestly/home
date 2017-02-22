@@ -3,5 +3,5 @@ printf '{"version":1}[[],'
 if [[ -f $LOCALDIR/cfg/conky/conkyrc.$HOSTNAME ]]; then
     exec conky -c "$LOCALDIR/cfg/conky/conkyrc.$HOSTNAME"
 else
-    printf '{"full_text":"no conkyrc.%s", "color":"\#bf616a"}],' "$HOSTNAME"
+    printf '{"full_text":"no conkyrc.%s", "color":"#bf616a"}],' "$HOSTNAME"
 fi
