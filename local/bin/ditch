@@ -32,6 +32,15 @@ chunkurls() {
         i = 1
     }
 
+    NF < 1 {
+        noinput=1
+        exit
+    }
+
+    i == 1 {
+        printf "https://api.twitch.tv/kraken/streams?channel="
+    }
+
     (NR % interval){
         ORS=","
         print $0
@@ -41,13 +50,15 @@ chunkurls() {
     !(NR % interval){
         ORS="\n"
         print $0 "&limit=" i
-        printf "https://api.twitch.tv/kraken/streams?channel="
         i = 1
     }
 
     END{
+        if(noinput)
+            exit
+
         ORS="\n"
-        print "&limit=" i - 1
+        print "&limit=" i
     }'
 }
 
