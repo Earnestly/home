@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh --
 # asr - download arch linux build files from the svntogit repositories
 
 # requires git expac pacman pacutils
@@ -9,10 +9,6 @@ error() {
     printf -- "%s: $1" "$argv0" "${@:2}" >&2
     exit 1
 }
-
-if [ ! "$1" ]; then
-    error 'usage: asr package\n'
-fi
 
 clone() {
     local repo pkg=$1
@@ -34,7 +30,6 @@ clone() {
     return 1
 }
 
-
 checkout() {
     local pkg=$1
 
@@ -44,6 +39,10 @@ checkout() {
         return
     fi
 }
+
+if [ ! "$1" ]; then
+    error 'usage: asr package\n'
+fi
 
 if ! checkout "$1"; then
     if ! pacman -T "$1" > /dev/null; then
@@ -68,7 +67,7 @@ if ! checkout "$1"; then
         if satisfies=$(pacsift --sync --exact --satisfies="$1"); then
             printf -- '%s is provided by the following packages:\n' "$1" >&2
             printf -- '%s\n' "$satisfies" >&2
-            exit 0
+            exit 1
         fi
 
         # This shouldn't be reachable.
