@@ -1,25 +1,23 @@
 #!/bin/sh --
+# t2s - generate a streamer list from a teams list based on twitch's teams api
 
-argv0=ditch
-data_dir=${LOCALDIR:-$HOME/local}/data/$argv0
+readonly argv0=ditch
+readonly data_dir=${LOCALDIR:-$HOME/local}/data/$argv0
 
 # I don't care about making these API keys public, use it if you want.
 # Backup: jzkbprff40iqj646a697cyrvl0zt2m6 (youtube-dl)
-client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
+readonly client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
 
 if [ ! -s "$data_dir"/teams ]; then
-    printf -- '%s: Empty or missing teams file\n' "$data_dir"/teams >&2
+    printf -- '%s: empty or missing teams file\n' "$data_dir"/teams >&2
     exit 1
 fi
 
-while read -r t; do
-    printf -- 'processing %s\n' "$t" >&2
-
+while read -r -- t; do
     # https://github.com/justintv/Twitch-API/issues/99
     apiurl="https://api.twitch.tv/kraken/teams/$t/?client_id=$client_id&api_version=5"
-    curl -s "$apiurl" | jq -r '.users[] | .url' | sed 's,https://www.twitch.tv/,,' &
+    curl -s "$apiurl" | jq -r '.users[] | .url' | sed 's,^https://www.twitch.tv/,,' &
 done < "$data_dir"/teams >> "$data_dir"/streamers
-
 wait
 
 sort -u "$data_dir"/streamers -o "$data_dir"/streamers
