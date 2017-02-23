@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh --
 # sx - simpler startx
 
 # requires svlogd xorg>=1.18
@@ -10,8 +10,8 @@
 # this file if different options are necessary.
 
 # Make sure we aren't already running in an Xserver.
-if [[ $DISPLAY ]]; then
-    printf 'DISPLAY already set\n' >&2
+if [ "$DISPLAY" ]; then
+    printf -- '%s: DISPLAY already set\n' "$DISPLAY" >&2
     exit 1
 fi
 
@@ -31,13 +31,7 @@ if ! mkdir -p "$cfgdir" "$logdir"; then
     exit
 fi
 
-# We need some way to determine if Xorg is going to be run in a privileged mode
-# and there appears to be no simple option other than to require user
-# intervention.
-if [[ $1 == '-p' ]]; then
-    privileged=1
-    shift
-fi
+export DISPLAY=:$tty
 
 # * Since Xorg 1.17 the -nolisten command has been removed:
 #   <https://cgit.freedesktop.org/xorg/xserver/commit/?id=cc59be38b>
@@ -45,11 +39,4 @@ fi
 # * -keeptty is now implicitly enabled when we run the Xserver on the same tty,
 #   however it still needs to be explicitly set for whatever reason.
 #   <https://cgit.freedesktop.org/xorg/xserver/commit/?id=6b79f28f5>
-args=(vt"$tty" -keeptty)
-
-if ((!privileged)); then
-    args+=(-logfile "$logfile")
-fi
-
-export DISPLAY=:$tty
-exec xinit "${@:-$xinitrc}" -- "$DISPLAY" "${args[@]}" |& svlogd -tt "$logdir"
+xinit "${@:-$xinitrc}" -- "$DISPLAY" vt"$tty" -logfile "$logfile" -keeptty 2>&1 | svlogd -tt "$logdir"
