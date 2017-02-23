@@ -1,20 +1,22 @@
 #!/bin/sh --
-# mkwineprefix - creates a sane wine prefix
+# mkwineprefix - creates a sane wine prefix or updates it
+
+# requires wine
 
 # Unlinks all directories pointing at the users home, optionally remaps z: to
 # /mnt instead of / and disables winemenubuilder to prevent .desktop/mime
-# pollution
+# pollution.
 
 # TODO complete a mechanism to load external registery snippets
 
-argv0=mkwineprefix
+readonly argv0=mkwineprefix
 
 usage() {
     cat >&2 <<!
 usage: mkwineprefix [-a arch] [-m] [-g] [-r] [-h] prefix
 
 options
-    -a arch  Architecture, 32 or 64 (Default: 32)
+    -a arch  Architecture, win32 or win64 (Default: win32)
     -m       Enable Mono installation
     -g       Enable Gecko installation
     -r       Remap z: to /mnt instead of /
@@ -25,51 +27,52 @@ prefix
 !
 }
 
-errx() {
+error() {
     printf -- "%s: $2" "$argv0" "${@:3}" >&2
     exit "$1"
 }
 
+warn() {
+    printf -- "%s: $1" "$argv0" "${@:2}" >&2
+}
+
 # We need at least one argument.
 if [ "$#" -eq 0 ]; then
-    errx 1 'usage: mkwineprefix [-a arch] [-m] [-g] [-r] [-h] prefix\n'
+    error 1 'usage: mkwineprefix [-a arch] [-m] [-g] [-r] [-h] prefix\n'
 fi
 
-while true; do
+while :; do
     case $1 in
         --) shift; break ;;
-        -a) shift; arch=$1
-            case $arch in
-                '') arch=32 ;;
-                32) export WINEARCH=win32 ;;
-                64) export WINEARCH=win64 ;;
-                *)  errx 1 '%s: invalid architecture (32 or 64)\n' "$arch" ;;
-            esac ;;
+        -a) shift; arch=$1 ;;
         -g) with_gecko=1 ;;
         -m) with_mono=1 ;;
         -r) remap_z=1 ;;
         -h) usage
             exit
             ;;
-        -?) errx 1 '%s: unknown option\n' "$1" ;;
+        -?) error 1 '%s: unknown option\n' "$1" ;;
         *)  break
     esac
     shift
 done
 
-prefix=$1
+case $arch in
+    '') arch=win32 ;;
+    win32) export WINEARCH=win32 ;;
+    win64) export WINEARCH=win64 ;;
+    *) error 1 '%s: invalid architecture (win32 or win64)\n' "$arch" ;;
+esac
 
-if ! prefix=$(readlink -f "$prefix"); then
-   errx 1 '%s: unable to determine canonical path\n' "$1"
+if ! prefix=$(readlink -f "$1"); then
+   error 1 '%s: unable to determine canonical path for the prefix\n' "$1"
 fi
 
 export WINEPREFIX="$prefix"
 
-# Check if the prefix already exists using dosdevices as a sentinel.  If it
-# does simply return the prefix location and exit.
 if [ -d "$WINEPREFIX"/dosdevices ]; then
-    printf -- '%s\n' "$WINEPREFIX"
-    errx 0 '%s: prefix already exists\n' "$WINEPREFIX"
+    warn '%s: prefix already exists, updating\n' "$WINEPREFIX"
+    operation=-u
 fi
 
 # Enable both if set by unsetting overrides.
@@ -84,20 +87,16 @@ else
 fi
 
 # Initialise the prefix now so we can fix it before any work is done with it.
-if ! wine wineboot -i; then
-    errx "$?" 'wineboot\n'
-fi
+wine wineboot "${operation:--i}" || exit
 
 # Remap Z: which limits what wine can see, the default / gives access to
 # everything the user does.  Selecting /mnt as an alternative due to most isos
 # being mounted there for installation purposes.
-if [ "$remap_z" ]; then
-    if [ -d "$WINEPREFIX"/dosdevices/z: ]; then
-        rm -f -- "$WINEPREFIX"/dosdevices/z:
+if [ "$remap_z" ] && [ -d "$WINEPREFIX"/dosdevices/z: ]; then
+    rm -f -- "$WINEPREFIX"/dosdevices/z:
 
-        # Recreate it and point to /mnt instead of /.
-        ln -sf -- /mnt "$WINEPREFIX"/dosdevices/z:
-    fi
+    # Recreate it and point to /mnt instead of /.
+    ln -sf -- /mnt "$WINEPREFIX"/dosdevices/z:
 fi
 
 # Remove all the symlinks pointing at the user home directory.
