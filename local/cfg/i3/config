@@ -8,65 +8,74 @@ new_window pixel 2
 workspace_auto_back_and_forth yes
 workspace_layout tabbed
 
-# Use super/logo key as modifier.
-set $mod mod4
+# Colors.
+# class                 border  backgnd text    indicator
+client.focused          #65737e #65737e #c0c5ce #bf616a
+client.focused_inactive #343d46 #343d46 #c0c5ce #bf616a
+client.unfocused        #343d46 #343d46 #65737e #0000ff
+client.urgent           #bf616a #bf616a #eff1f5 #ff00ff
 
-# Use Mouse+$mod to drag floating windows to their wanted position.
+# Keybinds.
+set $mod mod4
 floating_modifier $mod
 
-# Terminal.
-bindsym $mod+Return exec $TERMINAL
+bindsym $mod+Return exec terminal
+bindsym XF86Launch1 exec web
+bindsym XF86TouchpadToggle exec trackpad-toggle
 
-# Brightness control.
-#bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 2
-#bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 2
+# Global media keys.
+bindsym XF86AudioMute exec --no-startup-id ponymix toggle
+bindsym XF86AudioMicMute exec --no-startup-id ponymix -t source -d alsa_input.pci-0000_00_1b.0.analog-stereo toggle
 
-# Kill focused window.
+bindsym XF86AudioLowerVolume exec --no-startup-id ponymix decrease 3
+bindsym XF86AudioRaiseVolume exec --no-startup-id ponymix increase 3
+
+bindsym XF86AudioStop exec mpc stop
+bindsym XF86AudioPlay exec mpc toggle
+bindsym XF86AudioNext exec mpc next
+bindsym XF86AudioPrev exec mpc prev
+
+# bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 2
+# bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 2
+
+bindsym $mod+u [urgent="latest"] focus
 bindsym $mod+q kill
 
-# Change focus.
 bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
 bindsym $mod+l focus right
 
-# Move container.
 bindsym $mod+Shift+h move left
 bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
 
-# Move container to next output.
 bindsym $mod+Ctrl+h move container to output left
 bindsym $mod+Ctrl+j move container to output down
 bindsym $mod+Ctrl+k move container to output up
 bindsym $mod+Ctrl+l move container to output right
 
-# Split in horizontal orientation.
-bindsym $mod+semicolon split h
+bindsym $mod+Ctrl+Shift+h move workspace to output right
+bindsym $mod+Ctrl+Shift+j move workspace to output down
+bindsym $mod+Ctrl+Shift+k move workspace to output up
+bindsym $mod+Ctrl+Shift+l move workspace to output left
 
-# Split in vertical orientation.
+bindsym $mod+semicolon split h
 bindsym $mod+v split v
 
-# Toggle fullscreen for selected container(s).
 bindsym $mod+f fullscreen
 
-# Change container layout.
 bindsym $mod+s layout stacking
 bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
 
-# Toggle tiling / floating.
 bindsym $mod+Shift+space floating toggle
-
-# Change focus between tiling / floating windows.
 bindsym $mod+space focus mode_toggle
 
-# Focus the containers.
 bindsym $mod+a focus parent
 bindsym $mod+d focus child
 
-# Switch to workspace.
 bindsym $mod+1 workspace 1
 bindsym $mod+2 workspace 2
 bindsym $mod+3 workspace 3
@@ -80,6 +89,16 @@ bindsym $mod+0 workspace 10
 
 bindsym $mod+F1 workspace 11
 bindsym $mod+F2 workspace 12
+bindsym $mod+F3 workspace 13
+bindsym $mod+F4 workspace 14
+bindsym $mod+F5 workspace 15
+bindsym $mod+F6 workspace 16
+bindsym $mod+F7 workspace 17
+bindsym $mod+F8 workspace 18
+bindsym $mod+F9 workspace 19
+bindsym $mod+F10 workspace 20
+bindsym $mod+F11 workspace 21
+bindsym $mod+F12 workspace 22
 
 # Move focused container to workspace.
 bindsym $mod+Shift+1 move container to workspace 1
@@ -93,8 +112,18 @@ bindsym $mod+Shift+8 move container to workspace 8
 bindsym $mod+Shift+9 move container to workspace 9
 bindsym $mod+Shift+0 move container to workspace 10
 
-bindsym $mod+Shift+F1 move containerto workspace 11
-bindsym $mod+Shift+F2 move containerto workspace 12
+bindsym $mod+Shift+F1 move container to workspace 11
+bindsym $mod+Shift+F2 move container to workspace 12
+bindsym $mod+Shift+F3 move container to workspace 13
+bindsym $mod+Shift+F4 move container to workspace 14
+bindsym $mod+Shift+F5 move container to workspace 15
+bindsym $mod+Shift+F6 move container to workspace 16
+bindsym $mod+Shift+F7 move container to workspace 17
+bindsym $mod+Shift+F8 move container to workspace 18
+bindsym $mod+Shift+F9 move container to workspace 19
+bindsym $mod+Shift+F10 move container to workspace 20
+bindsym $mod+Shift+F11 move container to workspace 21
+bindsym $mod+Shift+F12 move container to workspace 22
 
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
@@ -106,7 +135,6 @@ mode "RESIZE MODE" {
     bindsym k resize shrink height 1 px or 1 ppt
     bindsym l resize grow width 1 px or 1 ppt
 
-    bindsym q mode "default"
     bindsym Escape mode "default"
 }
 bindsym $mod+r mode "RESIZE MODE"
@@ -121,7 +149,6 @@ mode "MENU MODE" {
     bindsym u exec --no-startup-id bemenu-loader ~/local/data/plaid/plaid_menu; mode "default"
     bindsym o exec --no-startup-id bemenu-loader ~/local/data/dmenu/dmenu_pdf; mode "default"
 
-    bindsym q mode "default"
     bindsym Escape mode "default"
 }
 bindsym $mod+p mode "MENU MODE"
@@ -140,38 +167,20 @@ mode "MPD CONTROL" {
     bindsym XF86AudioLowerVolume exec --no-startup-id mpc volume -3
     bindsym XF86AudioRaiseVolume exec --no-startup-id mpc volume +3
 
-    bindsym q mode "default"
     bindsym Escape mode "default"
 }
 bindsym $mod+m mode "MPD CONTROL"
 
-# Colors.
-# class                 border  backgnd text    indicator
-client.focused          #65737e #65737e #c0c5ce #bf616a
-client.focused_inactive #343d46 #343d46 #c0c5ce #bf616a
-client.unfocused        #343d46 #343d46 #65737e #0000ff
-client.urgent           #bf616a #bf616a #eff1f5 #ff00ff
+mode "LAYOUT MODE" {
+    # XXX I should turn these into scripts so I can access environment
+    #     variables and possibly do more with it.
+    bindsym 3 exec --no-startup-id "i3-msg 'workspace 3; append_layout ~/local/cfg/i3/layouts/tabbed_nmaster.json'"
 
-bar {
-	position top
-    status_command i3status-conky
-
-    colors {
-        # class            border  backgnd text
-        background         #2b303b
-        separator          #2b303b
-        focused_workspace  #2b303b #2b303b #c0c5ce
-        active_workspace   #2b303b #2b303b #4f5b66
-        inactive_workspace #2b303b #2b303b #4f5b66
-   	    urgent_workspace   #bf616a #bf616a #eff1f5
-	}
+    bindsym Escape mode "default"
 }
+bindsym $mod+t mode "LAYOUT MODE"
 
-for_window [class="plugin-container"] floating enable
-for_window [class="Firefox"] floating enable
-for_window [class="Firefox" instance="Navigator"] floating disable
-
-# Blender floating.
+# Specific window management.
 for_window [class="Blender" title="Blender User Preferences"] floating enable
 
 # Fontforge floating toolboxes.
