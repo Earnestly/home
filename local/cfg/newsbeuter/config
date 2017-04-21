@@ -1,6 +1,6 @@
 # HOME/local/cfg/newsbeuter/config
 
-auto-reload yes 
+auto-reload yes
 confirm-exit yes
 
 reload-threads 4
@@ -14,7 +14,7 @@ notify-format "newsbeuter: %f/%n"
 
 browser "$BROWSER %u &> /dev/null &"
 
-# Keybinds 
+# Keybinds
 bind-key h left
 bind-key k up
 bind-key j down
@@ -24,8 +24,13 @@ bind-key f pageup
 bind-key b pagedown
 
 # Colours
-color listfocus color7 color8
-color info color4 color0 bold
+color info blue black
+color article white black
+color listfocus white black bold
+color listfocus_unread blue white bold reverse
+color listnormal white black
+color listnormal_unread blue black bold
+color background white black
 
 # Macros
 macro q set browser "mpv --loop-file --cache-file=TMP %u &> /dev/null &" ; open-in-browser ; set browser "$BROWSER %u &> /dev/null &"

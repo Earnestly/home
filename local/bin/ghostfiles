@@ -18,8 +18,8 @@ exclude=(-path /var/cache -o -path /var/lib/pacman -o -path /var/log/journal)
 findorphans() {
     # pacman -q doesn't suppress the error message attached to the file when
     # used with -Qo, so we capture stderr and remove the messages in post.
-    sudo find / -xdev \( "${exclude[@]}" \) -prune -o -exec pacman -Qo '{}' + \
-        > /dev/null 2>&1 | sed 's/error: No package owns //'
+    sudo find / -xdev \( "${exclude[@]}" \) -prune -o -print |\
+        sudo pacman -Qo - 2>&1 1>&- | sed 's/^error: No package owns //'
 }
 
 mkdir -p "$datadir"

@@ -12,7 +12,7 @@
 readonly argv0=mkwineprefix
 
 usage() {
-    cat >&2 <<!
+    cat <<!
 usage: mkwineprefix [-a arch] [-m] [-g] [-r] [-h] prefix
 
 options

@@ -23,8 +23,8 @@
               case-insensitive-search='true'
               vertical-scrollbar-visible='false'
               horizontal-scrollbar-visible='false'
-              uri-launcher='$BROWSER &quot;%s&quot;'
-              path-launcher='$TERMINAL -d &quot;%s&quot;'>
+              uri-launcher='web &quot;%s&quot;'
+              path-launcher='terminal -d &quot;%s&quot;'>
 
         <keymap mode='global'>
             <!-- Use emacs style motion in menus -->
@@ -68,8 +68,9 @@
             <map in='f' out='pgdown'/>
             <map in='b' out='pgup'/>
 
-            <!-- Provide a reverse operation for 'space' -->
+            <!-- Provide sensible reverse operations for 'space' -->
             <map in='shift-space' out='del'/>
+            <map in='backspace' out='del'/>
 
             <map in='tab' out='o'/>
             <map in='f11' out='f'/>

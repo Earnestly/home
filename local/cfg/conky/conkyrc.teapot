@@ -23,35 +23,25 @@ conky.config = {
 conky.text = [[
 [\
 ${if_mpd_playing}\
-{"full_text":"MPD:${mpd_title 80}",\
-"color":"\#${template0}"},\
+{"full_text":"MPD:${mpd_title 80}","color":"\#${template0}"},\
 ${endif}\
-{"full_text":"VOL:${execp ponymix get-volume}%",\
-"color":"\#${template0}"},\
-{"full_text":"${execp check-mic-mute-conky}",\
-"color":"\#${template0}"},\
-{"full_text":"CPU:${cpu}%",\
-"color":"\#${template0}"},\
+{"full_text":"VOL:${execp ponymix get-volume}%","color":"\#${template0}"},\
+{"full_text":"${execp check-mic-mute-conky}","color":"\#${template0}"},\
+{"full_text":"CPU:${cpu}%","color":"\#${template0}"},\
 ${if_match ${acpitemp} > 90}\
-{"full_text":"TEMP:${acpitemp}C",\
-"color":"\#${template1}"},\
+{"full_text":"TEMP:${acpitemp}C","color":"\#${template1}"},\
 ${endif}\
-{"full_text":"HDD:${fs_free}",\
-"color":"\#${template0}"},\
+{"full_text":"HDD:${fs_free}","color":"\#${template0}"},\
 ${if_up wlp3s0}\
-{"full_text":"NET:${wireless_essid wlp3s0} ${wireless_link_qual wlp3s0}% DN:${downspeedf wlp3s0}/UP:${upspeedf wlp3s0}",\
-"color":"\#${template0}"},\
+{"full_text":"NET:${wireless_essid wlp3s0} ${wireless_link_qual wlp3s0}% DN:${downspeedf wlp3s0}/UP:${upspeedf wlp3s0}","color":"\#${template0}"},\
 ${endif}\
 ${if_match ${battery_percent} < 25}\
-{"full_text":"BAT:${battery_percent}%",\
-"color":"\#${template1}"},\
+{"full_text":"BAT:${battery_percent}%","color":"\#${template1}"},\
 ${endif}\
 ${if_smapi_bat_installed 0}\
 ${if_match ${smapi_bat_temp 0} > 35}\
-{"full_text":"${smapi_bat_temp 0}C",\
-"color":"\#${template1}"},\
+{"full_text":"${smapi_bat_temp 0}C","color":"\#${template1}"},\
 ${endif}\
 ${endif}\
-{"full_text":"${time %A %B %d %H:%M}",\
-"color":"\#${template0}"}],\
+{"full_text":"${time %A %B %d %H:%M}","color":"\#${template0}"}],\
 ]]

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh --
 # repo-cycle-detector - attempt to detect cycles in pacman repos
 
 parse() {
@@ -18,9 +18,9 @@ parse() {
     }'
 }
 
-if ((!$#)); then
+if [ "$#" -eq 0 ]; then
     printf 'usage: repo-cycle-detector repo\n' >&2
     exit 1
 fi
 
-expac -S '%n:%E' -l ':' - < <( pacsift --exact --repo="$1") | parse | tsort > /dev/null
+pacsift --exact --repo="$1" | expac -S '%n:%E' -l ':' - | parse | tsort > /dev/null

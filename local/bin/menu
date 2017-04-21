@@ -10,4 +10,4 @@ exec bemenu \
     --hf '#c0c5ce' --hb '#343d46' \
     --scf '#65737e' --scb '#343d46' \
     --scrollbar autohide \
-    --fn "$font" -w -i "$@"
+    --fn "$font" -wi "$@"

@@ -1,12 +1,12 @@
 #!/bin/sh --
 # sx - simpler startx
 
-# requires svlogd xorg>=1.18
+# requires svlogd xorg fgconsole
 
 # An svlogd implementation can be found in busybox:
 #   % ln -s /bin/busybox ~/local/bin/svlogd
 
-# This script doesn't allow passing arguments to the Xserver.  Instead edit
+# This script doesn't allow passing arguments to the xserver.  Instead edit
 # this file if different options are necessary.
 
 # Make sure we aren't already running in an Xserver.

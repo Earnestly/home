@@ -57,11 +57,10 @@ function precmd {
 
 # Print the current running command's name to the window title.
 function preexec {
-    if [[ $TERM == xterm-* ]]; then
-        # Check that the first word doesn't match some common prefixes.
-        local cmd=${1[(wr)^(*=*|trickle|rlwrap|doas|sudo|exec|ssh|-*)]}
-        print -Pn "\e];$cmd:q\a"
-    fi
+    local cmd=${1//\%/}; cmd=${cmd//\$/}
+    case $TERM in
+        xterm-*) print -Pn "\e]2;$cmd:q\a"
+    esac
 }
 
 # Replace vimode indicators.

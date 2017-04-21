@@ -81,8 +81,5 @@ source <(dircolors "$LOCALDIR/cfg/coreutils/dircolors")
 # export GIMP2_DIRECTORY="$XDG_CONFIG_HOME/gimp"
 # export CABAL_CONFIG="$XDG_DATA_HOME/cabal/config"
 # export GUILE_HISTORY="$XDG_CONFIG_HOME/guile/history"
- 
-# XXX Requires program code in an environment, this is not ideal but means one
-#     less symlink and one less dotfile.
 # export VIMPERATOR_INIT=":source $XDG_CONFIG_HOME/vimperator/vimperatorrc"
 # export VIMPERATOR_RUNTIME="$XDG_DATA_HOME/vimperator"

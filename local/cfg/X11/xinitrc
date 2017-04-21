@@ -1,14 +1,8 @@
-#!/bin/sh
+#!/bin/sh --
 # LOCALDIR/cfg/X11/xinitrc
 
 # NOTE
 #   This xinitrc should be POSIX sh as xinit starts it with /bin/sh.
-
-# This is here primarily to prevent the creation of HOME/.dbus/session-bus/ by
-# software using dbus.
-if [ ! "$DBUS_SESSION_BUS_ADDRESS" ]; then
-    eval "$(dbus-launch --sh-syntax)"
-fi
 
 # Give the localuser access to the Xserver using the Server Interpreted method
 # (see Xsecurity(7)) which uses my user's UID via SO_PEERCRED to mediate access

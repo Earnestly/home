@@ -190,28 +190,22 @@ for_window [class="fontforge" title="Point Info"] floating enable
 for_window [class="fontforge" title="Problem explanation"] floating enable
 
 assign [class="qutebrowser"] 2
-assign [class="Firefox"] 2
 assign [class="Chromium"] 2
 assign [class="mpv"] 3
-assign [class="Wine"] 5
+assign [class="Wine"] 9
 
-# Focus latest urgent window.
-bindsym $mod+u [urgent="latest"] focus
+bar {
+	position top
+    # status_command i3status-conky
+    status_command ~/dev/shell/statusbar
 
-# Toggle trackpad.
-bindsym XF86TouchpadToggle exec trackpad-toggle
-
-# Toggle mic mute.
-bindsym XF86AudioMicMute exec --no-startup-id ponymix -t source -d alsa_input.pci-0000_00_1b.0.analog-stereo toggle
-
-# Global media keys.
-bindsym XF86AudioMute exec --no-startup-id ponymix toggle
-bindsym XF86AudioLowerVolume exec --no-startup-id ponymix decrease 3
-bindsym XF86AudioRaiseVolume exec --no-startup-id ponymix increase 3
-
-bindsym XF86AudioStop exec mpc stop
-bindsym XF86AudioPlay exec mpc toggle
-bindsym XF86AudioNext exec mpc next
-bindsym XF86AudioPrev exec mpc prev
-
-bindsym XF86Launch1 exec $BROWSER
+    colors {
+        # class            border  backgnd text
+        background         #2b303b
+        separator          #2b303b
+        focused_workspace  #2b303b #2b303b #c0c5ce
+        active_workspace   #2b303b #2b303b #4f5b66
+        inactive_workspace #2b303b #2b303b #4f5b66
+        urgent_workspace   #bf616a #bf616a #eff1f5
+	}
+}
