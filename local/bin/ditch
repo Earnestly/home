@@ -1,15 +1,15 @@
 #!/bin/sh --
 # ditch - create a menu using the twitch team and stream APIs
 
-# requires awk jq curl menu mpv youtube-dl
+# requires awk jq curl bemenu mpv youtube-dl
 
 # LOCALDIR/data/ditch/streamers  list of individual streamers
 
 # If the streamers file doesn't exist then fall back on stdin.
 
 readonly argv0=ditch
-readonly data=${LOCALDIR:-$HOME/local}/data/$argv0/streamers
 readonly TMPDIR=${TMPDIR:-/tmp}
+data=${LOCALDIR:-$HOME/local}/data/$argv0/streamers
 
 # Number of entries to display in the menu.
 readonly lines=30
@@ -20,7 +20,7 @@ readonly client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
 
 # Make sure we remove the json once we're done so it doesn't interfere with
 # proceeding execution and doesn't clutter up $TMPDIR.
-trap 'rm -f -- "$TMPDIR/$argv0"-*.json' EXIT
+trap 'rm -f -- "$TMPDIR/$argv0"-????' EXIT
 
 chunkurls() {
     # Twitch allows up to a 100 streamers in a single query when the limit is
@@ -75,18 +75,17 @@ readjson() {
 # NOTE: This leaves the responsibility of multi-tasking potentially many
 #       processes to the kernel.  Neither gnu parallel(1) or xargs(1) proved to
 #       be very capable of this without complication and awkwardness, and
-#       neither were faster.
+#       neither were any faster.
 pulljson() {
     local tmp url
 
-    while read -r url; do
+    while read -r -- url; do
         if [ "$url" ]; then
-            tmp=$(mktemp -t "$argv0"-XXXX.json)
+            tmp=$(mktemp -t "$argv0"-XXXX)
             curl -sH "Client-ID: $client_id" "$url" | readjson > "$tmp" &
         fi
     done
 
-    # Wait for all our processes to end before continuing.
     wait
 }
 
@@ -111,6 +110,6 @@ fi
 chunkurls < "$data" | pulljson
 
 # Sort based on viewer count.
-column -s '│' -t "$TMPDIR/$argv0"-*.json | sort -srnk 2,2 -t '(' |\
+column -s '│' -t "$TMPDIR/$argv0"-???? | sort -srnk 2,2 -t '(' |\
     menu --ifne -l "$lines" -p 'STREAM' | stream
 exit
