@@ -1,13 +1,13 @@
-#!/bin/bash
+#!/bin/sh --
 # recoverpt - attempts to recover the partition table from the running kernel
 
 # requires awk udevadm lsblk
 
 recover_header() {
     awk -F= -v size="$1" '
-        /TABLE_TYPE/ { label = $2 }
-        /TABLE_UUID/ { label_id = $2 }
-        /DEVNAME/    { device = $2 }
+        /TABLE_TYPE/ {label = $2}
+        /TABLE_UUID/ {label_id = $2}
+        /DEVNAME/    {device = $2}
 
         END {
             print "label:", label
@@ -43,18 +43,15 @@ recover_partition() {
     }
 
     # Bail if we are dealing with device mapper devices.
-    /^DM_/                  { exit }
+    /^DM_/                  {exit}
 
-    /^DEVNAME/              { device = $2 }
-    /^ID_PART_TABLE_TYPE/   { label = $2 }
-    /^ID_PART_ENTRY_NAME/   { name = $2 }
-    /^ID_PART_ENTRY_OFFSET/ { start = $2 }
-    /^ID_PART_ENTRY_SIZE/   { size = $2 }
-    /^ID_PART_ENTRY_TYPE/   { type = $2 }
-    /^ID_PART_ENTRY_UUID/   { uuid = $2 }
-
-    # FIXME: Are these attrs available to the kernel at all?
-    # /      ?      /       { attrs = $2 }
+    /^DEVNAME/              {device = $2}
+    /^ID_PART_TABLE_TYPE/   {label = $2}
+    /^ID_PART_ENTRY_NAME/   {name = $2}
+    /^ID_PART_ENTRY_OFFSET/ {start = $2}
+    /^ID_PART_ENTRY_SIZE/   {size = $2}
+    /^ID_PART_ENTRY_TYPE/   {type = $2}
+    /^ID_PART_ENTRY_UUID/   {uuid = $2}
 
     END {
         # sfdisk doesnt want the leading 0x notation for MBR disks
@@ -66,9 +63,6 @@ recover_partition() {
         if(uuid)
             printf ", uuid=%s", toupper(uuid)
 
-        # if(attrs)
-        #     printf ", attrs=\"%s\"", attrs
-
         if(name)
             printf ", name=\"%s\"", unescape(name)
 
@@ -76,9 +70,9 @@ recover_partition() {
     }'
 }
 
-if [[ $1 == '-h' ]]; then
+if [ "$1" = -h ]; then
     cat > /dev/stderr <<!
-usage: recoverpt device
+usage: recoverpt [-h] device
 
 WARNING:
     Ensure the output of this tool is reasonably accurate as it is only a
@@ -92,8 +86,7 @@ Notes:
 
         /dev/sda1 : ..., name="...", attrs="LegacyBIOSBootable", bootable
 
-Example Usage:
-
+Example:
     Assuming we want to recover the sda device, the tool can be used in the
     following way:
 
@@ -108,8 +101,8 @@ Example Usage:
     exit
 fi
 
-if [[ ! -b $1 ]]; then
-    printf 'usage: recoverpt device\n' >&2
+if [ ! -b "$1" ]; then
+    printf 'usage: recoverpt [-h] device\n' >&2
     exit 1
 fi
 
