@@ -96,3 +96,10 @@ let neomake_verbose = 0
 " Use clang when checking C/C++ syntax.
 let g:neomake_cpp_clang_args = neomake#makers#ft#c#clang()['args'] + ['-std=c99']
 let g:neomake_cpp_clang_args = neomake#makers#ft#cpp#clang()['args'] + ['-std=c++11']
+
+" Use bsdtar for all the additional formats it supports over GNU tar.
+let g:tar_cmd = 'bsdtar'
+let g:tar_secure = 1
+
+" Tell vim about the additional file extensions we can now use.
+autocmd BufReadCmd *.iso,*.rar,*.7z call tar#Browse(expand("<amatch>"))
