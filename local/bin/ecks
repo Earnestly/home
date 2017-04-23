@@ -1,0 +1,80 @@
+#!/bin/sh --
+# ecks - dead simple combination of xinit and startx
+
+# requires Xorg xset xhost
+
+trap 'cleanup "$pid"' EXIT
+stty=$(stty -g)
+
+error() {
+    # shellcheck disable=SC2059
+    printf -- "ecks: $2" "${@:3}" >&2
+    exit "$1"
+}
+
+cleanup() {
+    if ps -o cmd= "${1:-0}"; then
+        kill "$1"
+
+        # Send SIGKILL after 10 seconds if the xserver is taking too long to
+        # terminate.
+        timeout 10 tail --pid="$1" -f /dev/null
+        
+        if [ "$?" -eq 124 ]; then
+            kill -s KILL "$1"
+        fi
+
+        # Attempt to restore the tty.
+        if [ "$stty" ]; then
+            stty "$stty"
+        else
+            stty sane
+        fi
+
+        exit
+    fi
+}
+
+if [ "$DISPLAY" ]; then
+    error 1 '%s: DISPLAY already present\n' "$DISPLAY"
+fi
+
+if ! tty=$(fgconsole); then
+    exit
+fi
+
+readonly localdir=${LOCALDIR:-$HOME/local}
+readonly logfile=$localdir/var/log/ecks/$tty
+readonly ecksrc=$localdir/cfg/ecks/ecksrc
+
+if [ ! -x "$ecksrc" ]; then
+    error 1 '%s: not found or not executable\n' "$ecksrc"
+fi
+
+mkdir -p "$localdir"/var/log/ecks
+
+# POSIX sh has no fork like rc
+/usr/lib/xorg-server/Xorg :"$tty" vt"$tty" -logfile "$logfile" -keeptty &
+pid=$!
+
+export DISPLAY=:$tty
+
+attempts=120
+until xset q > /dev/null 2>&1; do
+    if [ "$attempts" -gt 0 ]; then
+        attempts=$((attempts - 1))
+    else
+        error 1 '%s: failed to connect to the server, giving up\n' "$DISPLAY"
+    fi
+done
+
+# Give the localuser access to the Xserver using the Server Interpreted method
+# (see Xsecurity(7)) which uses my user's UID via SO_PEERCRED to mediate access
+# to the Xserver socket (/tmp/.X11-unix/X...).
+xhost +si:localuser:"$USER"
+
+if ! "$ecksrc"; then
+    exit
+fi
+
+cleanup "$pid"
