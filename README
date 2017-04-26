@@ -46,7 +46,7 @@ ASSUMPTIONS
     this point.
 
   - The Xorg server is started with a custom script.
-    <https://github.com/Earnestly/dotfiles/blob/master/local/bin/sx>
+    <https://github.com/Earnestly/dotfiles/blob/master/local/bin/ecks>
 
   - The system-config package is installed.
     <https://github.com/Earnestly/pkgbuilds/tree/master/system-config>
