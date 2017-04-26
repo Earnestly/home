@@ -4,7 +4,8 @@
 # requires Xorg xset xhost
 
 trap 'cleanup "$pid"' EXIT
-stty=$(stty -g)
+
+readonly stty=$(stty -g)
 
 error() {
     # shellcheck disable=SC2059
@@ -13,52 +14,65 @@ error() {
 }
 
 cleanup() {
-    if ps -o cmd= "${1:-0}"; then
-        kill "$1"
+    kill "$1"
 
-        # Send SIGKILL after 10 seconds if the xserver is taking too long to
-        # terminate.
-        timeout 10 tail --pid="$1" -f /dev/null
-        
-        if [ "$?" -eq 124 ]; then
-            kill -s KILL "$1"
-        fi
+    # Send SIGKILL after 10 seconds if the xserver is taking too long to
+    # terminate.
+    timeout 10 tail --pid="$1" -f /dev/null
 
-        # Attempt to restore the tty.
-        if [ "$stty" ]; then
-            stty "$stty"
-        else
-            stty sane
-        fi
+    case $? in
+        124) kill -s KILL "$1"
+    esac
 
-        exit
+    if ! stty "$stty"; then
+        stty sane
     fi
+
+    xauth remove :"$tty"
+
+    exit
 }
+
+readonly localdir=${LOCALDIR:-$HOME/local}
+
+readonly cfgdir=$localdir/cfg/ecks
+readonly logdir=$localdir/var/log/ecks
+readonly datadir=$localdir/data/ecks
+
+readonly ecksrc=$cfgdir/ecksrc
+readonly XAUTHORITY=$datadir/xauthority
+
+mkdir -p "$cfgdir" "$logdir" "$datadir"
 
 if [ "$DISPLAY" ]; then
     error 1 '%s: DISPLAY already present\n' "$DISPLAY"
+fi
+
+if [ ! -x "$ecksrc" ]; then
+    error 1 '%s: not found or not executable\n' "$ecksrc"
 fi
 
 if ! tty=$(fgconsole); then
     exit
 fi
 
-readonly localdir=${LOCALDIR:-$HOME/local}
-readonly logfile=$localdir/var/log/ecks/$tty
-readonly ecksrc=$localdir/cfg/ecks/ecksrc
-
-if [ ! -x "$ecksrc" ]; then
-    error 1 '%s: not found or not executable\n' "$ecksrc"
+if [ ! -f "$XAUTHORITY" ]; then
+    # shellcheck disable=SC2188
+    > "$XAUTHORITY"
 fi
 
-mkdir -p "$localdir"/var/log/ecks
+export XAUTHORITY
 
-# POSIX sh has no fork like rc
-/usr/lib/xorg-server/Xorg :"$tty" vt"$tty" -logfile "$logfile" -keeptty &
-pid=$!
+# NOTE: Clobbers existing entries.
+xauth add :"$tty" MIT-MAGIC-COOKIE-1 "$(mcookie)"
+
+/usr/lib/xorg-server/Xorg :"$tty" vt"$tty" -logfile "$logdir"/"$tty" \
+    -auth "$XAUTHORITY" -keeptty & pid=$!
 
 export DISPLAY=:$tty
 
+# Wait for the xserver to become available before continuing.
+# nb. This is the same logic xinit(1) uses.
 attempts=120
 until xset q > /dev/null 2>&1; do
     if [ "$attempts" -gt 0 ]; then
@@ -68,13 +82,10 @@ until xset q > /dev/null 2>&1; do
     fi
 done
 
-# Give the localuser access to the Xserver using the Server Interpreted method
-# (see Xsecurity(7)) which uses my user's UID via SO_PEERCRED to mediate access
-# to the Xserver socket (/tmp/.X11-unix/X...).
-xhost +si:localuser:"$USER"
-
 if ! "$ecksrc"; then
     exit
 fi
 
-cleanup "$pid"
+case $(ps -o comm= "$pid") in
+    Xorg) cleanup "$pid"
+esac
