@@ -5,8 +5,6 @@
 
 # LOCALDIR/data/ditch/streamers  list of individual streamers
 
-# If the streamers file doesn't exist then fall back on stdin.
-
 readonly argv0=ditch
 readonly TMPDIR=${TMPDIR:-/tmp}
 data=${LOCALDIR:-$HOME/local}/data/$argv0/streamers
@@ -33,7 +31,7 @@ chunkurls() {
     }
 
     NF < 1 {
-        noinput=1
+        noinput = 1
         exit
     }
 
@@ -44,7 +42,7 @@ chunkurls() {
     (NR % interval){
         ORS=","
         print $0
-        i++
+        ++i
     }
 
     !(NR % interval){
@@ -63,13 +61,8 @@ chunkurls() {
 }
 
 readjson() {
-    # Using '│' as a marker here for column to pretty print the results in
-    # columns, assuming not many people use this particular sentinel in their
-    # titles.  From experience this hasn't been the case.  In either case it
-    # won't break functionality as only the first word is needed which itself
-    # is guaranteed to have no spaces or high unicode plane codepoints.
     jq -r '.streams[] |
-          "\(.channel.name)│\(.channel.game)│(\(.viewers)) \(.channel.status)"'
+           [.channel.name, .channel.game, .viewers, .channel.status] | @tsv'
 }
 
 # NOTE: This leaves the responsibility of multi-tasking potentially many
@@ -79,7 +72,7 @@ readjson() {
 pulljson() {
     local tmp url
 
-    while read -r -- url; do
+    while read -r url; do
         if [ "$url" ]; then
             tmp=$(mktemp -t "$argv0"-XXXX)
             curl -sH "Client-ID: $client_id" "$url" | readjson > "$tmp" &
@@ -100,7 +93,7 @@ stream() {
     done
 }
 
-if [ ! -s "$data" ] || [ "$1" = '-' ]; then
+if [ ! -s "$data" ]; then
     data=/dev/stdin
 fi
 
@@ -110,6 +103,6 @@ fi
 chunkurls < "$data" | pulljson
 
 # Sort based on viewer count.
-column -s '│' -t "$TMPDIR/$argv0"-???? | sort -srnk 2,2 -t '(' |\
+sort -t '	' -nrk3,3 "$TMPDIR/$argv0"-???? | column -s '	' -o ' ' -t |\
     menu --ifne -l "$lines" -p 'STREAM' | stream
 exit
