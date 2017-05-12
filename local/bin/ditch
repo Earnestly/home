@@ -3,22 +3,14 @@
 
 # requires awk jq curl bemenu mpv youtube-dl
 
-# LOCALDIR/data/ditch/streamers  list of individual streamers
-
 readonly argv0=ditch
-readonly TMPDIR=${TMPDIR:-/tmp}
-data=${LOCALDIR:-$HOME/local}/data/$argv0/streamers
 
-# Number of entries to display in the menu.
+# Number of entries to display in the menu before scrolling.
 readonly lines=30
 
-# I don't care about making these API keys public, use it if you want.
+# Feel free to use these API keys.
 # Backup: jzkbprff40iqj646a697cyrvl0zt2m6 (youtube-dl)
 readonly client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
-
-# Make sure we remove the json once we're done so it doesn't interfere with
-# proceeding execution and doesn't clutter up $TMPDIR.
-trap 'rm -f -- "$TMPDIR/$argv0"-????' EXIT
 
 chunkurls() {
     # Twitch allows up to a 100 streamers in a single query when the limit is
@@ -30,12 +22,12 @@ chunkurls() {
         i = 1
     }
 
-    NF < 1 {
+    NF < 1{
         noinput = 1
         exit
     }
 
-    i == 1 {
+    i == 1{
         printf "https://api.twitch.tv/kraken/streams?channel="
     }
 
@@ -60,29 +52,34 @@ chunkurls() {
     }'
 }
 
-readjson() {
-    jq -r '.streams[] |
-           [.channel.name, .channel.game, .viewers, .channel.status] | @tsv'
-}
-
 # NOTE: This leaves the responsibility of multi-tasking potentially many
-#       processes to the kernel.  Neither gnu parallel(1) or xargs(1) proved to
-#       be very capable of this without complication and awkwardness, and
+#       processes to the kernel.  Neither gnu parallel(1) or xargs(1) proved
+#       to be very capable of this without complication and awkwardness, and
 #       neither were any faster.
 pulljson() {
-    local tmp url
+    # shellcheck disable=SC2039
+    local url
 
     while read -r url; do
         if [ "$url" ]; then
-            tmp=$(mktemp -t "$argv0"-XXXX)
-            curl -sH "Client-ID: $client_id" "$url" | readjson > "$tmp" &
+            curl -sH "Client-ID: $client_id" "$url" | readjson &
         fi
     done
 
     wait
 }
 
+readjson() {
+    jq -r '.streams[] |
+           [.viewers, .channel.name, .channel.game, .channel.status] | @tsv'
+}
+
+viewsort() {
+    sort -t '	' -nr | cut -f 1 --complement | column -ts '	'
+}
+
 stream() {
+    # shellcheck disable=SC2039
     local streamer
 
     while read -r streamer _; do
@@ -93,16 +90,4 @@ stream() {
     done
 }
 
-if [ ! -s "$data" ]; then
-    data=/dev/stdin
-fi
-
-# By splitting the pipeline in two we can create all our pre-formatted files in
-# parallel in one half and do all the rendering and selection handling in the
-# second without complication.
-chunkurls < "$data" | pulljson
-
-# Sort based on viewer count.
-sort -t '	' -nrk3,3 "$TMPDIR/$argv0"-???? | column -s '	' -o ' ' -t |\
-    menu --ifne -l "$lines" -p 'STREAM' | stream
-exit
+chunkurls | pulljson | viewsort | menu --ifne -l "$lines" -p 'STREAM' | stream

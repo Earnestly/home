@@ -140,7 +140,7 @@ mode "RESIZE MODE" {
 bindsym $mod+r mode "RESIZE MODE"
 
 mode "MENU MODE" {
-    bindsym d exec --no-startup-id ditch; mode "default"
+    bindsym d exec --no-startup-id ditch < ~/local/data/ditch/streamers; mode "default"
     bindsym s exec --no-startup-id switch; mode "default"
     bindsym w exec --no-startup-id dwall; mode "default"
     bindsym y exec --no-startup-id dclip; mode "default"
