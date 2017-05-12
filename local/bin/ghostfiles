@@ -1,5 +1,7 @@
-#!/bin/bash
+#!/bin/bash --
 # ghostfiles - track ghostfiles
+
+# requires pacman
 
 # A word on usage: This script simply creates a list of all unowned files on
 # the / filesystem.  After the user has manually validated the list the command
@@ -16,22 +18,23 @@ readonly latest=$datadir/latest
 exclude=(-path /var/cache -o -path /var/lib/pacman -o -path /var/log/journal)
 
 findorphans() {
-    # pacman -q doesn't suppress the error message attached to the file when
-    # used with -Qo, so we capture stderr and remove the messages in post.
+    # NOTE: pacman -q doesn't suppress the error message attached to the file
+    #       when used with -Qo, so we capture stderr and remove the messages in
+    #       post with cut.
     sudo find / -xdev \( "${exclude[@]}" \) -prune -o -print |\
-        sudo pacman -Qo - 2>&1 1>&- | sed 's/^error: No package owns //'
+        sudo pacman -Qo - 2>&1 > /dev/null | cut -d ' ' -f 5-
 }
 
-mkdir -p "$datadir"
+mkdir -p -- "$datadir"
 
 if [[ ! -s $known ]]; then
-    printf 'Generating %s, this may take awhile\n' "$known" >&2
+    printf 'generating %s, this may take awhile\n' "$known" >&2
     findorphans > "$known"
-    printf 'Review %s\n' "$known" >&2
+    printf 'review %s\n' "$known" >&2
     exit
 fi
 
-printf 'Generating %s for comparison with %s\n' "$latest" "$known" >&2
+printf 'generating %s for comparison with %s\n' "$latest" "$known" >&2
 
 findorphans > "$latest"
-grep -Fxvf "$known" "$latest"
+grep -Fxvf -- "$known" "$latest"
