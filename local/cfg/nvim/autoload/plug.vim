@@ -447,11 +447,15 @@ function! plug#load(...)
     let s = len(unknowns) > 1 ? 's' : ''
     return s:err(printf('Unknown plugin%s: %s', s, join(unknowns, ', ')))
   end
-  for name in a:000
-    call s:lod([name], ['ftdetect', 'after/ftdetect', 'plugin', 'after/plugin'])
-  endfor
-  call s:dobufread(a:000)
-  return 1
+  let unloaded = filter(copy(a:000), '!get(s:loaded, v:val, 0)')
+  if !empty(unloaded)
+    for name in unloaded
+      call s:lod([name], ['ftdetect', 'after/ftdetect', 'plugin', 'after/plugin'])
+    endfor
+    call s:dobufread(unloaded)
+    return 1
+  end
+  return 0
 endfunction
 
 function! s:remove_triggers(name)
@@ -575,7 +579,7 @@ function! s:infer_properties(name, repo)
       let uri = repo
     else
       if repo !~ '/'
-        let repo = 'vim-scripts/'. repo
+        throw printf('Invalid argument: %s (implicit `vim-scripts'' expansion is deprecated)', repo)
       endif
       let fmt = get(g:, 'plug_url_format', 'https://git::@github.com/%s.git')
       let uri = printf(fmt, repo)
