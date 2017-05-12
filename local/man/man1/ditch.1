@@ -1,0 +1,42 @@
+.TH ditch 1 2017-05-12 ditch
+
+.SH NAME
+ditch \- generate list of online twitch streamers and play streams
+
+.SH SYNOPSIS
+.B ditch
+
+.SH DESCRIPTION
+.B ditch
+is a filter that reads a list of streamer names from stdin.  It converts these
+names into a list of online streamers and presents a menu from which selections
+are provided to
+.B mpv
+for streaming.
+
+.SH EXIT STATUS
+.B ditch
+usually returns
+.B zero
+even if the provided streamer does not exist.  Instead streamer names are
+printed one per line if valid.
+
+.SH NOTES
+The tool
+.B ~/local/data/ditch/t2s
+can be used to create a list of streamers pulled from a list of teams.
+
+.SH EXAMPLE
+.nf
+printf draqu_ | ditch
+.fi
+
+.nf
+ditch < ~/local/data/ditch/streamers
+.fi
+
+.SH SEE ALSO
+.BR curl (1),
+.BR jq (1),
+.BR mpv (1),
+.BR youtube-dl (1)
