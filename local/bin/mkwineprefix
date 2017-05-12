@@ -5,7 +5,7 @@
 
 # Unlinks all directories pointing at the users home, optionally remaps z: to
 # /mnt instead of / and disables winemenubuilder to prevent .desktop/mime
-# pollution.
+# generation.
 
 # TODO complete a mechanism to load external registery snippets
 
@@ -13,17 +13,17 @@ readonly argv0=mkwineprefix
 
 usage() {
     cat <<!
-usage: mkwineprefix [-a arch] [-m] [-g] [-r] [-h] prefix
+usage: $argv0 [-a arch] [-m] [-g] [-r] [-h] prefix
 
 options
-    -a arch  Architecture, win32 or win64 (Default: win32)
-    -m       Enable Mono installation
-    -g       Enable Gecko installation
-    -r       Remap z: to /mnt instead of /
-    -h       This help message
+    -a arch  architecture, win32 or win64 (default: win32)
+    -m       enable mono installation
+    -g       enable gecko installation
+    -r       remap z: to /mnt instead of /
+    -h       this help message
 
 prefix
-    The path to the prefix, pwd prepended if not absolute.
+    The path to the prefix, the pwd is prepended if not absolute
 !
 }
 
