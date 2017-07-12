@@ -18,14 +18,25 @@ awk -v hz="$hz" -v elapsed="$elapsed" 'END {
     sutime = $17 / hz
     runtime = elapsed
 
+    days = runtime / 86400
+    runtime = runtime % 86400
+    hours = runtime / 3600
+    minutes = (runtime % 3600) / 60
+    seconds = runtime % 60
+
+    if(days > 0)
+        uptime = sprintf("%02d days %02d:%02d:%02d", days, hours, minutes, seconds)
+    else
+        uptime = sprintf("%02d:%02d:%02d", hours, minutes, seconds)
+
     total_cpu_time = utime + stime + cutime + cstime
 
-    perc_used = (total_cpu_time / runtime) * 100
-    userspace_perc = ((utime + cutime) / runtime) * 100
-    kernelspace_perc = ((stime + cstime) / runtime) * 100
+    perc_used = (total_cpu_time / elapsed) * 100
+    userspace_perc = ((utime + cutime) / elapsed) * 100
+    kernelspace_perc = ((stime + cstime) / elapsed) * 100
 
-    printf "Process uptime            %s\n", strftime("%H:%M:%S", runtime, 1)
-    printf "Overall CPU usage         %s %.3f%%\n", strftime("%H:%M:%S", total_cpu_time , 1), perc_used
-    printf "Time spent in userspace   %s %.3f%%\n", strftime("%H:%M:%S", utime + cutime / hz, 1), userspace_perc
-    printf "Time spent in kernelspace %s %.3f%%\n", strftime("%H:%M:%S", stime + cstime / hz, 1), kernelspace_perc
+    printf "process uptime            %s\n", uptime
+    printf "overall cpu usage         %s %.3f%%\n", strftime("%T", total_cpu_time , 1), perc_used
+    printf "time spent in userspace   %s %.3f%%\n", strftime("%T", utime + cutime / hz, 1), userspace_perc
+    printf "time spent in kernelspace %s %.3f%%\n", strftime("%T", stime + cstime / hz, 1), kernelspace_perc
 }' /proc/"$pid"/stat
