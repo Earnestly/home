@@ -1,7 +1,15 @@
-#!/bin/bash
+#!/bin/sh --
+# i3status-conky
+
+# requires LOCALDIR conky
+
+readonly host=$(hostname)
+readonly LOCALDIR=${LOCALDIR:-$HOME/local}
+
 printf '{"version":1}[[],'
-if [[ -f $LOCALDIR/cfg/conky/conkyrc.$HOSTNAME ]]; then
-    exec conky -c "$LOCALDIR/cfg/conky/conkyrc.$HOSTNAME"
+
+if [ -f "$LOCALDIR"/cfg/conky/conkyrc."$host" ]; then
+    exec conky -c "$LOCALDIR"/cfg/conky/conkyrc."$host"
 else
-    printf '{"full_text":"no conkyrc.%s", "color":"#bf616a"}],' "$HOSTNAME"
+    printf '{"full_text":"no conkyrc.%s", "color":"#bf616a"}],' "$host"
 fi
