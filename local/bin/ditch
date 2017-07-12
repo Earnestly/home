@@ -3,6 +3,9 @@
 
 # requires awk jq curl bemenu mpv youtube-dl
 
+# POSIX sh with local
+# shellcheck disable=SC2039
+
 readonly argv0=ditch
 
 # Number of entries to display in the menu before scrolling.
@@ -57,7 +60,6 @@ chunkurls() {
 #       to be very capable of this without complication and awkwardness, and
 #       neither were any faster.
 pulljson() {
-    # shellcheck disable=SC2039
     local url
 
     while read -r url; do
@@ -79,7 +81,6 @@ viewsort() {
 }
 
 stream() {
-    # shellcheck disable=SC2039
     local streamer
 
     while read -r streamer _; do
