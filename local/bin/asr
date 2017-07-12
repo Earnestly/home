@@ -3,6 +3,9 @@
 
 # requires git expac pacman pacutils
 
+# POSIX with local keyword
+# shellcheck disable=SC2039
+
 readonly argv0=asr
 
 error() {
@@ -16,7 +19,7 @@ clone() {
     set -- 'git://projects.archlinux.org/svntogit/packages.git' \
            'git://projects.archlinux.org/svntogit/community.git'
 
-    for repo in "${@}"; do
+    for repo in "$@"; do
         # Determine which repository the package exists in.
         if git ls-remote --exit-code "$repo" refs/heads/packages/"$pkg"; then
             git clone -nb packages/"$pkg" --single-branch "$repo" "$pkg"
