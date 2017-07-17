@@ -70,10 +70,11 @@ export DISPLAY=:$tty
 
 # Wait for the xserver to become available before continuing.
 # NOTE: This is the same logic xinit(1) uses.
-attempts=120
+attempts=60
 until xset q > /dev/null 2>&1; do
     if [ "$attempts" -gt 0 ]; then
         attempts=$((attempts - 1))
+        sleep 1
     else
         error 1 '%s: failed to connect to the server, giving up\n' "$DISPLAY"
     fi
