@@ -1,29 +1,34 @@
 #!/bin/sh --
-# t2s - generate streamer ids from a twitch team
+# n2i - convert twitch user names to channel ids
 
-# requires jq curl
+# requires jq curl xargs sed
 
 # POSIX sh with local
 # shellcheck disable=SC2039
 
-readonly argv0=t2i
+readonly argv0=n2i
 
 # Feel free to use these API keys.
 # Backup: jzkbprff40iqj646a697cyrvl0zt2m6 (youtube-dl)
 readonly client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
 readonly client_version=application/vnd.twitchtv.v5+json
 
+chunkurls() {
+    # Twitch only allows up to 100 logins to be specified per request.
+    xargs -n 100 | sed 's|^|https://api.twitch.tv/kraken/users?login=|;s| |,|g'
+}
+
 # NOTE: This leaves the responsibility of multi-tasking potentially many
 #       processes to the kernel.  Neither gnu parallel(1) or xargs(1) proved
 #       to be very capable of this without complication and awkwardness, and
 #       neither were any faster.
 pulljson() {
-    local team
+    local url
 
-    while read -r team; do
-        if [ "$team" ]; then
+    while read -r url; do
+        if [ "$url" ]; then
             curl -sH "Accept: $client_version" -H "Client-ID: $client_id" \
-                https://api.twitch.tv/kraken/teams/"$team" | readjson &
+                "$url" | readjson &
         fi
     done
 
@@ -34,4 +39,4 @@ readjson() {
     jq -r '.users[] | ._id'
 }
 
-pulljson
+chunkurls | pulljson

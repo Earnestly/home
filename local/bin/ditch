@@ -14,6 +14,7 @@ readonly lines=30
 # Feel free to use these API keys.
 # Backup: jzkbprff40iqj646a697cyrvl0zt2m6 (youtube-dl)
 readonly client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
+readonly client_version=application/vnd.twitchtv.v5+json
 
 chunkurls() {
     # Twitch allows up to a 100 streamers in a single query when the limit is
@@ -64,7 +65,7 @@ pulljson() {
 
     while read -r url; do
         if [ "$url" ]; then
-            curl -sH "Client-ID: $client_id" "$url" | readjson &
+            curl -sH "Accept: $client_version" -H "Client-ID: $client_id" "$url" | readjson &
         fi
     done
 
