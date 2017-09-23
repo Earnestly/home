@@ -17,10 +17,12 @@ call plug#begin(pkgdir)
     Plug 'tpope/vim-fugitive'
     Plug 'tpope/vim-surround'
     Plug 'tpope/vim-commentary'
+    Plug 'keith/tmux.vim'
     Plug 'alerque/vim-sile', {'for': 'sile'}
     Plug 'weakish/rcshell.vim', {'for': 'rc'}
     Plug 'jakwings/vim-pony', {'for': 'pony'}
     Plug 'rust-lang/rust.vim', {'for': 'rust'}
+    Plug 'vim-erlang/vim-erlang-runtime', {'for': 'erlang'}
 
     " Various local packages.
     Plug pkgdir . '/vim-ada', {'for': 'ada'}
@@ -36,6 +38,7 @@ unlet pkgdir
 map Q q:
 
 " Settings.
+set list
 set cc=80
 set title
 set number
@@ -61,14 +64,14 @@ set expandtab
 
 if &t_Co > 255 || has('gui_running')
     set background=dark
-    " set termguicolors
+    set termguicolors
     let base16colorspace=256
     colorscheme base16-yesterdaynight
 
     " By default my theme highlights the matching bracket with a lighter
     " colour, while darkening the cursor, causing me endless confusion.  Using
     " standout reverses the effect.
-    hi MatchParen cterm=standout
+    hi MatchParen gui=standout
 endif
 
 set smartcase
