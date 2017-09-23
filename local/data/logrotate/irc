@@ -1,6 +1,0 @@
-compress
-missingok
-notifempty
-copytruncate
-
-"~/local/cfg/weechat/logs/*/*.log" {}
