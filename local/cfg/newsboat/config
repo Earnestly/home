@@ -1,4 +1,4 @@
-# HOME/local/cfg/newsbeuter/config
+# LOCALDIR/cfg/newsboat/config
 
 auto-reload yes
 confirm-exit yes
@@ -10,9 +10,9 @@ mark-as-read-on-hover yes
 notify-beep yes
 notify-always yes
 notify-xterm yes
-notify-format "newsbeuter: %f/%n"
+notify-format "newsboat: %f/%n"
 
-browser "web %u &> /dev/null &"
+browser "web %u &"
 
 # Keybinds
 bind-key h left
@@ -33,7 +33,7 @@ color listnormal_unread blue black bold
 color background white black
 
 # Macros
-macro q set browser "mpv --loop-file --cache-file=TMP %u &> /dev/null &" ; open-in-browser ; set browser "web %u &> /dev/null &"
+macro q set browser "mpv-url %u &" ; open-in-browser ; set browser "web %u &"
 
 # Open 4th url in an article
 macro i open ; four ; quit
