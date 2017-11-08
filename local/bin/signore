@@ -1,0 +1,15 @@
+#!/bin/perl
+# signore - start a process with an ignored signal
+
+use strict;
+use warnings;
+
+my $signal = shift;
+
+if (! exists $SIG{$signal}) {
+    die("$signal: unknown signal\n");
+}
+
+$SIG{$signal} = "IGNORE";
+
+exec @ARGV;
