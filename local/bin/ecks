@@ -1,10 +1,10 @@
 #!/bin/sh --
 # ecks - dead simple combination of xinit and startx
 
-# requires Xorg xset xauth timeout
+# requires Xorg xset xauth timeout signore
 
 trap 'cleanup "$pid"' EXIT
-readonly stty=$(stty -g)
+trap 'ready=1' USR1
 
 error() {
     # shellcheck disable=SC2059
@@ -34,6 +34,14 @@ cleanup() {
     exit
 }
 
+if ! readonly stty=$(stty -g); then
+    exit
+fi
+
+if ! readonly tty=$(fgconsole); then
+    exit
+fi
+
 readonly localdir=${LOCALDIR:-$HOME/local}
 
 readonly cfgdir=$localdir/cfg/ecks
@@ -46,42 +54,35 @@ readonly XAUTHORITY=$datadir/xauthority
 mkdir -p "$cfgdir" "$logdir" "$datadir"
 
 if [ "$DISPLAY" ]; then
-    error 1 '%s: DISPLAY already present\n' "$DISPLAY"
+    error 1 '%s: DISPLAY already set\n' "$DISPLAY"
 fi
 
 if [ ! -x "$ecksrc" ]; then
-    error 1 '%s: not found or not executable\n' "$ecksrc"
-fi
-
-if ! readonly tty=$(fgconsole); then
-    exit
+    error 1 '%s: not executable\n' "$ecksrc"
 fi
 
 touch "$XAUTHORITY"
 export XAUTHORITY
 
-# NOTE: Clobbers existing entries.
+# Clobber existing entries.
 xauth add :"$tty" MIT-MAGIC-COOKIE-1 "$(mcookie)"
 
-/usr/lib/xorg-server/Xorg :"$tty" vt"$tty" -logfile "$logdir"/"$tty" \
-    -auth "$XAUTHORITY" -keeptty & pid=$!
+# The Xorg process will notice SIGUSR1 being set to SIG_IGN and issue its own
+# SIGUSR1 back to us when ready to accept connections.  So we listen for the
+# returning SIGUSR1 as an indication to continue.
+signore USR1 /usr/lib/xorg-server/Xorg :"$tty" \
+    -keeptty vt"$tty" \
+    -logfile "$logdir/$tty" \
+    -auth "$XAUTHORITY" &
+
+pid=$!
+
+until [ "${ready:-0}" -eq 1 ]; do
+    sleep 1
+done
 
 export DISPLAY=:$tty
 
-# Wait for the xserver to become available before continuing.
-# NOTE: This is the same logic xinit(1) uses.
-attempts=60
-until xset q > /dev/null 2>&1; do
-    if [ "$attempts" -gt 0 ]; then
-        attempts=$((attempts - 1))
-        sleep 1
-    else
-        error 1 '%s: failed to connect to the server, giving up\n' "$DISPLAY"
-    fi
-done
+"$ecksrc"
 
-if ! "$ecksrc"; then
-    exit
-fi
-
-cleanup "$pid"
+exit
