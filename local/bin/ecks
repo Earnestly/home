@@ -3,6 +3,13 @@
 
 # requires Xorg xset xauth timeout
 
+# I'm willing to take advantage of errexit for this script as roughly 85% of
+# the error checking would take the form of:
+#   if ! command; then
+#       exit
+#   fi
+set -o errexit
+
 error() {
     # To expose printf's DSL we will need to use a positional argument for the
     # format string.
@@ -12,6 +19,10 @@ error() {
 }
 
 cleanup() {
+    # Return to conventional flow control here as we need to continue
+    # regardless of failure.
+    set +o errexit
+
     if [ "$(ps -o comm= "$1")" = Xorg ]; then
         kill "$1"
 
@@ -37,28 +48,14 @@ if [ "$DISPLAY" ]; then
     error 1 '%s: DISPLAY already set\n' "$DISPLAY"
 fi
 
-if ! readonly stty=$(stty -g); then
-    exit
-fi
+stty=$(stty -g)
+tty=$(fgconsole)
 
-if ! readonly tty=$(fgconsole); then
-    exit
-fi
+cfgdir=${XDG_CONFIG_HOME:-$HOME/.config}/ecks
+datadir=${XDG_DATA_HOME:-$HOME/.local/share}/ecks
+XAUTHORITY=${XAUTHORITY:-$cfgdir/xauthfile}
 
-readonly localdir=${LOCALDIR:-$HOME/local}
-
-readonly cfgdir=$localdir/cfg/ecks
-readonly logdir=$localdir/var/log/ecks
-readonly datadir=$localdir/data/ecks
-
-readonly ecksrc=$cfgdir/ecksrc
-readonly XAUTHORITY=$datadir/xauthority
-
-mkdir -p "$cfgdir" "$logdir" "$datadir"
-
-if [ ! -x "$ecksrc" ]; then
-    error 1 '%s: not executable\n' "$ecksrc"
-fi
+mkdir -p "$cfgdir" "$datadir"
 
 trap 'cleanup "$pid"' EXIT
 
@@ -67,13 +64,17 @@ export XAUTHORITY
 
 xauth add :"$tty" MIT-MAGIC-COOKIE-1 "$(mcookie)"
 
-# Xorg will check if SIGUSR1 was set to SIG_IGN and issue its own SIGUSR1 back
-# to the parent process when it is ready to accept connections.
-trap 'DISPLAY=:$tty "$ecksrc"' USR1
+# Xorg will check if SIGUSR1 was set to SIG_IGN in its environment and issue
+# its own SIGUSR1 back to the parent process when it is ready to accept
+# connections.  See Xserver(1).
 
+# We take advantage of this feature to launch our client directly from the
+# SIGUSR1 handler and avoid the need to poll for readiness.
+trap 'DISPLAY=:$tty "$cfgdir"/ecksrc' USR1
 (
     trap '' USR1
-    exec /usr/lib/xorg-server/Xorg :"$tty" -keeptty vt"$tty" -logfile "$logdir/$tty" -auth "$XAUTHORITY"
+    exec /usr/lib/xorg-server/Xorg :"$tty" -keeptty vt"$tty" -noreset \
+                                   -logfile "$datadir/$tty" -auth "$XAUTHORITY"
 ) & pid=$!
 
 wait
