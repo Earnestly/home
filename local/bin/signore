@@ -1,15 +1,35 @@
-#!/bin/perl
-# signore - start a process with an ignored signal
+#!/usr/bin/env perl
+# signore - run a command with specific signal disposition
 
-use strict;
 use warnings;
+use strict;
+use Getopt::Long qw(:config bundling no_ignore_case);
 
-my $signal = shift;
-
-if (! exists $SIG{$signal}) {
-    die("$signal: unknown signal\n");
+sub usage {
+    print "usage: [-h] [-l] [-d signal] [-i signal] command\n";
 }
 
-$SIG{$signal} = "IGNORE";
+my @opt_default;
+my @opt_ignore;
 
-exec @ARGV;
+GetOptions(
+    "h|help"      => sub {usage(); exit(0);},
+    "l|list"      => sub {foreach (keys %SIG) {print "$_\n"}},
+    "i|ignore=s"  => \@opt_ignore,
+    "d|default=s" => \@opt_default,
+) || exit(1);
+
+my @bad_signals = grep {!exists $SIG{$_}} (@opt_default, @opt_ignore);
+
+foreach (@bad_signals) {
+    print STDERR "$_: unknown signal\n";
+}
+
+if (@bad_signals) {
+    die("try -l for a list of known signals\n");
+}
+
+$SIG{$_} = "IGNORE" for @opt_ignore;
+$SIG{$_} = "DEFAULT" for @opt_default;
+
+exec(@ARGV);
