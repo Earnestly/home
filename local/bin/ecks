@@ -1,12 +1,11 @@
 #!/bin/sh --
-# ecks - dead simple combination of xinit and startx
+# ecks - combination of xinit and startx
 
-# requires Xorg xset xauth timeout signore
-
-trap 'cleanup "$pid"' EXIT
-trap 'ready=1' USR1
+# requires Xorg xset xauth timeout
 
 error() {
+    # To expose printf's DSL we will need to use a positional argument for the
+    # format string.
     # shellcheck disable=SC2059
     printf -- "ecks: $2" "${@:3}" >&2
     exit "$1"
@@ -34,6 +33,10 @@ cleanup() {
     exit
 }
 
+if [ "$DISPLAY" ]; then
+    error 1 '%s: DISPLAY already set\n' "$DISPLAY"
+fi
+
 if ! readonly stty=$(stty -g); then
     exit
 fi
@@ -53,10 +56,6 @@ readonly XAUTHORITY=$datadir/xauthority
 
 mkdir -p "$cfgdir" "$logdir" "$datadir"
 
-if [ "$DISPLAY" ]; then
-    error 1 '%s: DISPLAY already set\n' "$DISPLAY"
-fi
-
 if [ ! -x "$ecksrc" ]; then
     error 1 '%s: not executable\n' "$ecksrc"
 fi
@@ -64,25 +63,14 @@ fi
 touch "$XAUTHORITY"
 export XAUTHORITY
 
-# Clobber existing entries.
+trap 'cleanup "$pid"' EXIT
+
 xauth add :"$tty" MIT-MAGIC-COOKIE-1 "$(mcookie)"
 
-# The Xorg process will notice SIGUSR1 being set to SIG_IGN and issue its own
-# SIGUSR1 back to us when ready to accept connections.  So we listen for the
-# returning SIGUSR1 as an indication to continue.
-signore USR1 /usr/lib/xorg-server/Xorg :"$tty" \
-    -keeptty vt"$tty" \
-    -logfile "$logdir/$tty" \
-    -auth "$XAUTHORITY" &
+# Xorg will check if SIGUSR1 was set to SIG_IGN and issue its own SIGUSR1 back
+# to the parent process when it is ready to accept connections.
+trap '' USR1
+/usr/lib/xorg-server/Xorg :"$tty" -keeptty vt"$tty" -logfile "$logdir/$tty" -auth "$XAUTHORITY" & pid=$!
 
-pid=$!
-
-until [ "${ready:-0}" -eq 1 ]; do
-    sleep 1
-done
-
-export DISPLAY=:$tty
-
-"$ecksrc"
-
-exit
+trap 'DISPLAY=:$tty "$ecksrc"' USR1
+wait
