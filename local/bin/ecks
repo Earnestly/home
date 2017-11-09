@@ -60,17 +60,20 @@ if [ ! -x "$ecksrc" ]; then
     error 1 '%s: not executable\n' "$ecksrc"
 fi
 
+trap 'cleanup "$pid"' EXIT
+
 touch "$XAUTHORITY"
 export XAUTHORITY
-
-trap 'cleanup "$pid"' EXIT
 
 xauth add :"$tty" MIT-MAGIC-COOKIE-1 "$(mcookie)"
 
 # Xorg will check if SIGUSR1 was set to SIG_IGN and issue its own SIGUSR1 back
 # to the parent process when it is ready to accept connections.
-trap '' USR1
-/usr/lib/xorg-server/Xorg :"$tty" -keeptty vt"$tty" -logfile "$logdir/$tty" -auth "$XAUTHORITY" & pid=$!
-
 trap 'DISPLAY=:$tty "$ecksrc"' USR1
+
+(
+    trap '' USR1
+    exec /usr/lib/xorg-server/Xorg :"$tty" -keeptty vt"$tty" -logfile "$logdir/$tty" -auth "$XAUTHORITY"
+) & pid=$!
+
 wait
