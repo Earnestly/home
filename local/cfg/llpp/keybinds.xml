@@ -1,6 +1,6 @@
 <!-- LOCALDIR/cfg/llpp/keybinds.xml -->
 
-<!-- 
+<!--
      As llpp stores both configuration and cache data in llpp.conf this file is
      used to store my basic configuration without history data.  Copy this file
      to llpp.conf if you wish to use it.
@@ -18,11 +18,13 @@
     </ui-font>
 
     <defaults zoom='100'
+              brightness='0.9'
               auto-scroll-step='12'
               horizontal-scroll-step='24'
               case-insensitive-search='true'
               vertical-scrollbar-visible='false'
               horizontal-scrollbar-visible='false'
+
               uri-launcher='web &quot;%s&quot;'
               path-launcher='terminal -d &quot;%s&quot;'>
 
@@ -34,7 +36,7 @@
             <map in='ctrl-b' out='pgup'/>
 
             <map in='ctrl-[' out='esc'/>
-            <map in='ctrl-c' out='esc'/>
+            <map in='ctrl-g' out='esc'/>
         </keymap>
 
         <keymap mode='birdseye'>
