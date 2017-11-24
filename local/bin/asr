@@ -20,7 +20,6 @@ clone() {
            'git://projects.archlinux.org/svntogit/community.git'
 
     for repo in "$@"; do
-        # Determine which repository the package exists in.
         if git ls-remote --exit-code "$repo" refs/heads/packages/"$pkg"; then
             git clone -nb packages/"$pkg" --single-branch "$repo" "$pkg"
 
@@ -29,7 +28,6 @@ clone() {
         fi
     done
 
-    # No package found
     return 1
 }
 
@@ -48,32 +46,41 @@ if [ ! "$1" ]; then
 fi
 
 if ! checkout "$1"; then
-    if ! pacman -T "$1" > /dev/null; then
-        error '%s: not available in official repositories\n' "$1"
-    fi
-
     if pkgbase=$(expac -S %e "$1"); then
-        # XXX expac cannot yet be configured to only search specific
-        #     repositories so it might pass the prior pacman -T test
-        #     only to fail here.
-        if [ "$pkgbase" = "(null)" ]; then
-            error '%s: not available in official repositories\n' "$1"
+        if [ "$pkgbase" = '(null)' ]; then
+            pkgbase=$1
+
+            # As some packages simply don't have a pkgbase we should check if
+            # pacman is aware of the package as a last resort.
+            if ! pacman -Si "$1" > /dev/null 2>&1; then
+                error '%s: not available in any repository\n' "$1"
+            fi
         fi
 
-        # We got a pkgbase, so let's try checking out that package instead.
+        # expac cannot yet be configured to only search specific repositories
+        # so it might pass the prior pacman -Si check only to fail here.
+        if repo=$(expac -S %r "$pkgbase"); then
+            case $repo in
+                testing|core|extra) ;;
+                community|community-testing) ;;
+                multilib|multilib-testing) ;;
+                *) error '%s: not an unofficial repository\n' "$repo"
+            esac
+        fi
+
         if ! checkout "$pkgbase"; then
             error '%s: checkout failed\n' "$pkgbase"
         fi
     else
-        # Sometimes we might get a virtual package which requires manual user
-        # intervention as otherwise we would have to guess their intention.
+        # Sometimes we might get a virtual package which requires manual
+        # intervention as otherwise we would have to guess the user's
+        # intention.
         if satisfies=$(pacsift --sync --exact --satisfies="$1"); then
             printf -- '%s is provided by the following packages:\n' "$1" >&2
             printf -- '%s\n' "$satisfies" >&2
             exit 1
         fi
 
-        # This shouldn't be reachable.
         error '%s: package exists but unable to checkout\n' "$1"
     fi
 fi
