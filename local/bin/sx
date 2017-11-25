@@ -1,5 +1,5 @@
 #!/bin/sh --
-# ecks - combination of xinit and startx
+# sx - combination of xinit and startx
 
 # requires Xorg xset xauth timeout
 
@@ -14,7 +14,7 @@ error() {
     # To expose printf's DSL we will need to use a positional argument for the
     # format string.
     # shellcheck disable=SC2059
-    printf -- "ecks: $2" "${@:3}" >&2
+    printf -- "sx: $2" "${@:3}" >&2
     exit "$1"
 }
 
@@ -51,8 +51,8 @@ fi
 stty=$(stty -g)
 tty=$(fgconsole)
 
-cfgdir=${XDG_CONFIG_HOME:-$HOME/.config}/ecks
-datadir=${XDG_DATA_HOME:-$HOME/.local/share}/ecks
+cfgdir=${XDG_CONFIG_HOME:-$HOME/.config}/sx
+datadir=${XDG_DATA_HOME:-$HOME/.local/share}/sx
 XAUTHORITY=${XAUTHORITY:-$cfgdir/xauthfile}
 
 mkdir -p "$cfgdir" "$datadir"
@@ -70,7 +70,7 @@ xauth add :"$tty" MIT-MAGIC-COOKIE-1 "$(mcookie)"
 
 # We take advantage of this feature to launch our client directly from the
 # SIGUSR1 handler and avoid the need to poll for readiness.
-trap 'DISPLAY=:$tty "$cfgdir"/ecksrc' USR1
+trap 'DISPLAY=:$tty "$cfgdir"/sxrc' USR1
 (
     trap '' USR1
     exec /usr/lib/xorg-server/Xorg :"$tty" -keeptty vt"$tty" -noreset \
