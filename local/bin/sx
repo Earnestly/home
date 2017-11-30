@@ -44,10 +44,6 @@ cleanup() {
     exit
 }
 
-if [ "$DISPLAY" ]; then
-    error 1 '%s: DISPLAY already set\n' "$DISPLAY"
-fi
-
 stty=$(stty -g)
 tty=$(fgconsole)
 
