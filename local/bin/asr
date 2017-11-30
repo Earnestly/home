@@ -13,6 +13,10 @@ error() {
     exit 1
 }
 
+warn() {
+    printf -- "%s: $1" "$argv0" "${@:2}" >&2
+}
+
 clone() {
     local repo pkg=$1
 
@@ -24,7 +28,7 @@ clone() {
             git clone -nb packages/"$pkg" --single-branch "$repo" "$pkg"
 
             # Break out if we succeed to avoid duplicate packages being found.
-            return 0
+            return
         fi
     done
 
@@ -42,45 +46,59 @@ checkout() {
 }
 
 if [ ! "$1" ]; then
-    error 'usage: asr package\n'
+    printf 'usage: asr package\n' >&2
+    exit 1
 fi
 
+# Attempt to blindly checkout the package as this should work in the common
+# case.  The error checking is only necessary in a few occasions and so I skip
+# it until needed.
 if ! checkout "$1"; then
     if pkgbase=$(expac -S %e "$1"); then
-        if [ "$pkgbase" = '(null)' ]; then
-            pkgbase=$1
-
-            # As some packages simply don't have a pkgbase we should check if
-            # pacman is aware of the package as a last resort.
-            if ! pacman -Si "$1" > /dev/null 2>&1; then
-                error '%s: not available in any repository\n' "$1"
-            fi
+        if [ "$pkgbase" != '(null)' ]; then
+            set -- "$pkgbase"
         fi
 
         # expac cannot yet be configured to only search specific repositories
         # so it might pass the prior pacman -Si check only to fail here.
-        if repo=$(expac -S %r "$pkgbase"); then
+        if repo=$(expac -S %r "$1"); then
             case $repo in
                 testing|core|extra) ;;
                 community|community-testing) ;;
                 multilib|multilib-testing) ;;
-                *) error '%s: not an unofficial repository\n' "$repo"
+                *) error '%s: not an official repository\n' "$repo"
             esac
         fi
 
-        if ! checkout "$pkgbase"; then
-            error '%s: checkout failed\n' "$pkgbase"
+        if ! checkout "$1"; then
+            error '%s: checkout failed\n' "$1"
         fi
     else
-        # Sometimes we might get a virtual package which requires manual
-        # intervention as otherwise we would have to guess the user's
-        # intention.
-        if satisfies=$(pacsift --sync --exact --satisfies="$1"); then
-            printf -- '%s is provided by the following packages:\n' "$1" >&2
-            printf -- '%s\n' "$satisfies" >&2
-            exit 1
-        fi
+        # Sometimes we might get a virtual package.  If the package is
+        # provided by only one package then attempt a checkout.
+        # Anything greater will require user intervention as otherwise we
+        # would have to guess the intention.
 
-        error '%s: package exists but unable to checkout\n' "$1"
+        # NOTE: Any nonextant package will fall through to this branch. It
+        #       works out in the end as pacsift | wc -l will return zero for
+        #       these cases.
+        satisfies=$(pacsift --sync --exact --satisfies="$1")
+
+        case $(printf -- '%s' "$satisfies" | wc -l) in
+            0) error '%s: no such package\n' "$1"
+               ;;
+            1) warn '%s: provided by %s\n' "$1" "$satisfies"
+
+               if ! checkout "${satisfies#*/}"; then
+                   error '%s: checkout failed\n' "${satisfies#*/}"
+               fi
+
+               exit
+               ;;
+            *) warn '%s: provided by multiple packages:\n' "$1"
+               printf -- '%s\n' "$satisfies" >&2
+               exit 1
+        esac
     fi
+    error '%s: checkout failed\n' "$1"
 fi
