@@ -1,17 +1,18 @@
-#!/bin/bash
+#!/bin/sh --
 # pusage - simple attempt to breakdown the total usage of a process
 
 # I don't do any error checking.  Assumes /proc/config.gz is zipped.
-set -ue
+set -o errexit
+set -o nounset
 
-pid=$1
-read -r comm < /proc/"$pid"/comm
-elapsed=$(ps -p "$pid" -o etimes=)
-hz=$(gzip -cd /proc/config.gz | sed -n 's/^CONFIG_HZ=\(.*\)/\1/p')
+read -r comm < /proc/"$1"/comm
+elapsed=$(ps -p "$1" -o etimes=)
+hz=$(gzip -cd /proc/config.gz | sed -nr 's/^CONFIG_HZ=(.*)/\1/p')
 
-printf 'Report for %s (%d) @ %dHz\n' "$comm" "$pid" "$hz"
+printf 'report for %s (%d) @ %dHz\n' "$comm" "$1" "$hz"
 
-awk -v hz="$hz" -v elapsed="$elapsed" 'END {
+awk -v hz="$hz" -v elapsed="$elapsed" '
+END {
     utime = $14 / hz
     stime = $15 / hz
     cutime = $16 / hz
@@ -36,7 +37,7 @@ awk -v hz="$hz" -v elapsed="$elapsed" 'END {
     kernelspace_perc = ((stime + cstime) / elapsed) * 100
 
     printf "process uptime            %s\n", uptime
-    printf "overall cpu usage         %s %.3f%%\n", strftime("%T", total_cpu_time , 1), perc_used
-    printf "time spent in userspace   %s %.3f%%\n", strftime("%T", utime + cutime / hz, 1), userspace_perc
-    printf "time spent in kernelspace %s %.3f%%\n", strftime("%T", stime + cstime / hz, 1), kernelspace_perc
-}' /proc/"$pid"/stat
+    printf "overall cpu usage         %s %.3f%%\n", strftime("%T", total_cpu_time, 1), perc_used
+    printf "time spent in userspace   %s %.3f%%\n", strftime("%T", utime + cutime, 1), userspace_perc
+    printf "time spent in kernelspace %s %.3f%%\n", strftime("%T", stime + cstime, 1), kernelspace_perc
+}' /proc/"$1"/stat
