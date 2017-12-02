@@ -38,7 +38,7 @@ warn() {
 
 # We need at least one argument.
 if [ "$#" -eq 0 ]; then
-    error 1 'usage: mkwineprefix [-a arch] [-m] [-g] [-r] [-h] prefix\n'
+    error 1 'usage: %s [-a arch] [-m] [-g] [-r] [-h] prefix\n' "$argv0"
 fi
 
 while :; do

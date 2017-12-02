@@ -5,7 +5,7 @@ parse() {
     # We assume a package name cannot contain this FS.
     # The format we're parsing is:
     #   package:dependency0:dependency1:..:dependency(n)
-    awk -F : '{ 
+    awk -F : '{
         p = $1
 
         # If we find that a package contains no dependency, make it a

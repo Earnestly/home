@@ -1,7 +1,8 @@
 # LOCALDIR/cfg/i3/config
 
 # Font for window titles and bar.
-font pango: Source Sans Pro Semibold, Italic 11
+#font pango: Source Sans Pro Semibold, Italic 11
+font pango: Inter UI Medium 10.2
 
 # General settings.
 new_window pixel 2
@@ -180,10 +181,7 @@ mode "LAYOUT MODE" {
 }
 bindsym $mod+t mode "LAYOUT MODE"
 
-# Specific window management.
 for_window [class="Blender" title="Blender User Preferences"] floating enable
-
-# Fontforge floating toolboxes.
 for_window [class="fontforge" title="Layers"] floating enable
 for_window [class="fontforge" title="Tools"] floating enable
 for_window [class="fontforge" title="Point Info"] floating enable
@@ -195,7 +193,7 @@ assign [class="mpv"] 3
 assign [class="Wine"] 9
 
 bar {
-	position top
+    position top
     # status_command i3status-conky
     status_command ~/dev/shell/statusbar
 
@@ -207,5 +205,5 @@ bar {
         active_workspace   #2b303b #2b303b #4f5b66
         inactive_workspace #2b303b #2b303b #4f5b66
         urgent_workspace   #bf616a #bf616a #eff1f5
-	}
+    }
 }

@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/bin/perl
 # signore - run a command with specific signal disposition
 
 use warnings;
@@ -6,7 +6,7 @@ use strict;
 use Getopt::Long qw(:config bundling no_ignore_case);
 
 sub usage {
-    print "usage: [-h] [-l] [-d signal] [-i signal] command\n";
+    print "usage: [-hl] [-d signal] [-i signal] command\n";
 }
 
 my @opt_default;

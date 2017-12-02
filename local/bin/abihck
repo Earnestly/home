@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash --
 # abihck - generate abi/api compliance report between two pacman packages before and after a system update
 
 # requires abi-compliance-checker api-sanity-checker ctags expac pacman makepkg
@@ -109,7 +109,7 @@ check_api_sanity() {
         -build
         -run
     )
-    
+
     if [[ -e abi/spec_types.xml ]]; then
         options+=(-st spec_types.xml)
     fi

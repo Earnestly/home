@@ -73,8 +73,7 @@ pulljson() {
 }
 
 readjson() {
-    jq -r '.streams[] |
-           [.viewers, .channel.name, .channel.game, .channel.status] | @tsv'
+    jq -r '.streams[] | [.viewers, .channel.name, .channel.game, .channel.status] | @tsv'
 }
 
 viewsort() {

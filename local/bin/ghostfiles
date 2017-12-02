@@ -28,13 +28,13 @@ findorphans() {
 mkdir -p -- "$datadir"
 
 if [[ ! -s $known ]]; then
-    printf 'generating %s, this may take awhile\n' "$known" >&2
+    printf 'generating %s...\n' "$known" >&2
     findorphans > "$known"
     printf 'review %s\n' "$known" >&2
     exit
 fi
 
-printf 'generating %s for comparison with %s\n' "$latest" "$known" >&2
+printf 'comparing %s against %s\n' "$latest" "$known" >&2
 
 findorphans > "$latest"
-grep -Fxvf -- "$known" "$latest"
+grep -Fxvf "$known" "$latest"

@@ -25,9 +25,10 @@ ini.optionxform = str
 ini.read(config)
 
 if not ini.sections():
-    sys.exit('{0}: Empty file'.format(config))
+    sys.exit('{0}: empty file'.format(config))
 
 recentfiles = ini['General']['recentFiles']
+
 urls = [u.strip('"') for u in recentfiles.split(', ')]
 
 conserve = []
@@ -38,9 +39,9 @@ for url in urls:
     if os.path.isfile(r.path):
         conserve.extend(['"' + r.scheme + '://' + r.path + '?' + r.query + '"'])
     else:
-        print('Removing entry: {0}'.format(r.path))
+        print('removing entry: {0}'.format(r.path))
 
-ini['General']['recentFiles'] = ",".join(conserve)
+ini['General']['recentFiles'] = ','.join(conserve)
 
 with open(config, 'w') as cfg:
     ini.write(cfg)
