@@ -1,5 +1,9 @@
 # LOCALDIR/cfg/qutebrowser/config.py
 
+import setproctitle
+
+setproctitle.setproctitle('qutebrowser')
+
 config.load_autoconfig = False
 
 # General
@@ -24,6 +28,8 @@ config.set('hints.chars', 'fdsartgbvecwxqyiopmnhzuljk')
 config.set('hints.scatter', False)
 config.set('hints.uppercase', True)
 
+config.set('completion.use_best_match', True)
+
 # Colours
 color_background = '#343d46'
 color_foreground = '#65737e'
@@ -45,7 +51,7 @@ config.set('colors.tabs.indicator.stop', color_background)
 config.set('colors.tabs.indicator.error', color_red)
 
 # Fonts
-font_ui = '10pt Interface'
+font_ui = '10pt Inter UI'
 font_mono = '11.5pt Inconsolatazi4'
 
 config.set('fonts.tabs', font_ui)
@@ -54,16 +60,17 @@ config.set('fonts.completion.entry', font_mono)
 config.set('fonts.completion.category', font_ui)
 
 # Key Bindings
-config.unbind('O')
-
+config.bind('t', 'set-cmd-text -s :open -t')
+config.bind('O', 'set-cmd-text :open {url}')
 config.bind('<Alt-h>', 'tab-prev')
 config.bind('<Alt-l>', 'tab-next')
+
+config.bind('yy', 'yank -s')
+config.bind('p', 'open -- {primary}')
+config.bind('P', 'open -t -- {primary}')
 
 config.bind('U', 'spawn -vd mpv-url {url}')
 config.bind(';q', 'hint links spawn -vd mpv-url {hint-url}')
 
-config.bind('t', 'set-cmd-text -s :open -t')
-config.bind('O', 'set-cmd-text :open {url}')
-
-config.bind('<Alt-x>', 'set -p content.javascript.enabled!')
-config.bind('<Ctrl-Shift-p>', 'set -p content.private_browsing!')
+config.bind('<Alt-x>', 'config-cycle -p content.javascript.enabled')
+config.bind('<Ctrl-Shift-p>', 'config-cycle -p content.private_browsing')
