@@ -6,8 +6,6 @@
 # POSIX sh with local
 # shellcheck disable=SC2039
 
-readonly argv0=t2i
-
 # Feel free to use these API keys.
 # Backup: jzkbprff40iqj646a697cyrvl0zt2m6 (youtube-dl)
 readonly client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
@@ -22,8 +20,7 @@ pulljson() {
 
     while read -r team; do
         if [ "$team" ]; then
-            curl -sH "Accept: $client_version" -H "Client-ID: $client_id" \
-                https://api.twitch.tv/kraken/teams/"$team" | readjson &
+            curl -sH "Accept: $client_version" -H "Client-ID: $client_id"  https://api.twitch.tv/kraken/teams/"$team" | readjson &
         fi
     done
 
