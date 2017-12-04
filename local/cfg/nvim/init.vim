@@ -11,7 +11,7 @@ let pkgdir = localdir . '/data/nvim/packages'
 call mkdir(pkgdir, "p")
 
 call plug#begin(pkgdir)
-    Plug 'benekastah/neomake'
+    Plug 'neomake/neomake'
     autocmd! BufWritePost * Neomake
 
     Plug 'tpope/vim-fugitive'
@@ -27,7 +27,9 @@ call plug#begin(pkgdir)
     " Various local packages.
     Plug pkgdir . '/vim-ada', {'for': 'ada'}
     Plug pkgdir . '/vim-ktap', {'for': 'ktap'}
+    Plug pkgdir . '/vim-spar', {'for': 'spar'}
     Plug pkgdir . '/vim-draft', {'for': 'draft'}
+    Plug pkgdir . '/vim-myrddin', {'for': 'myr'}
     Plug pkgdir . '/vim-promela', {'for': 'promela'}
     Plug pkgdir . '/vim-ats', {'for': ['dats', 'sats']}
 call plug#end()
