@@ -1,5 +1,5 @@
 #!/bin/sh --
-# mkwineprefix - creates a sane wine prefix or updates it
+# mkwineprefix - creates a wine prefix or updates it
 
 # requires wine
 
@@ -13,17 +13,18 @@ readonly argv0=mkwineprefix
 
 usage() {
     cat <<!
-usage: $argv0 [-a arch] [-m] [-g] [-r] [-h] prefix
+usage: $argv0 [-mgrh] [-a winearch] prefix
 
 options
-    -a arch  architecture, win32 or win64 (default: win32)
-    -m       enable mono installation
-    -g       enable gecko installation
-    -r       remap z: to /mnt instead of /
-    -h       this help message
+    -a winearch  win32 or win64 (default: win32)
+    -m           enable mono installation
+    -g           enable gecko installation
+    -r           remap z: to /mnt instead of /
+    -h           this help message
 
 prefix
-    The path to the prefix, the pwd is prepended if not absolute
+    The path to the prefix, the current working directory is
+    prepended if not absolute
 !
 }
 
@@ -36,32 +37,25 @@ warn() {
     printf -- "%s: $1" "$argv0" "${@:2}" >&2
 }
 
-# We need at least one argument.
-if [ "$#" -eq 0 ]; then
-    error 1 'usage: %s [-a arch] [-m] [-g] [-r] [-h] prefix\n' "$argv0"
-fi
-
-while :; do
-    case $1 in
-        --) shift; break ;;
-        -a) shift; arch=$1 ;;
-        -g) with_gecko=1 ;;
-        -m) with_mono=1 ;;
-        -r) remap_z=1 ;;
-        -h) usage
-            exit
-            ;;
-        -?) error 1 '%s: unknown option\n' "$1" ;;
-        *)  break
+while getopts :a:gmrh arg; do
+    case $arg in
+        a) arch=$OPTARG ;;
+        g) with_gecko=1 ;;
+        m) with_mono=1 ;;
+        r) remap_z=1 ;;
+        h) usage; exit ;;
+        *) printf 'usage: %s [-mgrh] [-a winearch] prefix\n' "$argv0" >&2; exit 1
     esac
-    shift
 done
+shift $((OPTIND - 1))
+
+prefix=$1
 
 case $arch in
     '') arch=win32 ;;
     win32) export WINEARCH=win32 ;;
     win64) export WINEARCH=win64 ;;
-    *) error 1 '%s: invalid architecture (win32 or win64)\n' "$arch" ;;
+    *) error 1 '%s: invalid architecture (win32 or win64)\n' "$arch"
 esac
 
 if ! prefix=$(readlink -f "$1"); then
@@ -70,33 +64,31 @@ fi
 
 export WINEPREFIX="$prefix"
 
-if [ -d "$WINEPREFIX"/dosdevices ]; then
+if test -d "$WINEPREFIX/dosdevices"; then
     warn '%s: prefix already exists, updating\n' "$WINEPREFIX"
     operation=-u
 fi
 
-# Enable both if set by unsetting overrides.
-if [ "$with_mono" ] && [ "$with_gecko" ]; then
-    export WINEDLLOVERRIDES='winemenubuilder.exe=d'
-elif [ "$with_mono" ]; then
-    export WINEDLLOVERRIDES='winemenubuilder.exe,mshtml=d'
-elif [ "$with_gecko" ]; then
-    export WINEDLLOVERRIDES='winemenubuilder.exe,mscoree=d'
-else
-    export WINEDLLOVERRIDES='winemenubuilder.exe,mscoree,mshtml=d'
-fi
+case $with_mono-$with_gecko in
+    1-1) export WINEDLLOVERRIDES='winemenubuilder.exe=d' ;;
+    1-0) export WINEDLLOVERRIDES='winemenubuilder.exe,mshtml=d' ;;
+    0-1) export WINEDLLOVERRIDES='winemenubuilder.exe,mscoree=d' ;;
+    *-*) export WINEDLLOVERRIDES='winemenubuilder.exe,mscoree,mshtml=d'
+esac
 
 # Initialise the prefix now so we can fix it before any work is done with it.
-wine wineboot "${operation:--i}" || exit
+if ! wine wineboot "${operation:--i}"; then
+    exit
+fi
 
 # Remap Z: which limits what wine can see, the default / gives access to
 # everything the user does.  Selecting /mnt as an alternative due to most isos
 # being mounted there for installation purposes.
-if [ "$remap_z" ] && [ -d "$WINEPREFIX"/dosdevices/z: ]; then
-    rm -f -- "$WINEPREFIX"/dosdevices/z:
+if test "$remap_z" -a -d "$WINEPREFIX/dosdevices/z:"; then
+    rm -f -- "$WINEPREFIX/dosdevices/z:"
 
     # Recreate it and point to /mnt instead of /.
-    ln -sf -- /mnt "$WINEPREFIX"/dosdevices/z:
+    ln -sf -- /mnt "$WINEPREFIX/dosdevices/z:"
 fi
 
 # Remove all the symlinks pointing at the user home directory.
@@ -104,8 +96,8 @@ fi
 #       need to test for windows 7+ directories.  This would only matter if
 #       we were going to modify extant prefixes.
 for dir in Desktop 'My Documents' 'My Music' 'My Pictures' 'My Videos'; do
-    rm -rf -- "$WINEPREFIX"/drive_c/users/"$USER"/"$dir"
-    mkdir -p -- "$WINEPREFIX"/drive_c/users/"$USER"/"$dir"
+    rm -f -- "$WINEPREFIX/drive_c/users/$USER/$dir"
+    mkdir -p -- "$WINEPREFIX/drive_c/users/$USER/$dir"
 done
 
 # Return the created prefix.
