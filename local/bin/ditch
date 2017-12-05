@@ -18,41 +18,18 @@ readonly client_version=application/vnd.twitchtv.v5+json
 
 chunkurls() {
     # Twitch allows up to a 100 streamers in a single query when the limit is
-    # raised using &limit=100.  This awk script chops up the list of streamers
-    # into chunks of 100, each comma separated and appends the &limit= with an
-    # appropriate value.
-    awk -v interval=100 '
+    # raised using &limit=100.
+    xargs -n 100 | awk '
     BEGIN{
-        i = 1
+        OFS=","
     }
 
-    NF < 1{
-        noinput = 1
-        exit
-    }
-
-    i == 1{
-        printf "https://api.twitch.tv/kraken/streams?channel="
-    }
-
-    (NR % interval){
-        ORS=","
-        print $0
-        ++i
-    }
-
-    !(NR % interval){
-        ORS="\n"
-        print $0 "&limit=" i
-        i = 1
-    }
-
-    END{
-        if(noinput)
-            exit
-
-        ORS="\n"
-        print "&limit=" i
+    NF{
+        # This assignment forces awk to rebuild the field list and update our
+        # $0 variable with the needed OFS value.
+        # https://www.gnu.org/software/gawk/manual/gawk.html#Changing-Fields
+        $1=$1
+        print "https://api.twitch.tv/kraken/streams?channel=" $0 "&limit=" NF
     }'
 }
 
