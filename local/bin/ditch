@@ -1,35 +1,30 @@
 #!/bin/sh --
-# ditch - create a menu using the twitch team and stream APIs
+# ditch - display menu of live twitch streamers from list of stream IDs
 
 # requires awk jq curl bemenu mpv youtube-dl
 
 # POSIX sh with local
 # shellcheck disable=SC2039
 
-readonly argv0=ditch
-
-# Number of entries to display in the menu before scrolling.
-readonly lines=30
-
 # Feel free to use these API keys.
 # Backup: jzkbprff40iqj646a697cyrvl0zt2m6 (youtube-dl)
-readonly client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
-readonly client_version=application/vnd.twitchtv.v5+json
+client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
+client_version=application/vnd.twitchtv.v5+json
 
 chunkurls() {
-    # Twitch allows up to a 100 streamers in a single query when the limit is
-    # raised using &limit=100.
+    # Twitch allows up to a maximum of 100 streamers in a single query.
+    # https://dev.twitch.tv/docs/v5/reference/streams/#get-stream-by-user
     xargs -n 100 | awk '
     BEGIN{
-        OFS=","
+        OFS = ","
     }
 
     NF{
-        # This assignment forces awk to rebuild the field list and update our
-        # $0 variable with the needed OFS value.
+        # This reassignment forces awk to rebuild the field list and update our
+        # $0 variable with the needed OFS value while not changing NF.
         # https://www.gnu.org/software/gawk/manual/gawk.html#Changing-Fields
-        $1=$1
-        print "https://api.twitch.tv/kraken/streams?channel=" $0 "&limit=" NF
+        $1 = $1
+        printf "https://api.twitch.tv/kraken/streams?channel=%s&limit=%d\n", $0, NF
     }'
 }
 
@@ -41,9 +36,7 @@ pulljson() {
     local url
 
     while read -r url; do
-        if [ "$url" ]; then
-            curl -sH "Accept: $client_version" -H "Client-ID: $client_id" "$url" | readjson &
-        fi
+        curl -sH "Accept: $client_version" -H "Client-ID: $client_id" "$url" | readjson &
     done
 
     wait
@@ -54,7 +47,7 @@ readjson() {
 }
 
 viewsort() {
-    sort -t '	' -nr | cut -f 1 --complement | column -ts '	'
+    sort -t '	' -nr | cut -f1 --complement | column -ts '	'
 }
 
 stream() {
@@ -68,4 +61,4 @@ stream() {
     done
 }
 
-chunkurls | pulljson | viewsort | menu --ifne -l "$lines" -p 'STREAM' | stream
+chunkurls | pulljson | viewsort | menu --ifne -l 30 -p STREAM | stream
