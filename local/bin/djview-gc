@@ -7,16 +7,16 @@ import configparser
 from urllib.parse import urlparse
 
 
-def localdir(*args) -> str:
-    localdir = os.environ.get('LOCALDIR')
+def confdir(*args) -> str:
+    xdg = os.environ.get('XDG_CONFIG_HOME')
 
-    if localdir is None or not os.path.isabs(localdir):
-        localdir = os.path.expanduser('~/local')
+    if xdg is None or not os.path.isabs(xdg):
+        xdg = os.path.expanduser('~/.config')
 
-    return os.path.join(localdir, *args)
+    return os.path.join(xdg, *args)
 
 
-config = localdir('cfg/DjVuLibre/DjView.conf')
+config = confdir('DjVuLibre/DjView.conf')
 
 ini = configparser.ConfigParser(allow_no_value=True)
 
