@@ -27,6 +27,8 @@ setopt auto_cd \
     hist_ignore_all_dups \
     interactive_comments
 
+unsetopt multios
+
 HISTSIZE=25000
 READNULLCMD=$PAGER
 SAVEHIST=$HISTSIZE
@@ -48,11 +50,15 @@ function precmd {
     # Print basic prompt to the window title.
     print -Pn "\e];%n %~\a"
 
-    # Get the top level directory for a git repo, strip leading paths and
-    # append a space if the command git rev-parse succeeded otherwise return
-    # nothing, this prevents double-space gaps in the prompt from appearing.
-    # Thanks to irc://freenode/#zsh!llua for the golfing help!
-    repo=${(%):-%(?.${"$(git rev-parse --show-toplevel 2> /dev/null)"##*/} .)}
+    if repo=$(git rev-parse --show-toplevel 2> /dev/null); then
+        if [[ ! $repo ]]; then
+            case $(git rev-parse --is-bare-repository) in
+                'true') repo='bare'
+            esac
+        fi
+
+        repo="${repo##*/} "
+    fi
 }
 
 # Print the current running command's name to the window title.
@@ -187,10 +193,7 @@ alias tmux="tmux -f $LOCALDIR/cfg/tmux/tmux.conf"
 
 alias k='rlwrap k'
 
-alias i="curl -F 'f:1=@-' ix.io"
-alias s="curl -F 'sprunge=@-' sprunge.us"
 alias p="curl -F 'c=@-' 'https://ptpb.pw/?u=1'"
-alias z="curl -F 'file=@-' https://0x0.st"
 alias xc='xclip -o | p'
 
 # XXX Enforce LOCALDIR where possible.
