@@ -7,19 +7,20 @@
 # /mnt instead of / and disables winemenubuilder to prevent .desktop/mime
 # generation.
 
-# TODO complete a mechanism to load external registery snippets
+# TODO
+# * complete a mechanism to load external registery snippets
 
 readonly argv0=mkwineprefix
 
 usage() {
     cat <<!
-usage: $argv0 [-mgrh] [-a winearch] prefix
+usage: $argv0 [-mgh] [-r dir] [-a winearch] prefix
 
 options
     -a winearch  win32 or win64 (default: win32)
     -m           enable mono installation
     -g           enable gecko installation
-    -r           remap z: to /mnt instead of /
+    -r dir       symlinks WINEPREFIX/dosdevices/z: to dir instead of /
     -h           this help message
 
 prefix
@@ -37,17 +38,21 @@ warn() {
     printf -- "%s: $1" "$argv0" "${@:2}" >&2
 }
 
-while getopts :a:gmrh arg; do
+while getopts :a:r:gmh arg; do
     case $arg in
         a) arch=$OPTARG ;;
         g) with_gecko=1 ;;
         m) with_mono=1 ;;
-        r) remap_z=1 ;;
+        r) remap_z=$OPTARG ;;
         h) usage; exit ;;
         *) printf 'usage: %s [-mgrh] [-a winearch] prefix\n' "$argv0" >&2; exit 1
     esac
 done
 shift $((OPTIND - 1))
+
+if [ ! "$1" ]; then
+    error 1 'no prefix provided\n'
+fi
 
 prefix=$1
 
@@ -58,21 +63,21 @@ case $arch in
     *) error 1 '%s: invalid architecture (win32 or win64)\n' "$arch"
 esac
 
-if ! prefix=$(readlink -f "$1"); then
+if ! prefix=$(readlink -e "$1"); then
    error 1 '%s: unable to determine canonical path for the prefix\n' "$1"
 fi
 
 export WINEPREFIX="$prefix"
 
-if test -d "$WINEPREFIX/dosdevices"; then
+if [ -d "$WINEPREFIX"/dosdevices ]; then
     warn '%s: prefix already exists, updating\n' "$WINEPREFIX"
     operation=-u
 fi
 
 case $with_mono-$with_gecko in
     1-1) export WINEDLLOVERRIDES='winemenubuilder.exe=d' ;;
-    1-0) export WINEDLLOVERRIDES='winemenubuilder.exe,mshtml=d' ;;
-    0-1) export WINEDLLOVERRIDES='winemenubuilder.exe,mscoree=d' ;;
+    1-*) export WINEDLLOVERRIDES='winemenubuilder.exe,mshtml=d' ;;
+    *-1) export WINEDLLOVERRIDES='winemenubuilder.exe,mscoree=d' ;;
     *-*) export WINEDLLOVERRIDES='winemenubuilder.exe,mscoree,mshtml=d'
 esac
 
@@ -81,23 +86,24 @@ if ! wine wineboot "${operation:--i}"; then
     exit
 fi
 
-# Remap Z: which limits what wine can see, the default / gives access to
-# everything the user does.  Selecting /mnt as an alternative due to most isos
-# being mounted there for installation purposes.
-if test "$remap_z" -a -d "$WINEPREFIX/dosdevices/z:"; then
-    rm -f -- "$WINEPREFIX/dosdevices/z:"
+# Remapping z: allows us to potentially limit what wine can see.
 
-    # Recreate it and point to /mnt instead of /.
-    ln -sf -- /mnt "$WINEPREFIX/dosdevices/z:"
+# We don't check if the remap is a valid directory because creating
+# deliberately broken symlinks is a useful usecase.
+if [ "$remap_z" ]; then
+    rm -f -- "$WINEPREFIX"/dosdevices/z:
+
+    if ! ln -sf -- "$remap_z" "$WINEPREFIX"/dosdevices/z:; then
+        exit
+    fi
 fi
 
-# Remove all the symlinks pointing at the user home directory.
-# Note: Since a prefix is always going to be created as Windows XP we don't
-#       need to test for windows 7+ directories.  This would only matter if
-#       we were going to modify extant prefixes.
-for dir in Desktop 'My Documents' 'My Music' 'My Pictures' 'My Videos'; do
-    rm -f -- "$WINEPREFIX/drive_c/users/$USER/$dir"
-    mkdir -p -- "$WINEPREFIX/drive_c/users/$USER/$dir"
+# Remove all the symlinks (which reach point outside the prefix).
+for dir in "$WINEPREFIX"/drive_c/users/"$USER"/*; do
+    if [ -d "$dir" ] && [ -h "$dir" ]; then
+        rm -f -- "$dir"
+        mkdir -p -- "$WINEPREFIX"/drive_c/users/"$USER"/"$dir"
+    fi
 done
 
 # Return the created prefix.
