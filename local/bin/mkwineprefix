@@ -45,7 +45,7 @@ while getopts :a:r:gmh arg; do
         m) with_mono=1 ;;
         r) remap_z=$OPTARG ;;
         h) usage; exit ;;
-        *) printf 'usage: %s [-mgrh] [-a winearch] prefix\n' "$argv0" >&2; exit 1
+        *) printf 'usage: %s [-mgh] [-r dir] [-a winearch] prefix\n' "$argv0" >&2; exit 1
     esac
 done
 shift $((OPTIND - 1))
