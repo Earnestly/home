@@ -10,6 +10,9 @@
 # TODO
 # * complete a mechanism to load external registery snippets
 
+# POSIX with local
+# shellcheck disable=SC2039
+
 readonly argv0=mkwineprefix
 
 usage() {
@@ -30,12 +33,16 @@ prefix
 }
 
 error() {
-    printf -- "%s: $2" "$argv0" "${@:3}" >&2
-    exit "$1"
+    local r=$1 fmt=$2
+    shift 2
+    printf -- "%s: $fmt" "$argv0" "$@" >&2
+    exit "$r"
 }
 
 warn() {
-    printf -- "%s: $1" "$argv0" "${@:2}" >&2
+    local fmt=$1
+    shift
+    printf -- "%s: $fmt" "$argv0" "$@" >&2
 }
 
 while getopts :a:r:gmh arg; do
@@ -51,7 +58,7 @@ done
 shift $((OPTIND - 1))
 
 if [ ! "$1" ]; then
-    error 1 'no prefix provided\n'
+    error 22 'no prefix provided\n'
 fi
 
 prefix=$1
@@ -60,15 +67,17 @@ case $arch in
     '') arch=win32 ;;
     win32) export WINEARCH=win32 ;;
     win64) export WINEARCH=win64 ;;
-    *) error 1 '%s: invalid architecture (win32 or win64)\n' "$arch"
+    *) error 22 '%s: invalid architecture (win32 or win64)\n' "$arch"
 esac
 
 if ! prefix=$(readlink -e "$1"); then
-   error 1 '%s: unable to determine canonical path for the prefix\n' "$1"
+   error 20 '%s: unable to determine canonical path for the prefix\n' "$1"
 fi
 
 export WINEPREFIX="$prefix"
 
+# XXX This is a bit of a proxy condition but I'm not sure how else to detect
+#     if a given path represents a wine prefix.
 if [ -d "$WINEPREFIX"/dosdevices ]; then
     warn '%s: prefix already exists, updating\n' "$WINEPREFIX"
     operation=-u
@@ -98,7 +107,7 @@ if [ "$remap_z" ]; then
     fi
 fi
 
-# Remove all the symlinks (which reach point outside the prefix).
+# Remove all the symlinks (which point outside the prefix).
 for dir in "$WINEPREFIX"/drive_c/users/"$USER"/*; do
     if [ -d "$dir" ] && [ -h "$dir" ]; then
         rm -f -- "$dir"
