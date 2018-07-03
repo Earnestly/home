@@ -6,7 +6,7 @@ set -o errexit
 set -o nounset
 
 read -r comm < /proc/"$1"/comm
-elapsed=$(ps -p "$1" -o etimes=)
+elapsed=$(ps -o etimes= "$1")
 hz=$(gzip -cd /proc/config.gz | sed -nr 's/^CONFIG_HZ=(.*)/\1/p')
 
 printf 'report for %s (%d) @ %dHz\n' "$comm" "$1" "$hz"
@@ -17,18 +17,14 @@ END {
     stime = $15 / hz
     cutime = $16 / hz
     sutime = $17 / hz
-    runtime = elapsed
 
-    days = runtime / 86400
-    runtime = runtime % 86400
-    hours = runtime / 3600
-    minutes = (runtime % 3600) / 60
-    seconds = runtime % 60
+    days = elapsed / 86400
+    runtime = elapsed % 86400
+    hours = elapsed / 3600
+    minutes = (elapsed % 3600) / 60
+    seconds = elapsed % 60
 
-    if(days > 0)
-        uptime = sprintf("%02d days %02d:%02d:%02d", days, hours, minutes, seconds)
-    else
-        uptime = sprintf("%02d:%02d:%02d", hours, minutes, seconds)
+    uptime = sprintf("%02d days %02d:%02d:%02d", days, hours, minutes, seconds)
 
     total_cpu_time = utime + stime + cutime + cstime
 
