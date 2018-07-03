@@ -201,6 +201,7 @@ alias aria2c="aria2c --dht-file-path $LOCALDIR/var/cache/aria2/dht.dat"
 alias petite="petite --eehistory $LOCALDIR/data/chezscheme/history"
 alias gdb="gdb -nh -x $LOCALDIR/cfg/gdb/init"
 
+# XXX Package this in /etc/profile.d while switching to XDG
 if hash nvidia-settings 2> /dev/null; then
     alias nvidia-settings="nvidia-settings --config=$LOCALDIR/cfg/nvidia/settings"
 fi
@@ -210,8 +211,8 @@ unalias run-help
 alias help='run-help'
 
 # Directory hashes.
-if [[ -d $HOME/dev ]]; then
-    for d in "$HOME"/dev/*(/); do
+if [[ -d $HOME/study ]]; then
+    for d in "$HOME"/study/*(/); do
         hash -d "${d##*/}"="$d"
     done
 fi
