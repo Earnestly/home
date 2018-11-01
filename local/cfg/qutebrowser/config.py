@@ -1,7 +1,6 @@
 # LOCALDIR/cfg/qutebrowser/config.py
 
 import setproctitle
-
 setproctitle.setproctitle('qutebrowser')
 
 config.load_autoconfig = False
@@ -10,7 +9,6 @@ config.load_autoconfig = False
 config.set('backend', 'webengine')
 
 config.set('editor.command', ['visual', '{}'])
-
 config.set('downloads.position', 'bottom')
 
 config.set('url.default_page', 'about:blank')
@@ -52,9 +50,11 @@ config.set('colors.tabs.indicator.error', color_red)
 
 # Fonts
 font_ui = '10pt Inter UI'
-font_mono = '11.5pt Inconsolatazi4'
+font_mono = '12pt Inconsolatazi4'
 
 config.set('fonts.tabs', font_ui)
+config.set('fonts.hints', font_ui)
+config.set('fonts.keyhint', font_mono)
 config.set('fonts.statusbar', font_mono)
 config.set('fonts.completion.entry', font_mono)
 config.set('fonts.completion.category', font_ui)
@@ -74,3 +74,7 @@ config.bind(';q', 'hint links spawn -vd mpv-url {hint-url}')
 
 config.bind('<Alt-x>', 'config-cycle -p content.javascript.enabled')
 config.bind('<Ctrl-Shift-p>', 'config-cycle -p content.private_browsing')
+
+# Remove return from the javascript question prompts to reduce the chance of
+# accidental acceptance.  Instead an explicit 'y' or 'n' will be required.
+config.unbind('<Return>', mode='yesno')
