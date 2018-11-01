@@ -33,16 +33,16 @@ prefix
 }
 
 error() {
-    local r=$1 fmt=$2
+    local r=$1 m=$2
     shift 2
-    printf -- "%s: $fmt" "$argv0" "$@" >&2
+    printf -- "%s: $m" "$argv0" "$@" >&2
     exit "$r"
 }
 
 warn() {
-    local fmt=$1
+    local m=$1
     shift
-    printf -- "%s: $fmt" "$argv0" "$@" >&2
+    printf -- "%s: $m" "$argv0" "$@" >&2
 }
 
 while getopts :a:r:gmh arg; do
@@ -70,8 +70,9 @@ case $arch in
     *) error 22 '%s: invalid architecture (win32 or win64)\n' "$arch"
 esac
 
-if ! prefix=$(readlink -e "$1"); then
-   error 20 '%s: unable to determine canonical path for the prefix\n' "$1"
+if ! prefix=$(readlink -f "$1"); then
+    warn '%s: creating directory\n' "$1"
+    mkdir -p -- "$prefix"
 fi
 
 export WINEPREFIX="$prefix"
@@ -107,7 +108,8 @@ if [ "$remap_z" ]; then
     fi
 fi
 
-# Remove all the symlinks (which point outside the prefix).
+# Replace the symlinks pointing to directories which usually point outside the
+# prefix, typically into the users HOME.
 for dir in "$WINEPREFIX"/drive_c/users/"$USER"/*; do
     if [ -d "$dir" ] && [ -h "$dir" ]; then
         rm -f -- "$dir"
