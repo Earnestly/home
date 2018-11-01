@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/bin/python3
 # djview-gc - remove DjView.conf history entries for files which no longer exist
 
 import os
