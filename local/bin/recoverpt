@@ -4,7 +4,9 @@
 # requires awk udevadm lsblk
 
 recover_header() {
-    awk -F= -v size="$1" '
+    awk -v size="$1" '
+        BEGIN {FS="="}
+
         /TABLE_TYPE/ {label = $2}
         /TABLE_UUID/ {label_id = $2}
         /DEVNAME/    {device = $2}
@@ -12,12 +14,11 @@ recover_header() {
         END {
             print "label:", label
 
-            # Some MBR disks dont have a label-id
+            # Some MBR disks do not have a label-id
             if(label_id && label == "dos")
-                    print "label-id: 0x" label_id
-
-            if(label == "gpt")
-                    print "label-id:", toupper(label_id)
+                print "label-id: 0x" label_id
+            else if(label == "gpt")
+                print "label-id:", toupper(label_id)
 
             print "device:", device
             print "unit: sectors"
@@ -32,7 +33,9 @@ recover_header() {
 }
 
 recover_partition() {
-    awk -F= '
+    awk '
+    BEGIN {FS="="}
+
     function unescape(s) {
         # XXX Cannot use systemd-escape(1) here as it will convert - to / which
         #     is incorrect for "x86-64".  Instead only spaces (\x20) will be
@@ -71,7 +74,7 @@ recover_partition() {
 }
 
 if [ "$1" = -h ]; then
-    cat > /dev/stderr <<!
+    cat <<!
 usage: recoverpt [-h] device
 
 WARNING:
