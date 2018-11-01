@@ -1,20 +1,25 @@
 #!/bin/sh --
 # asr - download arch linux build files from the svntogit repositories
 
-# requires git expac pacman pacutils
+# requires git pacman pacutils
 
-# POSIX with local keyword
+# POSIX with local
 # shellcheck disable=SC2039
 
-readonly argv0=asr
+# Allow variables in printf formatter to expose the DSL
+# shellcheck disable=SC2059
 
 error() {
-    printf -- "%s: $1" "$argv0" "${@:2}" >&2
-    exit 1
+    local r=$1 m=$2
+    shift 2
+    printf -- "asr: $m" "$@" >&2
+    exit "$r"
 }
 
 warn() {
-    printf -- "%s: $1" "$argv0" "${@:2}" >&2
+    local m=$1
+    shift
+    printf -- "asr: $m" "$@" >&2
 }
 
 clone() {
@@ -51,17 +56,15 @@ if [ ! "$1" ]; then
 fi
 
 # Attempt to blindly checkout the package as this should work in the common
-# case.  The error checking is only necessary in a few occasions and so I skip
-# it until needed.
+# case.  The error checking is only necessary in a few annoying edge-cases so
+# we avoid it until needed.
 if ! checkout "$1"; then
-    if pkgbase=$(expac -S %e "$1"); then
-        if [ "$pkgbase" != '(null)' ]; then
-            set -- "$pkgbase"
-        fi
-
+    # Check to see if the package was from a split-package by determining if
+    # it has a pkgbase.
+    if pkgbase=$(expac -S %e "$1") && [ "$pkgbase" != '(null)' ]; then
         # expac cannot yet be configured to only search specific repositories
-        # so it might pass the prior pacman -Si check only to fail here.
-        if repo=$(expac -S %r "$1"); then
+        # so it might pass the prior check only to fail here.
+        if repo=$(expac -S %r "$pkgbase"); then
             case $repo in
                 testing|core|extra) ;;
                 community|community-testing) ;;
@@ -70,8 +73,8 @@ if ! checkout "$1"; then
             esac
         fi
 
-        if ! checkout "$1"; then
-            error '%s: checkout failed\n' "$1"
+        if ! checkout "$pkgbase"; then
+            error '%s: checkout failed\n' "$pkgbase"
         fi
     else
         # Sometimes we might get a virtual package.  If the package is
@@ -100,5 +103,4 @@ if ! checkout "$1"; then
                exit 1
         esac
     fi
-    error '%s: checkout failed\n' "$1"
 fi
