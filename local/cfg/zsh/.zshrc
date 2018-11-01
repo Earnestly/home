@@ -29,10 +29,11 @@ setopt auto_cd \
 
 unsetopt multios
 
-HISTSIZE=25000
 READNULLCMD=$PAGER
-SAVEHIST=$HISTSIZE
+
 HISTFILE=$LOCALDIR/data/zsh/zhistory
+HISTSIZE=25000
+SAVEHIST=$HISTSIZE
 
 # As we can't track directories alone with git and zsh won't make the needful
 # directories either, we make them ourselves instead.
@@ -182,8 +183,7 @@ alias chmod='chmod -c --preserve-root'
 alias chown='chown -c --preserve-root'
 alias chgrp='chgrp -c --preserve-root'
 
-alias ls='ls --color=auto --show-control-chars --group-directories-first -AhXF'
-alias ll='ls --color=auto --show-control-chars --group-directories-first -AlhXF'
+alias ls='ls --color=auto --show-control-chars --group-directories-first -AlhXF'
 
 alias vi='nvim'
 alias dmesg='dmesg -exL'
