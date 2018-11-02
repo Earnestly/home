@@ -4,22 +4,10 @@
 # Included directories to search must include all path components for rsync
 # when using the recursive (-r) option (implied by -a).
 + build/
-+ build/aur/
-+ build/store/
-+ build/pkgbuilds/
-+ build/aur/*
-+ build/store/*
-+ build/pkgbuilds/*
++ build/**
 
-# Include build files and other paraphernalia but avoid vcs mirrors and
-# directories.
-+ build/store/todo.draft
-+ build/store/PKGBUILD
-+ build/*/*/PKGBUILD
-+ build/*/*/*.install
-+ build/*/*/*.patch
-+ build/*/*/*.diff
-+ build/*/*/*.txt
++ music/playlists/
++ music/playlists/**
 
 # Exclude net downloads
 - net
@@ -56,6 +44,8 @@
 
 # The git repos are managed elsewhere.
 - local/src
+
+- local/repo
 
 - local/var
 
