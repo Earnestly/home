@@ -14,7 +14,7 @@ my @opt_ignore;
 
 GetOptions(
     "h|help"      => sub {usage(); exit(0);},
-    "l|list"      => sub {foreach (keys %SIG) {print "$_\n"}},
+    "l|list"      => sub {foreach (keys %SIG) {print "$_\n"}; exit(0);},
     "i|ignore=s"  => \@opt_ignore,
     "d|default=s" => \@opt_default,
 ) || exit(1);
