@@ -3,8 +3,6 @@
 
 # requires pango-view awk
 
-argv0=ftdetect
-
 while getopts :f: arg; do
     case $arg in
         f) family=$OPTARG ;;
@@ -14,7 +12,7 @@ done
 shift $((OPTIND - 1))
 
 if [ ! "$1" ]; then
-    printf 'usage: %s [-f family] glyph\n' "$argv0" >&2
+    printf 'usage: ftdetect [-f family] glyph\n' >&2
     exit 1
 fi
 
