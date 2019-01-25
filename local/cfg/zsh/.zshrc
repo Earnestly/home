@@ -185,7 +185,7 @@ alias chgrp='chgrp -c --preserve-root'
 
 alias ls='ls --color=auto --show-control-chars --group-directories-first -AlhXF'
 
-alias vi='nvim'
+alias vi='editor'
 alias dmesg='dmesg -exL'
 alias weechat='dtach-weechat'
 alias mutt='dtach-mutt'
