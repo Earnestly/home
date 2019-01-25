@@ -1,0 +1,71 @@
+! XDG_CONFIG_HOME/X11/Xresources
+
+xterm.termName: xterm-256color
+
+xterm*faceName: Inconsolatazi4
+xterm*faceSize: 12
+
+! The default of 1024 (/usr/share/X11/app-defaults/XTerm) is a tad low.
+xterm*saveLines: 10000
+
+! Remove the black 2px border around the terminal window.
+xterm*borderWidth: 0
+
+! By setting the urgency hint my WM can respond accordingly.
+xterm*bellIsUrgent: true
+
+! Reduce the time it takes when printing many pages of text rapidly.
+xterm*jumpScroll: true
+xterm*fastScroll: true
+
+! Then do it in parallel.
+xterm*multiScroll: true
+
+! As UTF-8 locales are typically available xterm will assume 8-bit input which
+! disrupts programs using Alt as a modifer.
+xterm*metaSendsEscape: true
+
+! Regard the following as numbers (class 48) to allow double-click selection of
+! strings resembling urls: ! ( ) # $ % + - . / : = ? @ ~
+xterm*charClass: 33:48,35-37:48,40-41:48,43:48,45-47:48,58:48,61:48,63-64:48,126:48
+
+! On Arch Linux the XLFD infrastucture support has been essentially dropped.
+! As a result when using the popup-menu it will cause xterm to abort as it
+! cannot find a suitable font with which to display the menu.
+xterm.omitTranslation: popup-menu
+
+xterm.vt100.translations: #override \
+    Shift Ctrl <KeyPress> O: copy-selection(PRIMARY) exec-formatted("web '%t'", PRIMARY)\n \
+    Shift Ctrl <KeyPress> U: select-needle("://") select-set(PRIMARY)\n \
+    Shift Ctrl <KeyPress> V: insert-selection(CLIPBOARD)\n \
+    Shift Ctrl <KeyPress> C: copy-selection(CLIPBOARD)\n \
+    Shift Ctrl <KeyPress> T: spawn-new-terminal()\n \
+    Ctrl <KeyPress> minus: smaller-vt-font()\n \
+    Ctrl <KeyPress> plus: larger-vt-font()
+
+! Base16 Yesterday Night by https://github.com/froznshiva
+xterm*foreground: #dfe1e8
+xterm*background: #343d46
+xterm*cursorColor: #dfe1e8
+xterm*color0: #343d46
+xterm*color1: #cc6666
+xterm*color2: #b5bd68
+xterm*color3: #f0c674
+xterm*color4: #81a2be
+xterm*color5: #b294bb
+xterm*color6: #8abeb7
+xterm*color7: #dfe1e8
+xterm*color8: #a7adba
+xterm*color9: #cc6666
+xterm*color10: #b5bd68
+xterm*color11: #f0c674
+xterm*color12: #81a2be
+xterm*color13: #b294bb
+xterm*color14: #8abeb7
+xterm*color15: #ffffff
+xterm*color16: #de935f
+xterm*color17: #a3685a
+xterm*color18: #4f5b66
+xterm*color19: #65737e
+xterm*color20: #c0c5ce
+xterm*color21: #eff1f5
