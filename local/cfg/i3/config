@@ -1,15 +1,13 @@
-# LOCALDIR/cfg/i3/config
+# XDG_CONFIG_HOME/i3/config
 
 # Font for window titles and bar.
 #font pango: Source Sans Pro Semibold, Italic 11
 font pango: Inter UI Medium 10.2
 
-# General settings.
 new_window pixel 2
 workspace_auto_back_and_forth yes
 workspace_layout tabbed
 
-# Colors.
 # class                 border  backgnd text    indicator
 client.focused          #65737e #65737e #c0c5ce #bf616a
 client.focused_inactive #343d46 #343d46 #c0c5ce #bf616a
@@ -20,8 +18,8 @@ client.urgent           #bf616a #bf616a #eff1f5 #ff00ff
 set $mod mod4
 floating_modifier $mod
 
-bindsym $mod+Return exec terminal
-bindsym XF86Launch1 exec web
+bindsym $mod+Return exec --no-startup-id terminal
+bindsym XF86Launch1 exec --no-startup-id web
 bindsym XF86TouchpadToggle exec trackpad-toggle
 
 # Global media keys.
@@ -195,7 +193,7 @@ assign [class="Wine"] 9
 bar {
     position top
     # status_command i3status-conky
-    status_command ~/dev/shell/statusbar
+    status_command ~/study/shell/statusbar
 
     colors {
         # class            border  backgnd text
