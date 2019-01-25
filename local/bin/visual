@@ -1,0 +1,2 @@
+#!/bin/sh --
+exec terminal -e "editor \"$1\""

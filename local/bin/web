@@ -1,1 +1,2 @@
-/usr/bin/qutebrowser
+#!/bin/sh --
+exec qutebrowser "$@"
