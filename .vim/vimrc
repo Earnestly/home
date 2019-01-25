@@ -1,13 +1,18 @@
-" LOCALDIR/nvim/init.vim
+" HOME/.vim/vimrc
 
-if empty($LOCALDIR)
-    let localdir = $HOME . '/local'
-else
-    let localdir = $LOCALDIR
-endif
+" If I am going to tolerate a .vim directory then at least attempt to keep
+" everything isolated to that location.
+set undodir=$HOME/.vim/undo
+set directory=$HOME/.vim/swap
+set backupdir=$HOME/.vim/backup
+set viminfo+=n$HOME/.vim/viminfo
 
-let pkgdir = localdir . '/data/nvim/packages'
+" XXX Vim doesn't mkdir these paths (bug?).
+call mkdir(&backupdir, "p")
+call mkdir(&directory, "p")
+call mkdir(&undodir, "p")
 
+let pkgdir = $HOME . '/.vim/packages'
 call mkdir(pkgdir, "p")
 
 call plug#begin(pkgdir)
@@ -25,7 +30,6 @@ call plug#begin(pkgdir)
     Plug 'vim-erlang/vim-erlang-runtime', {'for': 'erlang'}
 
     " Various local packages.
-    Plug pkgdir . '/vim-ada', {'for': 'ada'}
     Plug pkgdir . '/vim-ktap', {'for': 'ktap'}
     Plug pkgdir . '/vim-spar', {'for': 'spar'}
     Plug pkgdir . '/vim-draft', {'for': 'draft'}
@@ -33,13 +37,14 @@ call plug#begin(pkgdir)
     Plug pkgdir . '/vim-promela', {'for': 'promela'}
     Plug pkgdir . '/vim-ats', {'for': ['dats', 'sats']}
 call plug#end()
-
 unlet pkgdir
 
 " Replace ex-mode with vim's command-line window.
 map Q q:
 
-" Settings.
+syntax on
+filetype indent plugin on
+
 set list
 set cc=80
 set title
@@ -47,37 +52,25 @@ set number
 set hidden
 set backup
 set showcmd
+set ttyfast
 set undofile
+set wildmenu
 set linebreak
+set smartcase
+set ignorecase
 set nohlsearch
 set scrolloff=1
+set laststatus=2
+set numberwidth=1
 set cinoptions+=t0
-
-syntax on
-filetype indent plugin on
-
-runtime! macros/matchit.vim
+set listchars=tab:>\ ,trail:-
+set backspace=indent,eol,start
 
 " 4 spaced expanded tabs by default.
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
 set expandtab
-
-if &t_Co > 255 || has('gui_running')
-    set background=dark
-    set termguicolors
-    let base16colorspace=256
-    colorscheme base16-yesterdaynight
-
-    " By default my theme highlights the matching bracket with a lighter
-    " colour, while darkening the cursor, causing me endless confusion.  Using
-    " standout reverses the effect.
-    hi MatchParen gui=standout
-endif
-
-set smartcase
-set ignorecase
 
 set cursorline
 set statusline=%n\ %F\ %M%=%y%w%r%h\ %{&fenc}\ %l,%c\ %p%%\ %L
@@ -88,19 +81,26 @@ set ttimeoutlen=50
 " Use the Xorg's primary buffer as default register.
 set clipboard=unnamed
 
-let &backupdir = localdir . '/data/nvim/backup'
+if &t_Co >= 256 || has('gui_running')
+    set background=dark
+    set termguicolors
+    let base16colorspace=256
+    colorscheme base16-yesterdaynight
 
-" XXX Vim doesn't mkdir the backupdir path (bug?) so let's do that ourselves
-" instead.
-call mkdir(&backupdir, "p")
+    " By default my theme highlights the matching bracket with a lighter
+    " colour, while darkening the cursor, causing me endless confusion.
+    " Using standout reverses the effect.
+    hi MatchParen gui=standout
+    hi MatchParen cterm=standout
+endif
 
-" Prevent neomake reporting its exit status and suppressing the write message.
-" https://github.com/benekastah/neomake/issues/238
-let neomake_verbose = 0
-
-" Use clang when checking C/C++ syntax.
+" Use more appropriate standards when checking C/C++ syntax with neomake.
 let g:neomake_cpp_clang_args = neomake#makers#ft#c#clang()['args'] + ['-std=c99']
 let g:neomake_cpp_clang_args = neomake#makers#ft#cpp#clang()['args'] + ['-std=c++11']
+
+let g:neomake_info_sign = {'text': '▐'}
+let g:neomake_error_sign = {'text': '▐'}
+let g:neomake_warning_sign = {'text': '▐'}
 
 " Use bsdtar for all the additional formats it supports over GNU tar.
 let g:tar_cmd = 'bsdtar'
@@ -108,3 +108,5 @@ let g:tar_secure = 1
 
 " Tell vim about the additional file extensions we can now use.
 autocmd BufReadCmd *.iso,*.rar,*.7z call tar#Browse(expand("<amatch>"))
+
+runtime! macros/matchit.vim
