@@ -44,14 +44,13 @@
 
 # The git repos are managed elsewhere.
 - local/src
-
-- local/repo
-
 - local/var
-
+- local/repo
 - local/data/wine
 - local/data/games
+- local/data/qutebrowser
 - local/data/vimperator/info
+
 + local/**
 
 + local/mail/
