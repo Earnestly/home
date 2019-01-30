@@ -5,6 +5,10 @@ xterm.termName: xterm-256color
 xterm*faceName: Inconsolatazi4
 xterm*faceSize: 12
 
+! By setting the minimum size xterm will no longer fallback to ! bitmap fonts
+! when using the smaller-vt-font action.  (This is probably a bug.)
+xterm*faceSize1: 6
+
 ! The default of 1024 (/usr/share/X11/app-defaults/XTerm) is a tad low.
 xterm*saveLines: 10000
 
@@ -26,8 +30,8 @@ xterm*multiScroll: true
 xterm*metaSendsEscape: true
 
 ! Regard the following as numbers (class 48) to allow double-click selection of
-! strings resembling urls: ! ( ) # $ % + - . / : = ? @ ~
-xterm*charClass: 33:48,35-37:48,40-41:48,43:48,45-47:48,58:48,61:48,63-64:48,126:48
+! strings resembling urls: ! ( ) # $ % & + - . / : = ? @ ~
+xterm*charClass: 33:48,35-38:48,40-41:48,43:48,45-47:48,58:48,61:48,63-64:48,126:48
 
 ! On Arch Linux the XLFD infrastucture support has been essentially dropped.
 ! As a result when using the popup-menu it will cause xterm to abort as it
