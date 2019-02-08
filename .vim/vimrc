@@ -5,39 +5,12 @@
 set undodir=$HOME/.vim/undo
 set directory=$HOME/.vim/swap
 set backupdir=$HOME/.vim/backup
-set viminfo+=n$HOME/.vim/viminfo
+set viminfofile=$HOME/.vim/viminfo
 
-" XXX Vim doesn't mkdir these paths (bug?).
+" XXX Vim doesn't mkdir these paths when needed (bug?).
 call mkdir(&backupdir, "p")
 call mkdir(&directory, "p")
 call mkdir(&undodir, "p")
-
-let pkgdir = $HOME . '/.vim/packages'
-call mkdir(pkgdir, "p")
-
-call plug#begin(pkgdir)
-    Plug 'neomake/neomake'
-    autocmd! BufWritePost * Neomake
-
-    Plug 'tpope/vim-fugitive'
-    Plug 'tpope/vim-surround'
-    Plug 'tpope/vim-commentary'
-    Plug 'keith/tmux.vim'
-    Plug 'alerque/vim-sile', {'for': 'sile'}
-    Plug 'weakish/rcshell.vim', {'for': 'rc'}
-    Plug 'jakwings/vim-pony', {'for': 'pony'}
-    Plug 'rust-lang/rust.vim', {'for': 'rust'}
-    Plug 'vim-erlang/vim-erlang-runtime', {'for': 'erlang'}
-
-    " Various local packages.
-    Plug pkgdir . '/vim-ktap', {'for': 'ktap'}
-    Plug pkgdir . '/vim-spar', {'for': 'spar'}
-    Plug pkgdir . '/vim-draft', {'for': 'draft'}
-    Plug pkgdir . '/vim-myrddin', {'for': 'myr'}
-    Plug pkgdir . '/vim-promela', {'for': 'promela'}
-    Plug pkgdir . '/vim-ats', {'for': ['dats', 'sats']}
-call plug#end()
-unlet pkgdir
 
 " Replace ex-mode with vim's command-line window.
 map Q q:
@@ -83,6 +56,9 @@ set clipboard=unnamed
 
 if &t_Co >= 256 || has('gui_running')
     set background=dark
+
+    " XXX This causes the :terminal feature to use libvterm's standard palette.
+    "     See g:terminal_ansi_colors to set them.
     set termguicolors
     let base16colorspace=256
     colorscheme base16-yesterdaynight
@@ -93,14 +69,6 @@ if &t_Co >= 256 || has('gui_running')
     hi MatchParen gui=standout
     hi MatchParen cterm=standout
 endif
-
-" Use more appropriate standards when checking C/C++ syntax with neomake.
-let g:neomake_cpp_clang_args = neomake#makers#ft#c#clang()['args'] + ['-std=c99']
-let g:neomake_cpp_clang_args = neomake#makers#ft#cpp#clang()['args'] + ['-std=c++11']
-
-let g:neomake_info_sign = {'text': '▐'}
-let g:neomake_error_sign = {'text': '▐'}
-let g:neomake_warning_sign = {'text': '▐'}
 
 " Use bsdtar for all the additional formats it supports over GNU tar.
 let g:tar_cmd = 'bsdtar'
