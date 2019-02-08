@@ -1,5 +1,5 @@
 #!/bin/python3
-# djview-gc - remove DjView.conf history entries for files which no longer exist
+# djview-gc - remove DjView.conf history entries for files that no longer exist
 
 import os
 import sys
@@ -20,28 +20,27 @@ config = confdir('DjVuLibre/DjView.conf')
 
 ini = configparser.ConfigParser(allow_no_value=True)
 
-# Preserve case in keys
+# Preserve the case for the keys as otherwise djview won't understand it.
 ini.optionxform = str
 ini.read(config)
 
 if not ini.sections():
-    sys.exit('{0}: empty file'.format(config))
+    sys.exit('djview-gc: {0}: empty file'.format(config))
 
 recentfiles = ini['General']['recentFiles']
-
 urls = [u.strip('"') for u in recentfiles.split(', ')]
 
-conserve = []
+extants = []
 
 for url in urls:
     r = urlparse(url)
 
     if os.path.isfile(r.path):
-        conserve.extend(['"' + r.scheme + '://' + r.path + '?' + r.query + '"'])
+        extants.extend(['"' + r.scheme + '://' + r.path + '?' + r.query + '"'])
     else:
-        print('removing entry: {0}'.format(r.path))
+        print('djview-gc: removed entry: {0}'.format(r.path))
 
-ini['General']['recentFiles'] = ','.join(conserve)
+ini['General']['recentFiles'] = ','.join(extants)
 
 with open(config, 'w') as cfg:
     ini.write(cfg)
