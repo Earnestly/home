@@ -1,4 +1,4 @@
-# LOCALDIR/cfg/coreutils/dircolors
+# XDG_CONFIG_HOME/coreutils/dircolors
 
 TERM tmux
 TERM linux

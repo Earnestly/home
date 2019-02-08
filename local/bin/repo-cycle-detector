@@ -23,4 +23,4 @@ if [ "$#" -eq 0 ]; then
     exit 1
 fi
 
-pacsift --exact --repo="$1" | expac -S '%n:%E' -l ':' - | parse | tsort > /dev/null
+pacsift --exact --repo="$1" | expac -Sl: %n:%E - | parse | tsort > /dev/null
