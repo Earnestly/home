@@ -24,11 +24,13 @@ set hidden
 set backup
 set showcmd
 set ttyfast
+set autoread
 set undofile
 set wildmenu
 set linebreak
 set smartcase
 set ignorecase
+set lazyredraw
 set nomodeline
 set nohlsearch
 set scrolloff=1
@@ -39,11 +41,15 @@ set ttimeoutlen=50
 set backspace=indent,eol,start
 
 set list
-set listchars=tab:..,trail:-
+set listchars=tab:\ \ ,trail:~
 
 set cursorline
 set laststatus=2
 set statusline=%n\ %F\ %M%=%y%w%r%h\ %{&fenc}\ %l,%c\ %p%%\ %L
+
+set expandtab
+set tabstop=4
+set shiftwidth=4
 
 if !empty($DISPLAY)
     " Use the Xorg's primary buffer as default register.
