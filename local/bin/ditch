@@ -3,9 +3,6 @@
 
 # requires awk jq curl bemenu mpv youtube-dl
 
-# POSIX sh with local
-# shellcheck disable=SC2039
-
 # Feel free to use these API keys.
 # Backup: jzkbprff40iqj646a697cyrvl0zt2m6 (youtube-dl)
 client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
@@ -33,8 +30,6 @@ chunkurls() {
 #       to be very capable of this without complication and awkwardness, and
 #       neither were any faster.
 pulljson() {
-    local url
-
     while read -r url; do
         curl -sH "Accept: $client_version" -H "Client-ID: $client_id" "$url" | readjson &
     done
@@ -51,8 +46,6 @@ viewsort() {
 }
 
 stream() {
-    local streamer
-
     while read -r streamer _; do
         if [ "$streamer" ]; then
             # Background mpv here in order to support multi-selection.
