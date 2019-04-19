@@ -10,9 +10,6 @@
 # TODO
 # * complete a mechanism to load external registery snippets
 
-# POSIX with local
-# shellcheck disable=SC2039
-
 readonly argv0=mkwineprefix
 
 usage() {
@@ -33,14 +30,14 @@ prefix
 }
 
 error() {
-    local r=$1 m=$2
+    r=$1 m=$2
     shift 2
     printf -- "%s: $m" "$argv0" "$@" >&2
     exit "$r"
 }
 
 warn() {
-    local m=$1
+    m=$1
     shift
     printf -- "%s: $m" "$argv0" "$@" >&2
 }
