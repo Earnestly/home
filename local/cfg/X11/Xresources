@@ -30,8 +30,8 @@ xterm*multiScroll: true
 xterm*metaSendsEscape: true
 
 ! Regard the following as numbers (class 48) to allow double-click selection of
-! strings resembling urls: ! ( ) # $ % & + , - . / : = ? @ ~
-xterm*charClass: 33:48,35-38:48,40-41:48,43-47:48,58:48,61:48,63-64:48,126:48
+! strings resembling urls: ! ( ) # $ % & + , - . / : ; = ? @ ~
+xterm*charClass: 33:48,35-38:48,40-41:48,43-47:48,58-59:48,61:48,63-64:48,126:48
 
 ! On Arch Linux the XLFD infrastucture support has been essentially dropped.
 ! As a result when using the popup-menu it will cause xterm to abort as it
