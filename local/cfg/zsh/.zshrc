@@ -193,7 +193,7 @@ alias tmux="tmux -f $LOCALDIR/cfg/tmux/tmux.conf"
 
 alias k='rlwrap k'
 
-alias p="curl -F 'c=@-' 'https://ptpb.pw/?u=1'"
+alias p='curl -F file=@- https://0x0.st'
 alias xc='xclip -o | p'
 
 # XXX Enforce LOCALDIR where possible.
