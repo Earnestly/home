@@ -69,8 +69,8 @@ config.bind('yy', 'yank -s')
 config.bind('p', 'open -- {primary}')
 config.bind('P', 'open -t -- {primary}')
 
-config.bind('U', 'spawn -vd mpv-url {url}')
-config.bind(';q', 'hint links spawn -vd mpv-url {hint-url}')
+config.bind('U', 'spawn -vd mpv --profile=url {url}')
+config.bind(';q', 'hint links spawn -vd mpv --profile=url {hint-url}')
 
 config.bind('<Alt-x>', 'config-cycle -p content.javascript.enabled')
 config.bind('<Ctrl-Shift-p>', 'config-cycle -p content.private_browsing')
