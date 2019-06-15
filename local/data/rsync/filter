@@ -12,15 +12,15 @@
 # Exclude net downloads
 - net
 
-+ dev/
-- dev/research/distro
++ study/
+- study/research/distro
 
 # Kobo-Reader is a large git repo <https://github.com/kobolabs/Kobo-Reader>.
-- dev/research/reader/Kobo-Reader
+- study/research/reader/Kobo-Reader
 
-+ dev/research/distro/clfs/src/**
-+ dev/research/distro/lfs/src/**
-+ dev/**
++ study/research/distro/clfs/src/**
++ study/research/distro/lfs/src/**
++ study/**
 
 # XXX This is hosted on github, I don't really trust github, but this is a lot
 #     of stuff to lug around for very little value in my eyes.  I need to
@@ -43,6 +43,7 @@
 + local/
 
 # The git repos are managed elsewhere.
+- local/emu
 - local/src
 - local/var
 - local/repo
