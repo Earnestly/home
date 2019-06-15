@@ -45,10 +45,10 @@
             <map in='k' out='up'/>
             <map in='l' out='right'/>
 
-            <map in='u' out='ctrl-k'/>
-            <map in='d' out='ctrl-j'/>
-            <map in='ctrl-u' out='ctrl-k'/>
-            <map in='ctrl-d' out='ctrl-j'/>
+            <map in='u' out='ctrl-up'/>
+            <map in='d' out='ctrl-down'/>
+            <map in='ctrl-u' out='ctrl-up'/>
+            <map in='ctrl-d' out='ctrl-down'/>
 
             <map in='f' out='pgdown'/>
             <map in='b' out='pgup'/>
@@ -62,10 +62,10 @@
             <map in='k' out='up'/>
             <map in='l' out='right'/>
 
-            <map in='u' out='ctrl-k'/>
-            <map in='d' out='ctrl-j'/>
-            <map in='ctrl-u' out='ctrl-k'/>
-            <map in='ctrl-d' out='ctrl-j'/>
+            <map in='u' out='ctrl-up'/>
+            <map in='d' out='ctrl-down'/>
+            <map in='ctrl-u' out='ctrl-up'/>
+            <map in='ctrl-d' out='ctrl-down'/>
 
             <map in='f' out='pgdown'/>
             <map in='b' out='pgup'/>
