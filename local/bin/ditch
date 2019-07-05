@@ -1,7 +1,7 @@
 #!/bin/sh --
 # ditch - display menu of live twitch streamers from list of stream IDs
 
-# requires awk jq curl bemenu mpv youtube-dl
+# requires awk jq curl bemenu mpv youtube-dl streamlink
 
 # Feel free to use these API keys.
 # Backup: jzkbprff40iqj646a697cyrvl0zt2m6 (youtube-dl)
@@ -9,7 +9,7 @@ client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
 client_version=application/vnd.twitchtv.v5+json
 
 chunkurls() {
-    # Twitch allows up to a maximum of 100 streamers in a single query.
+    # Twitch only allows a maximum of 100 streamers in a single query.
     # https://dev.twitch.tv/docs/v5/reference/streams/#get-stream-by-user
     xargs -n 100 | awk '
     BEGIN{
@@ -17,9 +17,6 @@ chunkurls() {
     }
 
     NF{
-        # This reassignment forces awk to rebuild the field list and update our
-        # $0 variable with the needed OFS value while not changing NF.
-        # https://www.gnu.org/software/gawk/manual/gawk.html#Changing-Fields
         $1 = $1
         printf "https://api.twitch.tv/kraken/streams?channel=%s&limit=%d\n", $0, NF
     }'
@@ -38,18 +35,18 @@ pulljson() {
 }
 
 readjson() {
-    jq -r '.streams[] | [.viewers, .channel.name, .channel.game, .channel.status] | @tsv'
+    jq -r '.streams[] | [.viewers, .channel.name, .channel.game[:50], .channel.status] | @tsv'
 }
 
 viewsort() {
-    sort -t '	' -nr | cut -f1 --complement | column -ts '	'
+    sort -t '	' -nr | cut -f2- | column -ts '	'
 }
 
 stream() {
     while read -r streamer _; do
         if [ "$streamer" ]; then
-            # Background mpv here in order to support multi-selection.
-            mpv --quiet https://twitch.tv/"$streamer" &
+            # Background in order to support multiple selections.
+            streamlink -vp 'mpv --quiet' -t 'MPV:{author}:{title}' --hls-live-edge 10 https://twitch.tv/"$streamer" best &
         fi
     done
 }
