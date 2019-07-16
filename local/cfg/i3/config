@@ -7,6 +7,7 @@ font pango: Inter UI Medium 10.2
 new_window pixel 2
 workspace_auto_back_and_forth yes
 workspace_layout tabbed
+focus_on_window_activation none
 
 # class                 border  backgnd text    indicator
 client.focused          #65737e #65737e #c0c5ce #bf616a
