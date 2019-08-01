@@ -110,26 +110,26 @@ fi
 for dir in "$WINEPREFIX"/drive_c/users/"$USER"/*; do
     if [ -d "$dir" ] && [ -h "$dir" ]; then
         rm -f -- "$dir"
-        mkdir -p -- "$WINEPREFIX"/drive_c/users/"$USER"/"$dir"
+        mkdir -p -- "$dir"
     fi
 done
 
+cat > "$WINEPREFIX"/colors.reg <<!
+REGEDIT4
+[HKEY_CURRENT_USER\Control Panel\Colors]
+"Background"="33 33 33"
+!
+
+cat > "$WINEPREFIX"/virtual_desktop.reg <<!
+REGEDIT4
+[HKEY_CURRENT_USER\Software\Wine\Explorer]
+"Desktop"="Default"
+[HKEY_CURRENT_USER\Software\Wine\Explorer\Desktops]
+"Default"="1366x768"
+!
+
+wine regedit /S "$WINEPREFIX"/colors.reg
+wine regedit /S "$WINEPREFIX"/virtual_desktop.reg
+
 # Return the created prefix.
 printf -- '%s\n' "$WINEPREFIX"
-
-# cat > "$WINEPREFIX"/colors.reg <<!
-# REGEDIT4
-# [HKEY_CURRENT_USER\Control Panel\Colors]
-# "Background"="33 33 33"
-# !
-
-# cat > "$WINEPREFIX"/virtual_desktop.reg <<!
-# REGEDIT4
-# [HKEY_CURRENT_USER\Software\Wine\Explorer]
-# "Desktop"="Default"
-# [HKEY_CURRENT_USER\Software\Wine\Explorer\Desktops]
-# "Default"="1024x786"
-# !
-
-# wine regedit /S "$WINEPREFIX"/colors.reg
-# wine regedit /S "$WINEPREFIX"/virtual_desktop.reg
