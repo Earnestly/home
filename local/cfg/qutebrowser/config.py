@@ -49,7 +49,7 @@ config.set('colors.tabs.indicator.stop', color_background)
 config.set('colors.tabs.indicator.error', color_red)
 
 # Fonts
-font_ui = '10pt Inter UI'
+font_ui = '10pt Inter'
 font_mono = '12pt Inconsolatazi4'
 
 config.set('fonts.tabs', font_ui)
@@ -66,6 +66,7 @@ config.bind('<Alt-h>', 'tab-prev')
 config.bind('<Alt-l>', 'tab-next')
 
 config.bind('yy', 'yank -s')
+config.bind(';y', 'hint links yank-primary')
 config.bind('p', 'open -- {primary}')
 config.bind('P', 'open -t -- {primary}')
 
