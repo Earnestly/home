@@ -56,18 +56,24 @@ if !empty($DISPLAY)
     set clipboard=unnamed
 endif
 
-if &t_Co >= 256 || has('gui_running')
+if &t_Co >= 256 && (&term =~# '^xterm' || &term =~# '^tmux')
+    " This causes the :terminal feature to use libvterm's standard
+    " palette.  See g:terminal_ansi_colors to set them.
+    set termguicolors
+
+    " These are only set if TERM is equal to xterm, as I use tmux as well
+    " they need to be set explicitly.  See :help xterm-true-color
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+
     set background=dark
 
-    " XXX This causes the :terminal feature to use libvterm's standard palette.
-    "     See g:terminal_ansi_colors to set them.
-    set termguicolors
     let base16colorspace=256
     colorscheme base16-yesterdaynight
 
-    " By default my theme highlights the matching bracket with a lighter
-    " colour, while darkening the cursor, causing me endless confusion.
-    " Using standout reverses the effect.
+    " By default my theme highlights the matching parenthesis with a
+    " lighter colour, while darkening the cursor, causing me endless
+    " confusion.  Using standout reverses the effect.
     hi MatchParen gui=standout
 endif
 
