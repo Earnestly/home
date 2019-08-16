@@ -2,9 +2,9 @@
 
 # Font for window titles and bar.
 #font pango: Source Sans Pro Semibold, Italic 11
-font pango: Inter UI Medium 10.2
+font pango: Inter Medium 10
 
-new_window pixel 2
+default_border pixel 2
 workspace_auto_back_and_forth yes
 workspace_layout tabbed
 focus_on_window_activation none
@@ -193,7 +193,6 @@ assign [class="Wine"] 9
 
 bar {
     position top
-    # status_command i3status-conky
     status_command ~/study/shell/statusbar
 
     colors {
