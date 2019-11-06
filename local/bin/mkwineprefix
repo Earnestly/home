@@ -3,29 +3,27 @@
 
 # requires wine
 
-# Unlinks all directories pointing at the users home, optionally remaps z: to
-# /mnt instead of / and disables winemenubuilder to prevent .desktop/mime
-# generation.
-
 # TODO
-# * complete a mechanism to load external registery snippets
+#   manpage
+#   maybe better error reporting
 
-readonly argv0=mkwineprefix
+argv0=mkwineprefix
 
 usage() {
     cat <<!
-usage: $argv0 [-mgh] [-r dir] [-a winearch] prefix
+usage: $argv0 [-gmh] [-a winearch] [-r dir] [-d dir] prefix
 
 options
     -a winearch  win32 or win64 (default: win32)
-    -m           enable mono installation
     -g           enable gecko installation
+    -m           enable mono installation
     -r dir       symlinks WINEPREFIX/dosdevices/z: to dir instead of /
+    -d dir       directory containing .reg files to be loaded into the registry
     -h           this help message
 
 prefix
-    The path to the prefix, the current working directory is
-    prepended if not absolute
+    The path to the prefix.  The current working directory is prepended if
+    it is not absolute
 !
 }
 
@@ -42,14 +40,15 @@ warn() {
     printf -- "%s: $m" "$argv0" "$@" >&2
 }
 
-while getopts :a:r:gmh arg; do
+while getopts :a:d:r:gmh arg; do
     case $arg in
         a) arch=$OPTARG ;;
         g) with_gecko=1 ;;
         m) with_mono=1 ;;
         r) remap_z=$OPTARG ;;
+        d) directory=$OPTARG ;;
         h) usage; exit ;;
-        *) printf 'usage: %s [-mgh] [-r dir] [-a winearch] prefix\n' "$argv0" >&2; exit 1
+        *) usage; exit 1
     esac
 done
 shift $((OPTIND - 1))
@@ -60,19 +59,20 @@ fi
 
 prefix=$1
 
-case $arch in
-    '') arch=win32 ;;
-    win32) export WINEARCH=win32 ;;
-    win64) export WINEARCH=win64 ;;
+case ${arch:-win32} in
+    win32) arch=win32 ;;
+    win64) arch=win64 ;;
     *) error 22 '%s: invalid architecture (win32 or win64)\n' "$arch"
 esac
 
-if ! prefix=$(readlink -f "$1"); then
-    warn '%s: creating directory\n' "$1"
-    mkdir -p -- "$prefix"
-fi
+case $prefix in
+    [!/]*) prefix=$PWD/$prefix
+esac
 
-export WINEPREFIX="$prefix"
+mkdir -p -- "$prefix"
+
+export WINEARCH=$arch
+export WINEPREFIX=$prefix
 
 # XXX This is a bit of a proxy condition but I'm not sure how else to detect
 #     if a given path represents a wine prefix.
@@ -88,21 +88,17 @@ case $with_mono-$with_gecko in
     *-*) export WINEDLLOVERRIDES='winemenubuilder.exe,mscoree,mshtml=d'
 esac
 
-# Initialise the prefix now so we can fix it before any work is done with it.
+# Initialise the prefix now so that is updated before any work is done with it.
 if ! wine wineboot "${operation:--i}"; then
     exit
 fi
 
-# Remapping z: allows us to potentially limit what wine can see.
-
-# We don't check if the remap is a valid directory because creating
-# deliberately broken symlinks is a useful usecase.
+# Remapping z: potentially limits what wine can see.
+# We don't check if the remap is a valid directory because creating broken
+# symlinks is a valid usecase.
 if [ "$remap_z" ]; then
     rm -f -- "$WINEPREFIX"/dosdevices/z:
-
-    if ! ln -sf -- "$remap_z" "$WINEPREFIX"/dosdevices/z:; then
-        exit
-    fi
+    ln -sf -- "$remap_z" "$WINEPREFIX"/dosdevices/z:
 fi
 
 # Replace the symlinks pointing to directories which usually point outside the
@@ -114,22 +110,11 @@ for dir in "$WINEPREFIX"/drive_c/users/"$USER"/*; do
     fi
 done
 
-cat > "$WINEPREFIX"/colors.reg <<!
-REGEDIT4
-[HKEY_CURRENT_USER\Control Panel\Colors]
-"Background"="33 33 33"
-!
-
-cat > "$WINEPREFIX"/virtual_desktop.reg <<!
-REGEDIT4
-[HKEY_CURRENT_USER\Software\Wine\Explorer]
-"Desktop"="Default"
-[HKEY_CURRENT_USER\Software\Wine\Explorer\Desktops]
-"Default"="1366x768"
-!
-
-wine regedit /S "$WINEPREFIX"/colors.reg
-wine regedit /S "$WINEPREFIX"/virtual_desktop.reg
+if [ -d "$directory" ]; then
+    for reg in "$directory"/*.reg; do
+        wine regedit -S "$reg"
+    done
+fi
 
 # Return the created prefix.
 printf -- '%s\n' "$WINEPREFIX"
