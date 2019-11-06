@@ -13,8 +13,8 @@
 -->
 
 <llppconfig>
-    <ui-font size='18'>
-        <![CDATA[/home/earnest/local/data/fonts/Fontin-Regular.otf]]>
+    <ui-font size='16'>
+        <![CDATA[/usr/share/fonts/cff/inter/Inter-Medium.otf]]>
     </ui-font>
 
     <defaults zoom='100'
@@ -25,8 +25,8 @@
               vertical-scrollbar-visible='false'
               horizontal-scrollbar-visible='false'
 
-              uri-launcher='web &quot;%s&quot;'
-              path-launcher='terminal -d &quot;%s&quot;'>
+              uri-launcher='web &apos;%s&apos;'
+              path-launcher='terminal -e &apos;cd &quot;%s&quot; &amp;&amp; exec $SHELL&apos;'>
 
         <keymap mode='global'>
             <!-- Use emacs style motion in menus -->
