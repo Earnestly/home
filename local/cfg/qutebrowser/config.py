@@ -16,7 +16,9 @@ config.set('url.start_pages', ['about:blank'])
 config.set('url.searchengines', {'DEFAULT': 'https://duckduckgo.com/html/?q=!{}'})
 
 config.set('content.dns_prefetch', False)
+config.set('content.notifications', False)
 config.set('content.javascript.enabled', False)
+config.set('content.register_protocol_handler', False)
 
 config.set('tabs.background', True)
 config.set('tabs.last_close', 'close')
