@@ -1,7 +1,21 @@
-# LOCALDIR/cfg/qutebrowser/config.py
+# HOME/.local/etc/qutebrowser/config.py
 
 import setproctitle
 setproctitle.setproctitle('qutebrowser')
+
+import qutebrowser.api.interceptor
+
+
+def uri_rewrite(request: qutebrowser.api.interceptor.Request):
+    if request.request_url.host() == 'www.reddit.com':
+        request.request_url.setHost('old.reddit.com')
+        try:
+            request.redirect(request.request_url)
+        except:
+            pass
+
+
+qutebrowser.api.interceptor.register(uri_rewrite)
 
 config.load_autoconfig = False
 
@@ -29,6 +43,12 @@ config.set('hints.scatter', False)
 config.set('hints.uppercase', True)
 
 config.set('completion.use_best_match', True)
+
+with config.pattern('twitter.com') as p:
+    # IE 11's user agent forces twitter to use its older desktop UI for the
+    # time being.
+    p.content.headers.user_agent = 'Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko'
+    p.content.javascript.enabled = True
 
 # Colours
 color_background = '#343d46'
