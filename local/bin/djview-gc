@@ -1,46 +1,42 @@
-#!/bin/python3
+#!/bin/python3 --
 # djview-gc - remove DjView.conf history entries for files that no longer exist
 
 import os
 import sys
 import configparser
-from urllib.parse import urlparse
+import urllib.parse
 
+xdg = os.environ.get('XDG_CONFIG_HOME')
 
-def confdir(*args) -> str:
-    xdg = os.environ.get('XDG_CONFIG_HOME')
+if xdg is None or not os.path.isabs(xdg):
+    xdg = os.path.expanduser('~/.config')
 
-    if xdg is None or not os.path.isabs(xdg):
-        xdg = os.path.expanduser('~/.config')
+config = os.path.join(xdg, 'DjVuLibre/DjView.conf')
 
-    return os.path.join(xdg, *args)
+ini = configparser.RawConfigParser(allow_no_value=True)
 
-
-config = confdir('DjVuLibre/DjView.conf')
-
-ini = configparser.ConfigParser(allow_no_value=True)
-
-# Preserve the case for the keys as otherwise djview won't understand it.
+# Preserve the case for the keys as otherwise djview won't understand them.
 ini.optionxform = str
 ini.read(config)
 
-if not ini.sections():
-    sys.exit('djview-gc: {0}: empty file'.format(config))
+if not (ini.has_option('General', 'recentFiles')
+        and ini['General']['recentFiles']
+        and ini['General']['recentFiles'] != '@Invalid()'):
+    sys.exit('djview-gc: {0}: no recent files'.format(config))
 
-recentfiles = ini['General']['recentFiles']
-urls = [u.strip('"') for u in recentfiles.split(', ')]
+urls = [u.strip('"') for u in ini['General']['recentFiles'].split(', ')]
 
 extants = []
 
 for url in urls:
-    r = urlparse(url)
+    r = urllib.parse.urlparse(url)
 
-    if os.path.isfile(r.path):
-        extants.extend(['"' + r.scheme + '://' + r.path + '?' + r.query + '"'])
+    if os.path.isfile(urllib.parse.unquote(r.path)):
+        extants.extend(['"{0}"'.format(r.geturl())])
     else:
-        print('djview-gc: removed entry: {0}'.format(r.path))
+        print('djview-gc: removing entry for {0}'.format(r.path))
 
-ini['General']['recentFiles'] = ','.join(extants)
+ini['General']['recentFiles'] = ', '.join(extants)
 
 with open(config, 'w') as cfg:
     ini.write(cfg)
