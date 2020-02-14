@@ -1,44 +1,52 @@
-! XDG_CONFIG_HOME/X11/Xresources
+! HOME/.local/etc/X11/Xresources
 
-xterm.termName: xterm-256color
+XTerm.termName: xterm-256color
 
-xterm*faceName: Inconsolatazi4
-xterm*faceSize: 12
+! Expose sixel graphics.
+XTerm.vt100.decTerminalID: 340
+XTerm.vt100.sixelScrolling: true
+XTerm.vt100.numColorRegisters: 256
+
+! Use UTF-8 regardless of locale.
+XTerm.vt100.utf8: 2
+
+XTerm.vt100.faceName: Inconsolatazi4
+XTerm.vt100.faceSize: 12
 
 ! By setting the minimum size xterm will no longer fallback to ! bitmap fonts
 ! when using the smaller-vt-font action.  (This is probably a bug.)
-xterm*faceSize1: 6
+XTerm.vt100.faceSize1: 6
 
 ! The default of 1024 (/usr/share/X11/app-defaults/XTerm) is a tad low.
-xterm*saveLines: 10000
+XTerm.vt100.saveLines: 10000
 
 ! Remove the black 2px border around the terminal window.
-xterm*borderWidth: 0
+XTerm.borderWidth: 0
 
 ! By setting the urgency hint my WM can respond accordingly.
-xterm*bellIsUrgent: true
+XTerm.vt100.bellIsUrgent: true
 
 ! Reduce the time it takes when printing many pages of text rapidly.
-xterm*jumpScroll: true
-xterm*fastScroll: true
+XTerm.vt100.jumpScroll: true
+XTerm.vt100.fastScroll: true
 
 ! Then do it in parallel.
-xterm*multiScroll: true
+XTerm.vt100.multiScroll: true
 
 ! As UTF-8 locales are typically available xterm will assume 8-bit input which
 ! disrupts programs using Alt as a modifer.
-xterm*metaSendsEscape: true
+XTerm.vt100.metaSendsEscape: true
 
 ! Regard ! # $ % & ' ( ) + , - . / : ; = ? @ ~ as alpha-numericals (class 48)
 ! to allow double-click ! selection of strings containing url characters.
-xterm*charClass: 33:48,35-41:48,43-47:48,58-59:48,61:48,63-64:48,126:48
+XTerm.vt100.charClass: 33:48,35-41:48,43-47:48,58-59:48,61:48,63-64:48,126:48
 
 ! On Arch Linux the XLFD infrastucture support has been essentially dropped.
 ! As a result when using the popup-menu it will cause xterm to abort as it
 ! cannot find a suitable font with which to display the menu.
-xterm.omitTranslation: popup-menu
+XTerm.omitTranslation: popup-menu
 
-xterm.vt100.translations: #override \
+XTerm.vt100.translations: #override \
     Shift Ctrl <KeyPress> O: copy-selection(PRIMARY) exec-formatted("web '%t'", PRIMARY)\n \
     Shift Ctrl <KeyPress> U: select-needle("://") select-set(PRIMARY)\n \
     Shift Ctrl <KeyPress> V: insert-selection(CLIPBOARD)\n \
@@ -48,28 +56,28 @@ xterm.vt100.translations: #override \
     Ctrl <KeyPress> plus: larger-vt-font()
 
 ! Base16 Yesterday Night by https://github.com/froznshiva
-xterm*foreground: #dfe1e8
-xterm*background: #343d46
-xterm*cursorColor: #dfe1e8
-xterm*color0: #343d46
-xterm*color1: #cc6666
-xterm*color2: #b5bd68
-xterm*color3: #f0c674
-xterm*color4: #81a2be
-xterm*color5: #b294bb
-xterm*color6: #8abeb7
-xterm*color7: #dfe1e8
-xterm*color8: #a7adba
-xterm*color9: #cc6666
-xterm*color10: #b5bd68
-xterm*color11: #f0c674
-xterm*color12: #81a2be
-xterm*color13: #b294bb
-xterm*color14: #8abeb7
-xterm*color15: #ffffff
-xterm*color16: #de935f
-xterm*color17: #a3685a
-xterm*color18: #4f5b66
-xterm*color19: #65737e
-xterm*color20: #c0c5ce
-xterm*color21: #eff1f5
+XTerm.vt100.foreground: #dfe1e8
+XTerm.vt100.background: #343d46
+XTerm.vt100.cursorColor: #dfe1e8
+XTerm.vt100.color0: #343d46
+XTerm.vt100.color1: #cc6666
+XTerm.vt100.color2: #b5bd68
+XTerm.vt100.color3: #f0c674
+XTerm.vt100.color4: #81a2be
+XTerm.vt100.color5: #b294bb
+XTerm.vt100.color6: #8abeb7
+XTerm.vt100.color7: #dfe1e8
+XTerm.vt100.color8: #a7adba
+XTerm.vt100.color9: #cc6666
+XTerm.vt100.color10: #b5bd68
+XTerm.vt100.color11: #f0c674
+XTerm.vt100.color12: #81a2be
+XTerm.vt100.color13: #b294bb
+XTerm.vt100.color14: #8abeb7
+XTerm.vt100.color15: #ffffff
+XTerm.vt100.color16: #de935f
+XTerm.vt100.color17: #a3685a
+XTerm.vt100.color18: #4f5b66
+XTerm.vt100.color19: #65737e
+XTerm.vt100.color20: #c0c5ce
+XTerm.vt100.color21: #eff1f5
