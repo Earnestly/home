@@ -3,34 +3,29 @@
 
 # requires git pacman pacutils
 
-# POSIX with local
-# shellcheck disable=SC2039
-
 # Allow variables in printf formatter to expose the DSL
 # shellcheck disable=SC2059
 
 error() {
-    local r=$1 m=$2
+    r=$1 m=$2
     shift 2
     printf -- "asr: $m" "$@" >&2
     exit "$r"
 }
 
 warn() {
-    local m=$1
+    m=$1
     shift
     printf -- "asr: $m" "$@" >&2
 }
 
 clone() {
-    local repo pkg=$1
-
     set -- 'git://projects.archlinux.org/svntogit/packages.git' \
            'git://projects.archlinux.org/svntogit/community.git'
 
     for repo in "$@"; do
-        if git ls-remote --exit-code "$repo" refs/heads/packages/"$pkg"; then
-            git clone -nb packages/"$pkg" --single-branch "$repo" "$pkg"
+        if git ls-remote --exit-code "$repo" refs/heads/packages/"$1"; then
+            git clone -nb packages/"$1" --single-branch "$repo" "$1"
 
             # Break out if we succeed to avoid duplicate packages being found.
             return
@@ -41,9 +36,7 @@ clone() {
 }
 
 checkout() {
-    local pkg=$1
-
-    if clone "$pkg" && cd "$pkg"; then
+    if clone "$1" && cd "$1"; then
         git checkout HEAD:trunk -- .
     else
         return
@@ -56,8 +49,7 @@ if [ ! "$1" ]; then
 fi
 
 # Attempt to blindly checkout the package as this should work in the common
-# case.  The error checking is only necessary in a few annoying edge-cases so
-# we avoid it until needed.
+# case.  The error checking is only necessary in a few annoying edge-cases.
 if ! checkout "$1"; then
     # Check to see if the package was from a split-package by determining if
     # it has a pkgbase.
@@ -69,12 +61,12 @@ if ! checkout "$1"; then
                 testing|core|extra) ;;
                 community|community-testing) ;;
                 multilib|multilib-testing) ;;
-                *) error '%s: not an official repository\n' "$repo"
+                *) error 1 '%s: not an official repository\n' "$repo"
             esac
         fi
 
         if ! checkout "$pkgbase"; then
-            error '%s: checkout failed\n' "$pkgbase"
+            error 1 '%s: checkout failed\n' "$pkgbase"
         fi
     else
         # Sometimes we might get a virtual package.  If the package is
@@ -87,19 +79,19 @@ if ! checkout "$1"; then
         #       these cases.
         satisfies=$(pacsift --sync --exact --satisfies="$1")
 
-        case $(printf -- '%s' "$satisfies" | wc -l) in
-            0) error '%s: no such package\n' "$1"
+        case $(printf '%s' "$satisfies" | wc -l) in
+            0) error 1 '%s: no such package\n' "$1"
                ;;
             1) warn '%s: provided by %s\n' "$1" "$satisfies"
 
                if ! checkout "${satisfies#*/}"; then
-                   error '%s: checkout failed\n' "${satisfies#*/}"
+                   error 1 '%s: checkout failed\n' "${satisfies#*/}"
                fi
 
                exit
                ;;
             *) warn '%s: provided by multiple packages:\n' "$1"
-               printf -- '%s\n' "$satisfies" >&2
+               printf '%s\n' "$satisfies" >&2
                exit 1
         esac
     fi
