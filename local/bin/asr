@@ -1,7 +1,7 @@
 #!/bin/sh --
 # asr - download arch linux build files from the svntogit repositories
 
-# requires git pacman pacutils
+# requires git expac pacman pacutils
 
 # Allow variables in printf formatter to expose the DSL
 # shellcheck disable=SC2059
@@ -9,23 +9,25 @@
 error() {
     r=$1 m=$2
     shift 2
-    printf -- "asr: $m" "$@" >&2
+    printf "asr: $m" "$@" >&2
     exit "$r"
 }
 
 warn() {
     m=$1
     shift
-    printf -- "asr: $m" "$@" >&2
+    printf "asr: $m" "$@" >&2
 }
 
 clone() {
-    set -- 'git://projects.archlinux.org/svntogit/packages.git' \
-           'git://projects.archlinux.org/svntogit/community.git'
+    pkg=$1
+
+    set -- https://git.archlinux.org/svntogit/packages.git \
+           https://git.archlinux.org/svntogit/community.git
 
     for repo in "$@"; do
-        if git ls-remote --exit-code "$repo" refs/heads/packages/"$1"; then
-            git clone -nb packages/"$1" --single-branch "$repo" "$1"
+        if git ls-remote --exit-code "$repo" refs/heads/packages/"$pkg"; then
+            git clone -nb packages/"$pkg" --single-branch "$repo" "$pkg"
 
             # Break out if we succeed to avoid duplicate packages being found.
             return
@@ -87,8 +89,6 @@ if ! checkout "$1"; then
                if ! checkout "${satisfies#*/}"; then
                    error 1 '%s: checkout failed\n' "${satisfies#*/}"
                fi
-
-               exit
                ;;
             *) warn '%s: provided by multiple packages:\n' "$1"
                printf '%s\n' "$satisfies" >&2
