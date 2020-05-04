@@ -11,20 +11,26 @@ argv0=mkwineprefix
 
 usage() {
     cat <<!
-usage: $argv0 [-gmh] [-a winearch] [-r dir] [-d dir] prefix
+usage: $argv0 [-gmh] [-a winearch] [-r destdir] [-d regdir] prefix
 
 options
     -a winearch  win32 or win64 (default: win32)
     -g           enable gecko installation
     -m           enable mono installation
-    -r dir       symlinks WINEPREFIX/dosdevices/z: to dir instead of /
-    -d dir       directory containing .reg files to be loaded into the registry
+    -r destdir   symlinks WINEPREFIX/dosdevices/z: to dir instead of /
+    -d regdir    directory containing .reg files to be loaded into the registry
     -h           this help message
 
 prefix
     The path to the prefix.  The current working directory is prepended if
     it is not absolute
 !
+}
+
+warn() {
+    m=$1
+    shift
+    printf -- "%s: $m" "$argv0" "$@" >&2
 }
 
 error() {
@@ -34,30 +40,24 @@ error() {
     exit "$r"
 }
 
-warn() {
-    m=$1
-    shift
-    printf -- "%s: $m" "$argv0" "$@" >&2
-}
-
 while getopts :a:d:r:gmh arg; do
     case $arg in
         a) arch=$OPTARG ;;
         g) with_gecko=1 ;;
         m) with_mono=1 ;;
         r) remap_z=$OPTARG ;;
-        d) directory=$OPTARG ;;
+        d) regdir=$OPTARG ;;
         h) usage; exit ;;
         *) usage; exit 1
     esac
 done
 shift $((OPTIND - 1))
 
-if [ ! "$1" ]; then
+prefix=$1
+
+if [ ! "$prefix" ]; then
     error 22 'no prefix provided\n'
 fi
-
-prefix=$1
 
 case ${arch:-win32} in
     win32) arch=win32 ;;
@@ -110,11 +110,11 @@ for dir in "$WINEPREFIX"/drive_c/users/"$USER"/*; do
     fi
 done
 
-if [ -d "$directory" ]; then
-    for reg in "$directory"/*.reg; do
+if [ -d "$regdir" ]; then
+    for reg in "$regdir"/*.reg; do
         wine regedit -S "$reg"
     done
 fi
 
 # Return the created prefix.
-printf -- '%s\n' "$WINEPREFIX"
+printf '%s\n' "$WINEPREFIX"
