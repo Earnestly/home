@@ -1,0 +1,18 @@
+! Base16 Yesterday Night by https://github.com/froznshiva
+
+#define black   #343d46
+#define maroon  #cc6666
+#define green   #b5bd68
+#define olive   #f0c674
+#define navy    #81a2be
+#define purple  #b294bb
+#define teal    #8abeb7
+#define silver  #dfe1e8
+#define grey    #a7adba
+#define red     #cc6666
+#define lime    #b5bd68
+#define yellow  #f0c674
+#define blue    #81a2be
+#define fuchsia #b294bb
+#define aqua    #8abeb7
+#define white   #ffffff
