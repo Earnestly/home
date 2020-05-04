@@ -1,43 +1,5 @@
-#!/bin/bash
-# dclip - upload primary selection to a pastebin and offer menu of actions
+#!/bin/sh --
+# dclip - upload primary selection to a pastebin
+# requires xclip curl menu
 
-# requires bemenu xclip curl
-
-yank=(xclip -o)
-put=(xclip -i)
-pastesite=(curl -F file=@- https://0x0.st)
-browser=${BROWSER:-firefox}
-
-read -r font < "${XDG_CONFIG_HOME:-$HOME/.config}"/dmenu/font
-
-bemenu_opts=(
-    --fn "$font" -w -i -p 'DCLIP'
-    --tf '#eff1f5' --tb '#bf616a'
-    --ff '#c0c5ce' --fb '#2b303b'
-    --sf '#bf616a' --sb '#343d46'
-    --nf '#65737e' --nb '#343d46'
-    --hf '#c0c5ce' --hb '#343d46'
-    --scf '#65737e' --scb '#343d46'
-    --scrollbar autohide
-)
-
-options=(
-    'Copy to primary selection'
-    'Open with browser'
-)
-
-if [[ $1 ]]; then
-    comm=("$@")
-else
-    comm=("${yank[@]}")
-fi
-
-upload=$(command "${comm[@]}" | command "${pastesite[@]}")
-
-pick=$(printf '%s\n' "${options[@]}" | bemenu "${bemenu_opts[@]}")
-
-case $pick in
-    *primary*) command "${put[@]}" <<< "$upload" ;;
-    *browser*) command "$browser" "$upload" ;;
-    *) exit 1 ;;
-esac
+xclip -o | curl -sF file=@- https://0x0.st | menu | xclip -i -r
