@@ -1,54 +1,36 @@
 #!/bin/sh --
 # ditch - display menu of live twitch streamers from list of stream IDs
+# requires mktemp jq curl bemenu mpv youtube-dl
 
-# requires awk jq curl bemenu mpv youtube-dl streamlink
+# NOTE
+#   - Cannot use curl -Z without the use of a temporary directory yet:
+#     <https://github.com/curl/curl/issues/5175>
 
-# Feel free to use these API keys.
-# Backup: jzkbprff40iqj646a697cyrvl0zt2m6 (youtube-dl)
-client_id=rfbp97unyyikyzw1y9cy87iii29lgjk
-client_version=application/vnd.twitchtv.v5+json
+# This API key is found on every twitch page.
+id=kimne78kx3ncx6brgo4mv6wki5h1ko
+maxquery=100
 
-chunkurls() {
-    # Twitch only allows a maximum of 100 streamers in a single query.
-    # https://dev.twitch.tv/docs/v5/reference/streams/#get-stream-by-user
-    xargs -n 100 | awk '
-    BEGIN{
-        OFS = ","
-    }
+tmp=$(mktemp -d /tmp/ditch_XXXX)
+trap 'rm -rf -- "$tmp"' EXIT
 
-    NF{
-        $1 = $1
-        printf "https://api.twitch.tv/kraken/streams?channel=%s&limit=%d\n", $0, NF
-    }'
-}
+xargs -E '' -n "$maxquery" | while read -r section; do
+    # A section is a series of space separated integers generated elsewhere.
+    # shellcheck disable=SC2086
+    set -- $section
 
-# NOTE: This leaves the responsibility of multi-tasking potentially many
-#       processes to the kernel.  Neither gnu parallel(1) or xargs(1) proved
-#       to be very capable of this without complication and awkwardness, and
-#       neither were any faster.
-pulljson() {
-    while read -r url; do
-        curl -sH "Accept: $client_version" -H "Client-ID: $client_id" "$url" | readjson &
-    done
+    IFS=,
+    printf 'url https://api.twitch.tv/kraken/streams?channel=%s&limit=%d\n' "$*" "$#"
+    unset IFS
 
-    wait
-}
-
-readjson() {
-    jq -r '.streams[] | [.viewers, .channel.name, .channel.game[:50], .channel.status] | @tsv'
-}
-
-viewsort() {
-    sort -t '	' -nr | cut -f2- | column -ts '	'
-}
-
-stream() {
-    while read -r streamer _; do
+    i=$((i + 1))
+    printf 'output %s/%d\n' "$tmp" "$i"
+    printf 'write-out %%{filename_effective}\\n\n'
+done\
+    | curl -sZH 'Accept: application/vnd.twitchtv.v5+json' -H "Client-ID: $id" -K - \
+    | xargs -E '' jq -rs 'map(.streams[]) | sort_by(-.viewers)[] | [.channel.name, .channel.game[:50], .channel.status] | @tsv' \
+    | column -ts '	' \
+    | menu --ifne -l 30 -p STREAM | while read -r streamer _; do
         if [ "$streamer" ]; then
-            # Background in order to support multiple selections.
-            streamlink -vp 'mpv --quiet' -t 'MPV:{author}:{title}' --hls-live-edge 10 https://twitch.tv/"$streamer" best &
+            mpv --quiet https://twitch.tv/"$streamer" &
         fi
     done
-}
-
-chunkurls | pulljson | viewsort | menu --ifne -l 30 -p STREAM | stream
