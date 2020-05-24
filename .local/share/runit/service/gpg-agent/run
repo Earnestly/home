@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+
+# gpg-agent has no way to simply run in the foreground[0] so --supervised is
+# used as an alternative but needs something like systemd-socket-activate as it
+# uses the sd_listen_fds(3) API.
+
+# Because systemd-socket-activate preserves a selected number of environment
+# variables[1] any additional variables need to be whitelisted with multiple -E
+# flags, e.g.:
+
+#   exec systemd-socket-activate -l "$(gpgconf --list-dir agent-socket)" \
+#        -E GNUPGHOME="$GNUPGHOME" \
+#        -E XDG_CACHE_HOME="$XDG_CACHE_HOME" gpg-agent --supervised 2>&1
+
+# Instead of worrying about this an alternative python script was provided
+# (with some modifications) by grawity[2] that does essentially the same job
+# but with only a dependency on python.
+
+# 0. https://lists.gnupg.org/pipermail/gnupg-devel/2006-August/023090.html
+# 1. https://github.com/systemd/systemd/blob/master/src/activate/activate.c#L139
+# 2. https://github.com/grawity
+
+import os
+import stat
+import socket
+
+os.environ['LISTEN_PID'] = str(os.getpid())
+os.environ['LISTEN_FDS'] = str(1)
+
+path = os.popen('gpgconf --list-dirs agent-socket').read().strip()
+
+if os.path.exists(path):
+    if stat.S_ISSOCK(os.stat(path).st_mode):
+        os.remove(path)
+    else:
+        sys.exit("gpg-agent-supervised: {0}: file exists and is not a socket".format(path))
+
+sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+sock.bind(path)
+sock.listen()
+sock.set_inheritable(True)
+
+if sock.fileno() != 3:
+    os.dup2(sock.fileno(), 3)
+    sock.close()
+
+os.dup2(1, 2)
+os.execvp('gpg-agent', ['gpg-agent', '--supervised'])

@@ -1,3 +1,0 @@
-#!/bin/sh
-export RANDFILE=$XDG_CONFIG_HOME/mutt/rnd
-exec dtach -A "$XDG_RUNTIME_DIR"/mutt -E mutt -F "$XDG_CONFIG_HOME"/mutt/muttrc

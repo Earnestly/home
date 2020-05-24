@@ -1,2 +1,0 @@
-#!/bin/sh
-exec dtach -A "$XDG_RUNTIME_DIR"/weechat -E weechat

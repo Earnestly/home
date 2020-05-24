@@ -1,4 +1,0 @@
-#!/bin/sh
-set -e
-sv check pulseaudio
-exec 2>&1 mpd --no-daemon --stderr

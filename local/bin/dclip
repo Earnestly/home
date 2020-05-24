@@ -1,5 +1,0 @@
-#!/bin/sh --
-# dclip - upload primary selection to a pastebin
-# requires xclip curl menu
-
-xclip -o | curl -sF file=@- https://0x0.st | menu | xclip -i -r

@@ -1,0 +1,5 @@
+#!/bin/sh --
+
+# Used by openssl via elinks -dump
+export RANDFILE="$XDG_CONFIG_HOME"/mutt/rnd
+exec dtach -A "$XDG_RUNTIME_DIR"/mutt -Ez mutt

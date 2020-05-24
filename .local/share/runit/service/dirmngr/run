@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+# Should turn this into a tool...
+
+import os
+import stat
+import socket
+
+os.environ['LISTEN_PID'] = str(os.getpid())
+os.environ['LISTEN_FDS'] = str(1)
+
+path = os.popen('gpgconf --list-dirs dirmngr-socket').read().strip()
+
+if os.path.exists(path):
+    if stat.S_ISSOCK(os.stat(path).st_mode):
+        os.remove(path)
+    else:
+        sys.exit("dirmngr-supervised: {0}: file exists and is not a socket".format(path))
+
+sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+sock.bind(path)
+sock.listen()
+sock.set_inheritable(True)
+
+if sock.fileno() != 3:
+    os.dup2(sock.fileno(), 3)
+    sock.close()
+
+os.dup2(1, 2)
+os.execvp('dirmngr', ['dirmngr', '--supervised'])

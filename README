@@ -2,85 +2,25 @@ Dotfiles <https://github.com/Earnestly/dotfiles>
 
 INTRODUCTION
 
-  These configurations depend heavily on the XDG Base Directory
-  Specification, custom environments, and command-line options to relocate
-  the default directories and files into a more reasonable structure.
+    https://gist.github.com/Earnestly/84cf9670b7e11ae2eac6f753910efebe
 
-  See <https://wiki.archlinux.org/index.php/XDG_Base_Directory_support>
-
-GENERAL LAYOUT
-
-  The structure I've chosen is mostly to mimic the /usr/local convention
-  and the FHS. There are small changes to the naming and meaning of the
-  directories based on Plan 9 but most should be fairly understandable.
-
-    HOME/local (LOCALDIR)
+    HOME/.local
     |- bin
-    |- cfg
-    |- data
+    |- etc
+    |- lib
+    |- share
     |- lib
     `- var
        |- cache
        `- log
 
-  Note that the data directory is similar to share but deliberately more
-  general. Data normally in share would appear here along with other
-  architecture independent library-like files or persistent state.
-
 ENVIRONMENTS
 
-  LOCALDIR=$HOME/local
-  XDG_DATA_HOME=$LOCALDIR/data
-  XDG_CONFIG_HOME=$LOCALDIR/cfg
-  XDG_CACHE_HOME=$LOCALDIR/var/cache
-
-ASSUMPTIONS
-
-  These configurations need to make a few unfortunate assumptions about
-  the environment, I'll attempt to list the known ones here.
-
-  - The shell is zsh built with --enable-etcdir=/etc/zsh.
-
-    The ZDOTDIR environment configured as HOME/local/cfg/zsh in
-    /etc/zsh/zshenv as the LOCALDIR environment is not available at
-    this point.
-
-  - The Xorg server is started with sx.  <https://github.com/Earnestly/sx>
-
-  - The system-config package is installed.
-    <https://github.com/Earnestly/pkgbuilds/tree/master/system-config>
-
-  - HOME/local is a directory and the environment LOCALDIR refers to it.
-
-  - XDG_CONFIG_HOME, XDG_CACHE_HOME and XDG_DATA_HOME environments are
-    correctly configured as defined in ENVIRONMENTS.
+  XDG_CONFIG_HOME=$HOME/.local/etc
+  XDG_CACHE_HOME=$HOME/.local/var/cache
 
 ISSUES
 
-  - zsh
+  HOME/.pki
 
-    Zsh is able to relocate its various configurations via ZDOTDIR,
-    however the files are all still prefixed with a dot.
-
-      > We might need to think about rules for finding e.g. ~/.zsh/zshrc
-      > instead of ~/.zsh/.zshrc since the extra dot is pretty unhelpful.
-      > (E.g. look for the file without the dot if a parent directory does
-      > have a dot at the start. We don't want to look for ~/zshrc, that
-      > could easily be problematic.)
-
-    <http://www.zsh.org/mla/workers/2013/msg00702.html>
-
-  - llpp
-
-    Stores history in the configuration file making it difficult to
-    share nicely across multiple machines.
-
-  - systemd
-
-    Systemd user sessions started by user@.service are not able to
-    easily inherit per-user environments (that depend on user specific
-    values such as HOME) without creating a systemd --user wrapper. PAM
-    environments are also unable to provide this. Due to the user@.service
-    taking a UID instead of the username, it's not possible to build the
-    environments in the service or via a drop-in configuration.
-    <https://github.com/systemd/systemd/issues/1476>
+    https://github.com/chromium/chromium/blob/master/crypto/nss_util.cc#L51

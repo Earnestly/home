@@ -1,0 +1,2 @@
+#!/bin/sh --
+curl -sF file=@- https://0x0.st

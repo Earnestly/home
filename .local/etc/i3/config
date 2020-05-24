@@ -1,0 +1,208 @@
+# HOME/.local/etc/i3/config
+
+# Font for window titles and bar.
+#font pango: Source Sans Pro Semibold, Italic 11
+font pango: Inter Medium 10
+
+default_border pixel 2
+workspace_auto_back_and_forth yes
+workspace_layout tabbed
+focus_on_window_activation none
+
+# class                 border  backgnd text    indicator
+client.focused          #65737e #65737e #c0c5ce #bf616a
+client.focused_inactive #343d46 #343d46 #c0c5ce #bf616a
+client.unfocused        #343d46 #343d46 #65737e #0000ff
+client.urgent           #bf616a #bf616a #eff1f5 #ff00ff
+
+# Keybinds.
+set $mod mod4
+floating_modifier $mod
+
+bindsym $mod+Return exec --no-startup-id terminal
+bindsym XF86Launch1 exec --no-startup-id web
+bindsym XF86TouchpadToggle exec trackpad-toggle
+
+# Global media keys.
+bindsym XF86AudioMute exec --no-startup-id ponymix toggle
+bindsym XF86AudioMicMute exec --no-startup-id ponymix -t source -d alsa_input.pci-0000_00_1b.0.analog-stereo toggle
+
+bindsym XF86AudioLowerVolume exec --no-startup-id ponymix decrease 3
+bindsym XF86AudioRaiseVolume exec --no-startup-id ponymix increase 3
+
+bindsym XF86AudioStop exec mpc stop
+bindsym XF86AudioPlay exec mpc toggle
+bindsym XF86AudioNext exec mpc next
+bindsym XF86AudioPrev exec mpc prev
+
+# bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 2
+# bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 2
+
+bindsym $mod+u [urgent="latest"] focus
+bindsym $mod+q kill
+
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+bindsym $mod+Ctrl+h move container to output left
+bindsym $mod+Ctrl+j move container to output down
+bindsym $mod+Ctrl+k move container to output up
+bindsym $mod+Ctrl+l move container to output right
+
+bindsym $mod+Ctrl+Shift+h move workspace to output right
+bindsym $mod+Ctrl+Shift+j move workspace to output down
+bindsym $mod+Ctrl+Shift+k move workspace to output up
+bindsym $mod+Ctrl+Shift+l move workspace to output left
+
+bindsym $mod+semicolon split h
+bindsym $mod+v split v
+
+bindsym $mod+f fullscreen
+
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+space focus mode_toggle
+
+bindsym $mod+a focus parent
+bindsym $mod+d focus child
+
+bindsym $mod+1 workspace 1
+bindsym $mod+2 workspace 2
+bindsym $mod+3 workspace 3
+bindsym $mod+4 workspace 4
+bindsym $mod+5 workspace 5
+bindsym $mod+6 workspace 6
+bindsym $mod+7 workspace 7
+bindsym $mod+8 workspace 8
+bindsym $mod+9 workspace 9
+bindsym $mod+0 workspace 10
+
+bindsym $mod+F1 workspace 11
+bindsym $mod+F2 workspace 12
+bindsym $mod+F3 workspace 13
+bindsym $mod+F4 workspace 14
+bindsym $mod+F5 workspace 15
+bindsym $mod+F6 workspace 16
+bindsym $mod+F7 workspace 17
+bindsym $mod+F8 workspace 18
+bindsym $mod+F9 workspace 19
+bindsym $mod+F10 workspace 20
+bindsym $mod+F11 workspace 21
+bindsym $mod+F12 workspace 22
+
+# Move focused container to workspace.
+bindsym $mod+Shift+1 move container to workspace 1
+bindsym $mod+Shift+2 move container to workspace 2
+bindsym $mod+Shift+3 move container to workspace 3
+bindsym $mod+Shift+4 move container to workspace 4
+bindsym $mod+Shift+5 move container to workspace 5
+bindsym $mod+Shift+6 move container to workspace 6
+bindsym $mod+Shift+7 move container to workspace 7
+bindsym $mod+Shift+8 move container to workspace 8
+bindsym $mod+Shift+9 move container to workspace 9
+bindsym $mod+Shift+0 move container to workspace 10
+
+bindsym $mod+Shift+F1 move container to workspace 11
+bindsym $mod+Shift+F2 move container to workspace 12
+bindsym $mod+Shift+F3 move container to workspace 13
+bindsym $mod+Shift+F4 move container to workspace 14
+bindsym $mod+Shift+F5 move container to workspace 15
+bindsym $mod+Shift+F6 move container to workspace 16
+bindsym $mod+Shift+F7 move container to workspace 17
+bindsym $mod+Shift+F8 move container to workspace 18
+bindsym $mod+Shift+F9 move container to workspace 19
+bindsym $mod+Shift+F10 move container to workspace 20
+bindsym $mod+Shift+F11 move container to workspace 21
+bindsym $mod+Shift+F12 move container to workspace 22
+
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+bindsym $mod+Shift+e exit
+
+mode "RESIZE MODE" {
+    bindsym h resize shrink width 1 px or 1 ppt
+    bindsym j resize grow height 1 px or 1 ppt
+    bindsym k resize shrink height 1 px or 1 ppt
+    bindsym l resize grow width 1 px or 1 ppt
+
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "RESIZE MODE"
+
+mode "MENU MODE" {
+    bindsym d exec --no-startup-id ditch < "$HOME"/.local/share/ditch/streamers; mode "default"
+    bindsym s exec --no-startup-id switch; mode "default"
+    bindsym l exec --no-startup-id mpass; mode "default"
+    bindsym y exec --no-startup-id mclip; mode "default"
+    bindsym p exec --no-startup-id dmenu_run; mode "default"
+    # bindsym g exec --no-startup-id taverner; mode "default"
+    # bindsym u exec --no-startup-id bemenu-loader "$HOME"/.local/share/plaid/plaid_menu; mode "default"
+    bindsym o exec --no-startup-id menu-loader "$HOME"/.local/share/menu/pdf; mode "default"
+
+    bindsym --whole-window button1 exec --no-startup-id maim -uso | pb | menu | xclip -i -r; mode "default"
+
+    bindsym Escape mode "default"
+}
+bindsym $mod+p mode "MENU MODE"
+
+# Music control.
+mode "MPD CONTROL" {
+    bindsym s exec --no-startup-id mpc stop
+    bindsym p exec --no-startup-id mpc toggle
+    bindsym l exec --no-startup-id mpc next
+    bindsym h exec --no-startup-id mpc prev
+    bindsym g exec --no-startup-id mpc play 1
+    bindsym r exec --no-startup-id mpc repeat && mpc single
+    bindsym equal exec --no-startup-id mpc volume +3
+    bindsym minus exec --no-startup-id mpc volume -3
+    bindsym XF86AudioMute exec --no-startup-id ponymix toggle
+    bindsym XF86AudioLowerVolume exec --no-startup-id mpc volume -3
+    bindsym XF86AudioRaiseVolume exec --no-startup-id mpc volume +3
+
+    bindsym Escape mode "default"
+}
+bindsym $mod+m mode "MPD CONTROL"
+
+# mode "LAYOUT MODE" {
+#     # XXX I should turn these into scripts so I can access environment
+#     #     variables and possibly do more with it.
+#     bindsym 3 exec --no-startup-id i3-msg "workspace 3; append_layout $HOME/.local/etc/i3/layouts/tabbed_nmaster.json"
+
+#     bindsym Escape mode "default"
+# }
+# bindsym $mod+t mode "LAYOUT MODE"
+
+for_window [class="Blender" title="Blender User Preferences"] floating enable
+for_window [class="fontforge" title="Layers"] floating enable
+for_window [class="fontforge" title="Tools"] floating enable
+for_window [class="fontforge" title="Point Info"] floating enable
+for_window [class="fontforge" title="Problem explanation"] floating enable
+
+assign [class="qutebrowser"] 2
+assign [class="Chromium"] 2
+assign [class="mpv"] 3
+assign [class="Wine"] 9
+
+bar {
+    position top
+    status_command ~/study/shell/statusbar
+
+    colors {
+        background         #2b303b
+        separator          #2b303b
+        focused_workspace  #2b303b #2b303b #c0c5ce
+        active_workspace   #2b303b #2b303b #4f5b66
+        inactive_workspace #2b303b #2b303b #4f5b66
+        urgent_workspace   #bf616a #bf616a #eff1f5
+    }
+}

@@ -1,8 +1,0 @@
-#!/bin/sh --
-# cmpver - pretty print vercmp output
-
-case $(vercmp "$1" "$2") in
-    1)  printf '%s > %s\n' "$1" "$2" ;;
-    0)  printf '%s = %s\n' "$1" "$2" ;;
-    -1) printf '%s < %s\n' "$1" "$2" ;;
-esac

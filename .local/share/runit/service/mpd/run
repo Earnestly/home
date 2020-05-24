@@ -1,0 +1,4 @@
+#!/bin/sh --
+if sv check pulseaudio; then
+    exec mpd --no-daemon --stderr 2>&1
+fi

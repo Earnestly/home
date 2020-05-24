@@ -1,0 +1,82 @@
+/* HOME/.local/etc/X11/Xresources */
+
+XTerm.termName: xterm-256color
+
+/* Expose sixel graphics. */
+XTerm.vt100.decTerminalID: 340
+XTerm.vt100.sixelScrolling: true
+XTerm.vt100.numColorRegisters: 256
+
+/* Use UTF-8 regardless of locale. */
+XTerm.vt100.utf8: 2
+
+XTerm.vt100.faceName: Inconsolatazi4
+XTerm.vt100.faceSize: 12
+
+/* By setting the minimum size xterm will no longer fallback to bitmap fonts
+ * when using the smaller-vt-font action.  (This is probably a bug.) */
+XTerm.vt100.faceSize1: 6
+
+/* The default of 1024 (/usr/share/X11/app-defaults/XTerm) is a tad low. */
+XTerm.vt100.saveLines: 10000
+
+/* Remove the black 2px border around the terminal window. */
+XTerm.borderWidth: 0
+
+/* By setting the urgency hint my WM can respond accordingly. */
+XTerm.vt100.bellIsUrgent: true
+
+/* Reduce the time it takes when printing many pages of text rapidly. */
+XTerm.vt100.jumpScroll: true
+XTerm.vt100.fastScroll: true
+
+/* Then do it in parallel. */
+XTerm.vt100.multiScroll: true
+
+/* As UTF-8 locales are typically available xterm will assume 8-bit input which
+ * disrupts programs using Alt as a modifer. */
+XTerm.vt100.metaSendsEscape: true
+
+/* Regard ! # $ % & ' ( ) * + , - . / : ; = ? @ ~ as alpha-numericals (class
+ * 48) to allow double-click selection of strings containing url characters. */
+XTerm.vt100.charClass: 33:48,35-47:48,58-59:48,61:48,63-64:48,126:48
+
+XTerm.vt100.translations: #override \
+    Shift Ctrl <KeyPress> O: copy-selection(PRIMARY) exec-formatted("web '%t'", PRIMARY)\n \
+    Shift Ctrl <KeyPress> U: select-needle("://") select-set(PRIMARY)\n \
+    Shift Ctrl <KeyPress> V: insert-selection(CLIPBOARD)\n \
+    Shift Ctrl <KeyPress> C: copy-selection(CLIPBOARD)\n \
+    Shift Ctrl <KeyPress> T: spawn-new-terminal()\n \
+    Ctrl <KeyPress> minus: smaller-vt-font()\n \
+    Ctrl <KeyPress> plus: larger-vt-font()
+
+/* Prevent xterm mapping the bright variants of the 16 colours for bold text. */
+XTerm.vt100.boldColors: false
+
+#include "colours/base16_yesterday_night"
+
+Sxiv.font: Inter Medium:size=10
+Sxiv.foreground: black
+Sxiv.background: silver
+
+XTerm.vt100.foreground: silver
+XTerm.vt100.background: black
+XTerm.vt100.cursorColor: silver
+
+XTerm.vt100.color0: black
+XTerm.vt100.color1: maroon
+XTerm.vt100.color2: green
+XTerm.vt100.color3: olive
+XTerm.vt100.color4: navy
+XTerm.vt100.color5: purple
+XTerm.vt100.color6: teal
+XTerm.vt100.color7: silver
+
+XTerm.vt100.color8: grey
+XTerm.vt100.color9: red
+XTerm.vt100.color10: lime
+XTerm.vt100.color11: yellow
+XTerm.vt100.color12: blue
+XTerm.vt100.color13: fuchsia
+XTerm.vt100.color14: aqua
+XTerm.vt100.color15: white

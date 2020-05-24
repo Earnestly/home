@@ -1,0 +1,37 @@
+#!/bin/bash --
+# menu-loader - general menu generation from configuration
+
+# Configuration format:
+#   # comments
+#   title=[optional]
+#   command=required
+#   key display=value executed
+
+argv0=menu-loader
+lines=30
+
+declare -A index
+
+if ! [[ -f $1 ]]; then
+    printf '%s: no configuration specified\n' "$argv0" >&2
+    exit 1
+fi
+
+while IFS='=' read -r k v; do
+    case $k in
+        title) title=$v ;;
+        command) cmd=$v ;;
+        [!#]*) index[$k]=$v
+    esac
+done < "$1"
+
+if ! hash "$cmd" 2> /dev/null; then
+    printf '%s: no command specified\n' "$argv0" >&2
+    exit 1
+fi
+
+while read -r; do
+    if [[ $REPLY ]]; then
+        exec "$cmd" "${index[$REPLY]}"
+    fi
+done < <(printf '%s\n' "${!index[@]}" | sort | menu -p "${title:-Title}" -l "$lines")

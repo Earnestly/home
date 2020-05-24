@@ -1,0 +1,18 @@
+#!/bin/sh --
+# ftdetect - attempts to detect the fallback family used for a given glyph
+# requires pango-view awk
+
+while getopts :f: arg; do
+    case $arg in
+        f) family=$OPTARG ;;
+        *) exit
+    esac
+done
+shift "$((OPTIND - 1))"
+
+if ! [ "$1" ]; then
+    printf 'usage: ftdetect [-f family] glyph\n' >&2
+    exit 1
+fi
+
+FC_DEBUG=4 pango-view -qt "$1" --font "${family:-sans}" 2>&1 | awk 'BEGIN{FS="\""}/family: /{m = $2}END{print m}'

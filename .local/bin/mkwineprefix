@@ -1,0 +1,119 @@
+#!/bin/sh --
+# mkwineprefix - creates a wine prefix or updates it
+# requires wine
+
+# TODO
+#   manpage
+#   maybe better error reporting
+
+argv0=mkwineprefix
+
+usage() {
+    cat <<!
+usage: $argv0 [-gmh] [-a winearch] [-r destdir] [-d regdir] prefix
+
+options
+    -a winearch  win32 or win64 (default: win32)
+    -g           enable gecko installation
+    -m           enable mono installation
+    -r destdir   symlinks WINEPREFIX/dosdevices/z: to dir instead of /
+    -d regdir    directory containing .reg files to be loaded into the registry
+    -h           this help message
+
+prefix
+    The path to the prefix.  The current working directory is prepended if
+    it is not absolute
+!
+}
+
+warn() {
+    m=$1
+    shift
+    printf -- "%s: $m" "$argv0" "$@" >&2
+}
+
+error() {
+    r=$1 m=$2
+    shift 2
+    printf -- "%s: $m" "$argv0" "$@" >&2
+    exit "$r"
+}
+
+while getopts :a:d:r:gmh arg; do
+    case $arg in
+        a) arch=$OPTARG ;;
+        g) with_gecko=1 ;;
+        m) with_mono=1 ;;
+        r) remap_z=$OPTARG ;;
+        d) regdir=$OPTARG ;;
+        h) usage; exit ;;
+        *) usage; exit 1
+    esac
+done
+shift $((OPTIND - 1))
+
+prefix=$1
+
+if ! [ "$prefix" ]; then
+    error 22 'no prefix provided\n'
+fi
+
+case ${arch:-win32} in
+    win32) arch=win32 ;;
+    win64) arch=win64 ;;
+    *) error 22 '%s: invalid architecture (win32 or win64)\n' "$arch"
+esac
+
+case $prefix in
+    [!/]*) prefix=$PWD/$prefix
+esac
+
+mkdir -p -- "$prefix"
+
+export WINEARCH=$arch
+export WINEPREFIX=$prefix
+
+# XXX This is a bit of a proxy condition but I'm not sure how else to detect
+#     if a given path represents a wine prefix.
+if [ -d "$WINEPREFIX"/dosdevices ]; then
+    warn '%s: prefix already exists, updating\n' "$WINEPREFIX"
+    operation=-u
+fi
+
+case $with_mono-$with_gecko in
+    1-1) export WINEDLLOVERRIDES='winemenubuilder.exe=d' ;;
+    1-*) export WINEDLLOVERRIDES='winemenubuilder.exe,mshtml=d' ;;
+    *-1) export WINEDLLOVERRIDES='winemenubuilder.exe,mscoree=d' ;;
+    *-*) export WINEDLLOVERRIDES='winemenubuilder.exe,mscoree,mshtml=d'
+esac
+
+# Initialise the prefix now so that is updated before any work is done with it.
+if ! wine wineboot "${operation:--i}"; then
+    exit
+fi
+
+# Remapping z: potentially limits what wine can see.
+# The remap is not checked to be a valid directory because creating broken
+# symlinks is a valid usecase.
+if [ "$remap_z" ]; then
+    rm -f -- "$WINEPREFIX"/dosdevices/z:
+    ln -sf -- "$remap_z" "$WINEPREFIX"/dosdevices/z:
+fi
+
+# Replace the symlinks pointing to directories which usually point outside the
+# prefix, typically into the users HOME.
+for dir in "$WINEPREFIX"/drive_c/users/"$USER"/*; do
+    if [ -d "$dir" ] && [ -h "$dir" ]; then
+        rm -f -- "$dir"
+        mkdir -p -- "$dir"
+    fi
+done
+
+if [ -d "$regdir" ]; then
+    for reg in "$regdir"/*.reg; do
+        wine regedit -S "$reg"
+    done
+fi
+
+# Return the created prefix.
+printf '%s\n' "$WINEPREFIX"

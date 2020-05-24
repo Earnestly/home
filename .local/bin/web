@@ -1,0 +1,15 @@
+#!/bin/bash --
+
+# --qt-flag no-sandbox
+
+# --qt-flag disable-gpu
+# --qt-flag disable-gpu-compositing
+# --qt-flag disable-gpu-rasterization
+
+# --qt-flag ignore-gpu-blacklist
+# --qt-flag enable-gpu-rasterization
+# --qt-flag enable-native-gpu-memory-buffers
+# --qt-flag num-raster-threads="$(nproc)"
+ulimit -c 0
+exec qutebrowser "$@" # -dD log-cookies --logfilter network "$@"
+

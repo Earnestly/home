@@ -1,0 +1,4 @@
+#!/bin/sh --
+# dclip - upload primary selection to a pastebin
+# requires xclip pb menu
+xclip -o | pb | menu | xclip -i -r

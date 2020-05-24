@@ -1,0 +1,10 @@
+# HOME/.local/etc/user-dirs.dirs
+
+# https://cgit.freedesktop.org/xdg/xdg-user-dirs/tree/xdg-user-dir-lookup.c#n126
+XDG_DESKTOP_DIR="$HOME/"
+
+XDG_DOCUMENTS_DIR="$HOME/doc"
+XDG_DOWNLOAD_DIR="$HOME/net"
+XDG_MUSIC_DIR="$HOME/music"
+XDG_PICTURES_DIR="$HOME/pic"
+XDG_VIDEOS_DIR="$HOME/video"

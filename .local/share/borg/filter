@@ -1,0 +1,73 @@
+# XDG_DATA_HOME/borg/filter
+
+# For use with borg and the following command-line:
+# borg create -C zstd -s -p --list --patterns-from "$HOME"/.local/share/borg/filter user@remote:/backup/location::archive .
+
+# NOTES
+#   The default notation is sh: which mimics typical shell style globbing.  The
+#   exception is **, which is recursive, much like globstar found in bash.
+#
+#   ! instructs borg to completely ignore the file or directory as opposed to -
+#   which will still result in traversal in the case of a sub-directory being
+#   later included. Using ! is therefore a fairly dramatic performance boost
+#   especially if the directories which would otherwise be traversed are deep
+#   and large.
+#
+#   The more broad the inclusion the later it needs to be listed.  If a broad
+#   inclusion is first then everything will be included and any subsequent
+#   negations are ignored as the first takes precedence.  As a result the
+#   specific inclusions and exclusions should be listed in order of narrowest
+#   scope to greatest.
+#
+#   The use of relative paths in this list requires the borg create command to
+#   also use a relative path such as . when in the directory /home/earnest.
+#   It appears that attempts to set the root prefix with 'R' are all
+#   unsuccessful even if the path is absolute or not.
+
+# The use of this construct is to guard the case of borg create being used
+# without specifying a relative path.  If /home appears in the given path (such
+# as /home/earnest) then this pattern prevents any potential files being
+# matched found below it.
+! /home
+
+! net
+! .git
+
++ .ssh
+
+# Ignore any .git directories found under build/
+! build/**/.git
++ build
+
++ doc
+
++ music/playlists
+
+! study/research/reader/Kobo-Reader
+! study/*/casestudy
++ study/research/distro/clfs/src
++ study/research/distro/lfs/src
+- study/research/distro
+- study/ada/resources/Courses/.git
++ study
+
+! .local/etc/pulse
+! .local/etc/chromium
+! .local/etc/mutt/cache
+! .local/etc/retroarch/rom
+! .local/etc/retroarch/core
++ .local/etc
+
+
+! .local/var
+! .local/share/wine
+! .local/share/games
+! .local/share/appimage
+! .local/share/qutebrowser
+! .local/share/vimperator/info
+! .local/share/reddit-scrape
+! .local/share/artstation-scrape
++ .local
+
++ .local/share/borg/filter
+- *
