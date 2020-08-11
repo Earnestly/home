@@ -29,8 +29,6 @@ done\
     | curl -sZH 'Accept: application/vnd.twitchtv.v5+json' -H "Client-ID: $id" -K - \
     | xargs -E '' jq -rs 'map(.streams[]) | sort_by(-.viewers)[] | [.channel.name, .channel.game[:50], .channel.status] | @tsv' \
     | column -ts '	' \
-    | menu --ifne -l 30 -p STREAM | while read -r streamer _; do
-        if [ "$streamer" ]; then
-            mpv --quiet https://twitch.tv/"$streamer" &
-        fi
+    | menu --ifne -l 30 -p STREAM | while read -r streamer _ && [ "$streamer" ]; do
+        mpv --quiet https://twitch.tv/"$streamer" &
     done
