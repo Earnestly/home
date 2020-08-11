@@ -81,10 +81,10 @@ if [ -d "$WINEPREFIX"/dosdevices ]; then
 fi
 
 case $with_mono-$with_gecko in
-    1-1) export WINEDLLOVERRIDES='winemenubuilder.exe=d' ;;
-    1-*) export WINEDLLOVERRIDES='winemenubuilder.exe,mshtml=d' ;;
-    *-1) export WINEDLLOVERRIDES='winemenubuilder.exe,mscoree=d' ;;
-    *-*) export WINEDLLOVERRIDES='winemenubuilder.exe,mscoree,mshtml=d'
+    1-1) export WINEDLLOVERRIDES=winemenubuilder.exe=d ;;
+    1-*) export WINEDLLOVERRIDES=winemenubuilder.exe,mshtml=d ;;
+    *-1) export WINEDLLOVERRIDES=winemenubuilder.exe,mscoree=d ;;
+    *-*) export WINEDLLOVERRIDES=winemenubuilder.exe,mscoree,mshtml=d
 esac
 
 # Initialise the prefix now so that is updated before any work is done with it.
@@ -101,7 +101,7 @@ if [ "$remap_z" ]; then
 fi
 
 # Replace the symlinks pointing to directories which usually point outside the
-# prefix, typically into the users HOME.
+# prefix, typically into the user's HOME.
 for dir in "$WINEPREFIX"/drive_c/users/"$USER"/*; do
     if [ -d "$dir" ] && [ -h "$dir" ]; then
         rm -f -- "$dir"
