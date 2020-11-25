@@ -1,34 +1,65 @@
 #!/bin/sh --
-# ditch - display menu of live twitch streamers from list of stream IDs
-# requires mktemp jq curl bemenu mpv youtube-dl
+# ditch - display menu of twitch streamers currently online
+# requres jq curl bemenu mpv youtube-dl
 
-# NOTE
-#   - Cannot use curl -Z without the use of a temporary directory yet:
-#     <https://github.com/curl/curl/issues/5175>
+# TODO
+#   - If the file 'livestreams' exists and is not within the cache time limit
+#     it will be used regardless of new inputs.  The flag '-f' forces a cache
+#     bypass, but I do not favour this approach.
 
-# This API key is found on every twitch page.
-id=kimne78kx3ncx6brgo4mv6wki5h1ko
-maxquery=100
+# XXX I am not aware of a maximum query limit for the number of users or
+#     whether this may change.
+maxquery=500
+cachedir=${XDG_CACHE_HOME:-$HOME/.cache}/ditch
+mkdir -p -- "$cachedir"
 
-tmp=$(mktemp -d /tmp/ditch_XXXX)
-trap 'rm -rf -- "$tmp"' EXIT
+renew=$(touch -d "$(TZ=UTC+00:10:00 date +%Y-%m-%dT%T)" -- "$cachedir"/timeref
+        find "$cachedir"/livestreams ! -newer "$cachedir"/timeref
+        rm -f -- "$cachedir"/timeref)
 
-xargs -E '' -n "$maxquery" | while read -r section; do
-    # A section is a series of space separated integers generated elsewhere.
-    # shellcheck disable=SC2086
-    set -- $section
+if [ -s "$cachedir"/livestreams ] && ! { [ "$renew" ] || [ "$1" = -f ] ;}; then
+    cat -- "$cachedir"/livestreams
+else
+    tmp=${TMPDIR:-/tmp}/ditch_$$
+    mkdir -p -- "$tmp"/data
 
-    IFS=,
-    printf 'url https://api.twitch.tv/kraken/streams?channel=%s&limit=%d\n' "$*" "$#"
-    unset IFS
+    # shellcheck disable=SC1004
+    awk -v m="$maxquery" -v tmp="$tmp"/data '
+        function writequery(s, dest){
+            printf("[{\"query\":\"query{users(logins:[%s]){login\\nstream{" \
+                   "title\\nviewersCount\\ngame{name}\\n}}}\"}]", s) > dest
+        }
+        !((NR-1) % m) {if(users) writequery(users, tmp "/" NR); users = ""}
+        NF && !/^#/   {users = users "\\\"" $1 "\\\""}
+        END           {if(users) writequery(users, tmp "/" NR)}'
 
-    i=$((i + 1))
-    printf 'output %s/%d\n' "$tmp" "$i"
-    printf 'write-out %%{filename_effective}\\n\n'
-done\
-    | curl -sZH 'Accept: application/vnd.twitchtv.v5+json' -H "Client-ID: $id" -K - \
-    | xargs -E '' jq -rs 'map(.streams[]) | sort_by(-.viewers)[] | [.channel.name, .channel.game[:50], .channel.status] | @tsv' \
-    | column -ts '	' \
-    | menu --ifne -l 30 -p STREAM | while read -r streamer _ && [ "$streamer" ]; do
-        mpv --quiet https://twitch.tv/"$streamer" &
+    for data in "$tmp"/data/*; do
+        if [ -f "$data" ]; then
+            # N.B. Placing 'next' first in the config seems harmless, whereas if
+            #      it were last curl would warn of a missing url.
+            printf 'next\n'
+            printf 'url https://api.twitch.tv/gql\n'
+            printf 'header "Client-ID: kimne78kx3ncx6brgo4mv6wki5h1ko"\n'
+            printf 'data "@%s"\n' "$data"
+            printf 'output "%s"\n' "$tmp"/"${data##*/}"
+            printf 'write-out %%{filename_effective}\\n\n'
+        fi
+    # N.B. cat is used to ensure a single stream of a json is produced in order
+    #      to avoid xargs spreading the arguments across multiple invocations
+    #      of jq according to ARG_MAX.
+    done | curl --parallel-max 15 -sSZK - \
+         | xargs -E '' cat \
+         | jq -sr '[.[][].data.users[] | select(.stream != null)]
+                   | sort_by(-.stream.viewersCount)[]
+                   | [.login, .stream.game.name[:50], .stream.title]
+                   | @tsv' \
+         | column -ts '	' \
+         | tee "$cachedir"/livestreams
+
+    rm -rf -- "$tmp"
+fi | menu --ifne -l 30 -p STREAM | while read -r user _; do
+        if [ "$user" ]; then
+            printf '%s\n' "$user" >> "$cachedir"/stats
+            mpv --quiet https://twitch.tv/"$user" &
+        fi
     done
