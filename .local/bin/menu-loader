@@ -7,15 +7,12 @@
 #   command=required
 #   key display=value executed
 
-argv0=menu-loader
-lines=30
-
-declare -A index
-
-if ! [[ -f $1 ]]; then
-    printf '%s: no configuration specified\n' "$argv0" >&2
+if ! [[ -e $1 ]]; then
+    printf 'menu-loader: no configuration specified\n' >&2
     exit 1
 fi
+
+declare -A index
 
 while IFS='=' read -r k v; do
     case $k in
@@ -26,12 +23,12 @@ while IFS='=' read -r k v; do
 done < "$1"
 
 if ! hash "$cmd" 2> /dev/null; then
-    printf '%s: no command specified\n' "$argv0" >&2
+    printf 'menu-loader: no command specified\n' >&2
     exit 1
 fi
 
 while read -r; do
     if [[ $REPLY ]]; then
-        exec "$cmd" "${index[$REPLY]}"
+        "$cmd" "${index[$REPLY]}" &
     fi
-done < <(printf '%s\n' "${!index[@]}" | sort | menu -p "${title:-Title}" -l "$lines")
+done < <(printf '%s\n' "${!index[@]}" | sort | menu -p "${title:-Title}" -l 30)
