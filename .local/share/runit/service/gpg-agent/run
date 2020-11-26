@@ -27,7 +27,8 @@ import socket
 os.environ['LISTEN_PID'] = str(os.getpid())
 os.environ['LISTEN_FDS'] = str(1)
 
-path = os.popen('gpgconf --list-dirs agent-socket').read().strip()
+with os.popen('gpgconf --list-dirs agent-socket') as fd:
+    path = fd.read().strip()
 
 if os.path.exists(path):
     if stat.S_ISSOCK(os.stat(path).st_mode):
