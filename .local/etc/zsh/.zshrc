@@ -10,23 +10,25 @@ zle -N zle-keymap-select
 
 setopt auto_cd \
     glob_dots \
-    hist_verify \
-    hist_append \
-    prompt_subst \
-    share_history \
     extended_glob \
+    prompt_subst \
     rm_star_silent \
-    hist_fcntl_lock \
     print_exit_value \
     complete_aliases \
     numeric_glob_sort \
+    hist_verify \
+    hist_append \
+    hist_fcntl_lock \
     hist_save_no_dups \
     hist_ignore_space \
-    hist_reduce_blanks \
-    inc_append_history \
     hist_ignore_all_dups \
+    share_history \
+    inc_append_history \
     interactive_comments
 
+# This is the behaviour of the shell without disabling multios:
+#   % { print stdout; print stderr >&2; } 2>&1 > /dev/null | xargs
+#   stderr stdout
 unsetopt multios
 
 READNULLCMD=$PAGER
@@ -41,7 +43,7 @@ mkdir -p "$HISTFILE:h"
 
 HELPDIR=/usr/share/zsh/$ZSH_VERSION/help
 
-PROMPT='%m %n %#${vimode} %F{green}${repo}%F{cyan}%~%f '
+PROMPT='${SSH_CONNECTION+%m }%n $vimode ${repo:+$repo }%F{cyan}%~%f '
 
 zstyle ':completion:*' menu select
 zstyle ':completion:*' use-cache on
@@ -52,32 +54,21 @@ function precmd {
     # Print basic prompt to the window title.
     print -Pn "\e];%n %~\a"
 
-    # if [[ $SSH_CONNECTION ]]; then
-    #     :
-    # fi
-
-    if repo=$(git rev-parse --show-toplevel 2> /dev/null); then
-        if [[ ! $repo ]]; then
-            case $(git rev-parse --is-bare-repository) in
-                true) repo=bare
-            esac
-        fi
-
-        repo="${repo##*/} "
-    fi
+    case $(git rev-parse --is-bare-repository 2> /dev/null) in
+        false) repo=%F{green}${"$(git rev-parse --show-toplevel)":t}%f ;;
+        true)  repo=%F{blue}${"$(git rev-parse --git-dir)":P:t}%f ;;
+        *)     repo=
+    esac
 }
 
 # Print the current running command's name to the window title.
 function preexec {
-    local cmd=${1//\%/}; cmd=${cmd//\$/}
-    case $TERM in
-        xterm-*) print -Pn "\e]2;$cmd:q\a"
-    esac
+    printf '\e]2;%s\a' "$1"
 }
 
 # Replace vimode indicators.
 function zle-line-init zle-keymap-select {
-    vimode=${${KEYMAP/vicmd/c}/(main|viins)/i}
+    vimode=${${KEYMAP/vicmd/c}/main/i}
     zle reset-prompt
 }
 
@@ -88,7 +79,7 @@ bindkey -v
 vimode=i
 
 # Remove the default 0.4s ESC delay, set it to 0.1s.
-export KEYTIMEOUT=1
+KEYTIMEOUT=1
 
 # Shift-tab.
 bindkey $terminfo[kcbt] reverse-menu-complete
@@ -164,16 +155,6 @@ function n {
 }
 compdef "_files -W $HOME/doc/note -/" n
 
-function nrm {
-    rm -v "${@[@]/#/"$HOME/doc/note/"}"
-}
-compdef "_files -W $HOME/doc/note -/" nrm
-
-function nmv {
-    mv -v "${@[@]/#/"$HOME/doc/note/"}"
-}
-compdef "_files -W $HOME/doc/note -/" nmv
-
 alias -g ...='../..'
 alias -g ....='../../..'
 alias rm='rm -vI'
@@ -189,6 +170,7 @@ alias chgrp='chgrp -c --preserve-root'
 
 alias ls='ls --color=auto --show-control-chars --group-directories-first -AlhXF'
 
+alias v='editor'
 alias vi='editor'
 alias dmesg='dmesg -exL'
 alias weechat='dtach-weechat'
@@ -212,14 +194,7 @@ alias help='run-help'
 # Directory hashes.
 if [[ -d $HOME/study ]]; then
     for d in "$HOME"/study/*(/); do
-        hash -d "${d##*/}"="$d"
+        hash -d "${d:t}"="$d"
     done
     unset d
 fi
-
-# Enable C-S-t in (vte) termite which opens a new terminal in the same working
-# directory.
-# if [[ $VTE_VERSION ]]; then
-#     source /etc/profile.d/vte.sh
-#     __vte_prompt_command
-# fi
