@@ -11,5 +11,5 @@
 # --qt-flag enable-native-gpu-memory-buffers
 # --qt-flag num-raster-threads="$(nproc)"
 ulimit -c 0
-exec qutebrowser "$@" # -dD log-cookies --logfilter network "$@"
-
+# exec qutebrowser -dD log-cookies --logfilter network "$@"
+exec qutebrowser --qt-flag disable-gpu "$@"

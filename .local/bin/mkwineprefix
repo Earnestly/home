@@ -6,11 +6,9 @@
 #   manpage
 #   maybe better error reporting
 
-argv0=mkwineprefix
-
 usage() {
     cat <<!
-usage: $argv0 [-gmh] [-a winearch] [-r destdir] [-d regdir] prefix
+usage: mkwineprefix [-gmh] [-a winearch] [-r destdir] [-d regdir] prefix
 
 options
     -a winearch  win32 or win64 (default: win32)
@@ -29,13 +27,13 @@ prefix
 warn() {
     m=$1
     shift
-    printf -- "%s: $m" "$argv0" "$@" >&2
+    printf "%s: $m" mkwineprefix "$@" >&2
 }
 
 error() {
     r=$1 m=$2
     shift 2
-    printf -- "%s: $m" "$argv0" "$@" >&2
+    printf "%s: $m" mkwineprefix "$@" >&2
     exit "$r"
 }
 
@@ -70,12 +68,12 @@ esac
 
 mkdir -p -- "$prefix"
 
-export WINEARCH=$arch
-export WINEPREFIX=$prefix
+export WINEARCH="$arch"
+export WINEPREFIX="$prefix"
 
 # XXX This is a bit of a proxy condition but I'm not sure how else to detect
 #     if a given path represents a wine prefix.
-if [ -d "$WINEPREFIX"/dosdevices ]; then
+if [ -L "$WINEPREFIX"/dosdevices/c: ]; then
     warn '%s: prefix already exists, updating\n' "$WINEPREFIX"
     operation=-u
 fi
@@ -102,8 +100,8 @@ fi
 
 # Replace the symlinks pointing to directories which usually point outside the
 # prefix, typically into the user's HOME.
-for dir in "$WINEPREFIX"/drive_c/users/"$USER"/*; do
-    if [ -d "$dir" ] && [ -h "$dir" ]; then
+for dir in "$WINEPREFIX"/drive_c/users/*/*; do
+    if [ -d "$dir" ] && [ -L "$dir" ]; then
         rm -f -- "$dir"
         mkdir -p -- "$dir"
     fi
@@ -111,7 +109,9 @@ done
 
 if [ -d "$regdir" ]; then
     for reg in "$regdir"/*.reg; do
-        wine regedit -S "$reg"
+        if [ -f "$reg" ]; then
+            wine regedit -S "$reg"
+        fi
     done
 fi
 

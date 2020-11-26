@@ -1,0 +1,75 @@
+#!/bin/sh --
+# mirror-tool - track revisions and changes from various local git mirrors
+# requires git tig
+
+usage() {
+    printf 'usage: mirror-tool [-ucq] repository [branch]\n'
+}
+
+warn() {
+    m=$1
+    shift
+    printf "%s: $m" mirror-tool "$@" >&2
+}
+
+error() {
+    r=$1 m=$2
+    shift 2
+    printf "%s: $m" mirror-tool "$@" >&2
+    exit "$r"
+}
+
+while getopts :ucq arg; do
+    case $arg in
+        u) update=1 ;;
+        c) count=1 ;;
+        q) quiet=1; printf() { :; } ;;
+        *) usage >&2; exit 1
+    esac
+done
+shift "$((OPTIND - 1))"
+
+if ! [ "$1" ]; then
+    usage >&2
+    exit 22
+fi
+
+if ! [ -d "$1" ]; then
+    error 20 '%s: no such directory\n' "$1"
+fi
+
+# Globally required for all git and tig operations.
+export GIT_DIR="$1"
+
+if [ "$(git rev-parse --is-bare-repository 2> /dev/null)" != true ]; then
+    error 22 '%s: not a git mirror\n' "$1"
+fi
+
+if origin=$(git config remote.origin.url); then
+    branch=${2:-master}
+
+    # https://github.com/git/git/commit/f269048754f3b835f4f7287c5a13271
+    git symbolic-ref HEAD refs/heads/"$branch"
+
+    if git fetch -q "$origin" "$branch"; then
+        distance=$(git rev-list HEAD...FETCH_HEAD --count "$branch")
+    else
+        exit
+    fi
+
+    if [ "$count" ]; then
+        command printf '%s %s\n' "$distance" "$GIT_DIR"
+    fi
+
+    if [ "$distance" -gt 0 ]; then
+        if ! [ "$quiet" ]; then
+            tig HEAD...FETCH_HEAD
+        fi
+    else
+        error 1 '%s: no new commits\n' "$1"
+    fi
+
+    if [ "$update" ]; then
+        git fetch --all -pq
+    fi
+fi

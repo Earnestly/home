@@ -1,0 +1,6 @@
+#!/bin/sh --
+
+case $1 in
+    C-c) xclip -i -r
+esac
+
