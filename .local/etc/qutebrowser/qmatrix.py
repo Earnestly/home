@@ -15,7 +15,8 @@ qmatrix_active = True
 
 resource_whitelist = [
     qutebrowser.api.interceptor.ResourceType.main_frame,
-    qutebrowser.api.interceptor.ResourceType.favicon
+    qutebrowser.api.interceptor.ResourceType.favicon,
+    None
 ]
 
 resource_flags = {
@@ -102,6 +103,7 @@ qmatrix_read_config()
 
 @qutebrowser.api.cmdutils.register()
 def qmatrix_edit():
+    """Docstring."""
     editor = qutebrowser.misc.editor.ExternalEditor(watch=True, parent=config._config)
 
     def on_file_updated():

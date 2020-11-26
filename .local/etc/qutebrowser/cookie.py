@@ -4,6 +4,7 @@ import qutebrowser.api.cmdutils
 import qutebrowser.utils
 
 def cookie_whitelist_load():
+    """Docstring."""
     # Reset per-domain cookie.accept
     for line in config._config.dump_userconfig().splitlines():
         fields = line.split(' ')
@@ -28,6 +29,7 @@ def cookie_whitelist_load():
 
 @qutebrowser.api.cmdutils.register()
 def cookie_whitelist_edit():
+    """Docstring."""
     editor = qutebrowser.misc.editor.ExternalEditor(watch=True, parent=config._config)
 
     def on_file_updated():
