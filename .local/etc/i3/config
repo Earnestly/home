@@ -1,7 +1,7 @@
 # HOME/.local/etc/i3/config
 
 # Font for window titles and bar.
-#font pango: Source Sans Pro Semibold, Italic 11
+# font pango: Source Sans Pro Semibold, Italic 11
 font pango: Inter Medium 10
 
 default_border pixel 2
@@ -21,14 +21,14 @@ floating_modifier $mod
 
 bindsym $mod+Return exec --no-startup-id terminal
 bindsym XF86Launch1 exec --no-startup-id web
-bindsym XF86TouchpadToggle exec trackpad-toggle
+# bindsym XF86TouchpadToggle exec trackpad-toggle
 
 # Global media keys.
-bindsym XF86AudioMute exec --no-startup-id ponymix toggle
-bindsym XF86AudioMicMute exec --no-startup-id ponymix -t source -d alsa_input.pci-0000_00_1b.0.analog-stereo toggle
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
 
-bindsym XF86AudioLowerVolume exec --no-startup-id ponymix decrease 3
-bindsym XF86AudioRaiseVolume exec --no-startup-id ponymix increase 3
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +3%
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -3%
 
 bindsym XF86AudioStop exec mpc stop
 bindsym XF86AudioPlay exec mpc toggle
@@ -129,7 +129,7 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exit
 
-mode "RESIZE MODE" {
+mode "RESIZE" {
     bindsym h resize shrink width 1 px or 1 ppt
     bindsym j resize grow height 1 px or 1 ppt
     bindsym k resize shrink height 1 px or 1 ppt
@@ -137,13 +137,15 @@ mode "RESIZE MODE" {
 
     bindsym Escape mode "default"
 }
-bindsym $mod+r mode "RESIZE MODE"
+bindsym $mod+r mode "RESIZE"
 
-mode "MENU MODE" {
+mode "MENU" {
     bindsym d exec --no-startup-id ditch < "$HOME"/.local/share/ditch/streamers; mode "default"
-    bindsym s exec --no-startup-id switch; mode "default"
+    bindsym w exec --no-startup-id sh "$HOME"/study/shell/watchlater; mode "default"
+    # bindsym s exec --no-startup-id switch; mode "default"
     bindsym l exec --no-startup-id mpass; mode "default"
     bindsym y exec --no-startup-id mclip; mode "default"
+    bindsym v exec --no-startup-id sewer; mode "default"
     bindsym p exec --no-startup-id dmenu_run; mode "default"
     # bindsym g exec --no-startup-id taverner; mode "default"
     # bindsym u exec --no-startup-id bemenu-loader "$HOME"/.local/share/plaid/plaid_menu; mode "default"
@@ -153,10 +155,10 @@ mode "MENU MODE" {
 
     bindsym Escape mode "default"
 }
-bindsym $mod+p mode "MENU MODE"
+bindsym $mod+p mode "MENU"
 
 # Music control.
-mode "MPD CONTROL" {
+mode "MPD" {
     bindsym s exec --no-startup-id mpc stop
     bindsym p exec --no-startup-id mpc toggle
     bindsym l exec --no-startup-id mpc next
@@ -171,16 +173,16 @@ mode "MPD CONTROL" {
 
     bindsym Escape mode "default"
 }
-bindsym $mod+m mode "MPD CONTROL"
+bindsym $mod+m mode "MPD"
 
-# mode "LAYOUT MODE" {
+# mode "LAYOUT" {
 #     # XXX I should turn these into scripts so I can access environment
 #     #     variables and possibly do more with it.
 #     bindsym 3 exec --no-startup-id i3-msg "workspace 3; append_layout $HOME/.local/etc/i3/layouts/tabbed_nmaster.json"
 
 #     bindsym Escape mode "default"
 # }
-# bindsym $mod+t mode "LAYOUT MODE"
+# bindsym $mod+t mode "LAYOUT"
 
 for_window [class="Blender" title="Blender User Preferences"] floating enable
 for_window [class="fontforge" title="Layers"] floating enable
