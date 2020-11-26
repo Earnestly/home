@@ -1,0 +1,43 @@
+.TH MIRROR-TOOL 1 "25 November 2020"
+.SH NAME
+mirror-tool \- track changes to local git mirrors
+.SH SYNOPSIS
+.B mirror-tool
+.RB [ -ucq ]
+.I repository
+.RI [ branch ]
+.SH DESCRIPTION
+.B mirror-tool
+is designed to check a local
+.BR git (1)
+mirror
+.I repository
+on an optional
+.I branch
+for any new commits and display them using
+.BR tig (1).
+.SH OPTIONS
+.TP
+.B -c
+Print the number of new commits and exit.
+.TP
+.B -u
+Update the mirror.
+.TP
+.B -q
+Suppress the use of
+.B tig
+and printing of diagnostics.
+.SH ENVIRONMENT
+.TP
+.B GIT_DIR
+Used to set the
+.I repository
+as the
+.B git
+directory.
+.SH SOURCE
+~/.local/bin/mirror-tool
+.SH SEE ALSO
+.BR git (1),
+.BR tig (1)
