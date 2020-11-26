@@ -1,13 +1,13 @@
 # XDG_CONFIG_HOME/qutebrowser/config.py
 
+config.load_autoconfig(False)
+
 import setproctitle
 setproctitle.setproctitle('qutebrowser')
 
 config.source(config.configdir / 'qmatrix.py')
 config.source(config.configdir / 'cookie.py')
 config.source(config.configdir / 'rewrite.py')
-
-config.load_autoconfig = False
 
 config.set('editor.command', ['editor-gui', '{}'])
 config.set('downloads.position', 'bottom')
@@ -37,12 +37,6 @@ config.set('hints.uppercase', True)
 
 config.set('completion.use_best_match', True)
 
-with config.pattern('twitter.com') as p:
-    # IE 11's user agent forces twitter to use its older desktop UI for the
-    # time being.
-    p.content.headers.user_agent = 'Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko'
-    p.content.javascript.enabled = True
-
 # Colours
 color_background = '#343d46'
 color_foreground = '#65737e'
@@ -63,33 +57,56 @@ config.set('colors.tabs.indicator.start', color_text)
 config.set('colors.tabs.indicator.stop', color_background)
 config.set('colors.tabs.indicator.error', color_red)
 
-# Fonts
 font_ui = '10pt Inter'
-
 config.set('fonts.default_family', 'Inconsolatazi4')
 config.set('fonts.default_size', '12pt')
-
-config.set('fonts.tabs', font_ui)
+config.set('fonts.tabs.selected', font_ui)
+config.set('fonts.tabs.unselected', font_ui)
 config.set('fonts.hints', font_ui)
 config.set('fonts.completion.category', font_ui)
 
-# Key Bindings
 config.bind('t', 'set-cmd-text -s :open -t')
 config.bind('O', 'set-cmd-text :open {url}')
 config.bind('<Alt-h>', 'tab-prev')
 config.bind('<Alt-l>', 'tab-next')
 
+config.bind(';a', 'hint images download')
+
+# The binding C-e is taken for insert mode and used to move the cursor to the
+# end of the line.
+config.bind('<Ctrl-Shift-e>', 'open-editor', 'insert')
+
+# Configure everything to use primary selection by default instead of clipboard.
 config.bind('yy', 'yank -s')
 config.bind(';y', 'hint links yank-primary')
 config.bind('p', 'open -- {primary}')
 config.bind('P', 'open -t -- {primary}')
 
+# Implement emacs/readline style key bindings for insert mode.
+config.bind('<Alt-Backspace>', 'fake-key <Ctrl-Backspace>', 'insert')
+config.bind('<Alt-f>', 'fake-key <Ctrl-Right>', 'insert')
+config.bind('<Alt-b>', 'fake-key <Ctrl-Left>', 'insert')
+config.bind('<Ctrl-Shift-v>', 'fake-key <Ctrl-a>', 'insert')
+config.bind('<Ctrl-h>', 'fake-key <Backspace>', 'insert')
+config.bind('<Ctrl-a>', 'fake-key <Home>', 'insert')
+config.bind('<Ctrl-n>', 'fake-key Up', 'insert')
+config.bind('<Ctrl-p>', 'fake-key Down', 'insert')
+config.bind('<Ctrl-e>', 'fake-key <End>', 'insert')
+config.bind('<Ctrl-k>', 'fake-key <Shift-End> ;; fake-key <Delete>', 'insert')
+config.bind('<Ctrl-w>', 'fake-key <Ctrl+Shift+Left> ;; fake-key <Delete>', 'insert')
+config.bind('<Ctrl-u>', 'fake-key <Shift+Home> ;; fake-key <Delete>', 'insert')
+config.bind('<Ctrl-r>', 'fake-key <Ctrl+z>', 'insert')
+
+# Qt appears to be highly pessimistic about available memory when overcommit is
+# disabled which prevents the starting of multiple mpv instances directly.  By
+# using a script which starts mpv indirectly it appears Qt is willing to start
+# more.
 # config.bind('U', 'spawn -vd mpv --profile=url {url}')
 # config.bind(';q', 'hint links spawn -vd mpv --profile=url {hint-url}')
 config.bind('U', 'spawn -u video')
 config.bind(';q', 'hint links userscript video')
 
-config.bind('Q', ':inspector')
+config.bind('Q', ':devtools window')
 
 config.bind('<Alt-x>', 'config-cycle -p content.javascript.enabled')
 config.bind('<Ctrl-Shift-p>', 'config-cycle -p content.private_browsing')
