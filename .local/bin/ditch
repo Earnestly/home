@@ -51,10 +51,11 @@ else
             END               {if(users) request(users)}' \
         | curl --tcp-fastopen --parallel-max 15 -sSZK - \
         | xargs -E '' cat \
-        | jq -sr '[.[][].data.users[] | select(.stream != null)]
-                  | sort_by(-.stream.viewersCount)[]
-                  | [.login, .stream.game.name[:50], .stream.title]
-                  | @tsv' \
+        | jq -sr '[.[][] | select(.data.users).data.users[]
+                         | select(.stream)]
+                         | sort_by(-.stream.viewersCount)[]
+                         | [.login, .stream.game.name[:50], .stream.title]
+                         | @tsv' \
         | column -ts '	' \
         | tee "$cachedir"/livestreams
 
@@ -63,6 +64,6 @@ else
 fi | menu --ifne -l 30 -p STREAM | while read -r user _; do
         if [ "$user" ]; then
             printf '%s\n' "$user" >> "$cachedir"/stats
-            mpv --quiet https://twitch.tv/"$user" &
+            xdg-open https://www.twitch.tv/"$user" &
         fi
     done
