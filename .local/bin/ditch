@@ -51,11 +51,10 @@ else
             END               {if(users) request(users)}' \
         | curl --tcp-fastopen --parallel-max 15 -sSZK - \
         | xargs -E '' cat \
-        | jq -sr '[.[][] | select(.data.users).data.users[]
-                         | select(.stream)]
-                         | sort_by(-.stream.viewersCount)[]
-                         | [.login, .stream.game.name[:50], .stream.title]
-                         | @tsv' \
+        | jq -sr '[.[] | arrays[] | select(.data.users).data.users[] | select(.stream)]
+                       | sort_by(-.stream.viewersCount)[]
+                       | [.login, .stream.game.name[:50], .stream.title]
+                       | @tsv' \
         | column -ts '	' \
         | tee "$cachedir"/livestreams
 
