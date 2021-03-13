@@ -59,13 +59,18 @@
 + .local/etc
 
 
+! .local/mnt
+! .local/src
 ! .local/var
+! .local/media
+! .local/srv/repo
 ! .local/share/wine
-! .local/share/games
+! .local/share/game
 ! .local/share/appimage
 ! .local/share/qutebrowser
 ! .local/share/vimperator/info
 ! .local/share/reddit-scrape
+! .local/share/nitter-scrape
 ! .local/share/artstation-scrape
 + .local
 
