@@ -1,6 +1,7 @@
 #!/bin/sh --
+# XDG_CONFIG_HOME/sxiv/exec/key-handler
 
 case $1 in
-    C-c) xclip -i -r
+    c) xclip -i -r ;;
+    r) tr '\n' '\0' | xargs -0 rm -f -- ;;
 esac
-
