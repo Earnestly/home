@@ -1,4 +1,8 @@
 #!/bin/bash --
+# web
+
+# There is no reason to pay the storage cost for useless backtraces.
+ulimit -c 0
 
 # --qt-flag no-sandbox
 
@@ -10,6 +14,25 @@
 # --qt-flag enable-gpu-rasterization
 # --qt-flag enable-native-gpu-memory-buffers
 # --qt-flag num-raster-threads="$(nproc)"
-ulimit -c 0
-# exec qutebrowser -dD log-cookies --logfilter network "$@"
-exec qutebrowser --qt-flag disable-gpu "$@"
+
+# Display failed cookie storage attempts.
+# -dD log-cookies --logfilter network
+
+set -- --no-err-windows -dD log-cookies --logfilter network "$@"
+
+read -r md5 _ < <(printf %s "$LOGNAME" | md5sum)
+
+if [[ -S $XDG_RUNTIME_DIR/qutebrowser/ipc-$md5 ]]; then
+    exec qutebrowser "$@"
+else
+    mkdir -p -- "$HOME"/.local/var/log/web
+
+    # XXX --dbus-stub appears ineffective in preventing chromium from its
+    #       attempts to use dbus.
+    #       >   [... ERROR:bus.cc(393)] Failed to connect to the bus: ...
+    # export QTWEBENGINE_CHROMIUM_FLAGS=--dbus-stub
+    cat <<! > "$HOME"/.local/var/log/web/config
+-*ERROR:bus.cc(*)] Failed to connect to the bus:*
+!
+    exec qutebrowser "$@" 2>&1 | svlogd -ttt "$HOME"/.local/var/log/web
+fi
