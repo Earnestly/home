@@ -10,7 +10,10 @@ config.source(config.configdir / 'cookie.py')
 config.source(config.configdir / 'rewrite.py')
 
 config.set('editor.command', ['editor-gui', '{}'])
+
 config.set('downloads.position', 'bottom')
+
+config.set('session.lazy_restore', True)
 
 config.set('url.default_page', 'about:blank')
 config.set('url.start_pages', ['about:blank'])
@@ -74,7 +77,7 @@ config.bind(';a', 'hint images download')
 
 # The binding C-e is taken for insert mode and used to move the cursor to the
 # end of the line.
-config.bind('<Ctrl-Shift-e>', 'open-editor', 'insert')
+config.bind('<Ctrl-Shift-e>', 'edit-text', 'insert')
 
 # Configure everything to use primary selection by default instead of clipboard.
 config.bind('yy', 'yank -s')
