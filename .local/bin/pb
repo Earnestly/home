@@ -1,2 +1,10 @@
 #!/bin/sh --
-curl -sF file=@- https://0x0.st
+# pb - paste from standard input
+# requires curl
+
+case ${1:--0} in
+    -i) exec curl -sF f:1=@- http://ix.io ;;
+    -s) exec curl -sF sprunge=@- http://sprunge.us ;;
+    -p) exec curl -s --data-binary @- https://paste.rs ;;
+    -0) exec curl -sF file=@- https://0x0.st # file='@-;type=text/plain'
+esac
