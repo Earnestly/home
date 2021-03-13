@@ -1,11 +1,20 @@
-#!/bin/sh
+#!/bin/sh --
+# dmenu_run -
 
-read -r font < "${XDG_CONFIG_HOME:-$HOME/.config}"/menu/font
-exec bemenu-run \
-    --fn "$font" -p 'RUN' \
-    --tf '#eff1f5' --tb '#bf616a' \
-    --ff '#c0c5ce' --fb '#2b303b' \
-    --sf '#bf616a' --sb '#343d46' \
-    --nf '#65737e' --nb '#343d46' \
-    --hf '#c0c5ce' --hb '#343d46' \
-    --scf '#65737e' --scb '#343d46' "$@"
+cfgdir=${XDG_CONFIG_HOME:-$HOME/.config}
+
+if colours=$(system-colours); then
+    for c in white silver grey black maroon; do
+        read -r -- "${c?}" < "$colours"/"$c"
+    done
+fi
+
+read -r font < "$cfgdir"/menu/font
+
+exec bemenu-run -p RUN --fn "$font" -ifw \
+                --tf "$white" --tb "$maroon" \
+                --ff "$silver" --fb "$black" \
+                --sf "$maroon" --sb "$black" \
+                --nf "$grey" --nb "$black" \
+                --hf "$white" --hb "$black" \
+                --scf "$grey" --scb "$black" "$@"
