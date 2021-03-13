@@ -26,6 +26,7 @@ resource_flags = {
     't': qutebrowser.api.interceptor.ResourceType.font_resource,
     'i': qutebrowser.api.interceptor.ResourceType.image,
     'm': qutebrowser.api.interceptor.ResourceType.media,
+    'w': qutebrowser.api.interceptor.ResourceType.service_worker,
     'd': qutebrowser.api.interceptor.ResourceType.sub_resource,
     'f': qutebrowser.api.interceptor.ResourceType.sub_frame,
     'p': qutebrowser.api.interceptor.ResourceType.ping,
@@ -33,7 +34,7 @@ resource_flags = {
 
 more_flags = ('=')
 
-default_flags = 'sxctimdf'
+default_flags = 'sxctimwdf'
 rules = []
 logger = logging.getLogger('qmatrix')
 
@@ -54,6 +55,7 @@ def qmatrix_read_config():
     #           t  font
     #           i  image
     #           m  media
+    #           w  service worker
     #           d  download (sub_resource)
     #           f  iframe (sub_frame)
     #           p  ping
