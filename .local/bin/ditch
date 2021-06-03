@@ -38,7 +38,7 @@ else
                 # N.B. Placing "next" first in the config seems harmless,
                 #      whereas if it were last curl would warn of a missing url.
                 printf "next\n"
-                printf "url https://api.twitch.tv/gql\n"
+                printf "url https://gql.twitch.tv/gql\n"
                 printf "header \"Client-ID: kimne78kx3ncx6brgo4mv6wki5h1ko\"\n"
                 printf "data \"@%s\"\n", dest
                 printf "output \"%s.result\"\n", dest
