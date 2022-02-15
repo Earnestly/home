@@ -9,30 +9,32 @@ if mkdir -p -- "$cachedir"; then
     renew=$(find -L "$cachedir" ! -newer "$colours" -o -path '*/*' -newer "$cachedir")
 
     if [ "$renew" ]; then
+        # N.B. Ensure all standard colours have an appropriate value before
+        #      overriding them with anything specifically listed below.
+        printf '#000000\n' > "$cachedir"/black
+        printf '#800000\n' > "$cachedir"/maroon
+        printf '#008000\n' > "$cachedir"/green
+        printf '#808000\n' > "$cachedir"/olive
+        printf '#000080\n' > "$cachedir"/navy
+        printf '#800080\n' > "$cachedir"/purple
+        printf '#008080\n' > "$cachedir"/teal
+        printf '#c0c0c0\n' > "$cachedir"/silver
+
+        printf '#808080\n' > "$cachedir"/grey
+        printf '#ff0000\n' > "$cachedir"/red
+        printf '#00ff00\n' > "$cachedir"/lime
+        printf '#ffff00\n' > "$cachedir"/yellow
+        printf '#0000ff\n' > "$cachedir"/blue
+        printf '#ff00ff\n' > "$cachedir"/fuchsia
+        printf '#00ffff\n' > "$cachedir"/aqua
+        printf '#ffffff\n' > "$cachedir"/white
+
         if [ -f "$colours" ]; then
             while read -r define colour value; do
                 if [ "$define" = '#define' ]; then
                     printf '%s\n' "$value" > "$cachedir"/"$colour"
                 fi
             done < "$colours"
-        else
-            printf '#000000\n' > "$cachedir"/black
-            printf '#800000\n' > "$cachedir"/maroon
-            printf '#008000\n' > "$cachedir"/green
-            printf '#808000\n' > "$cachedir"/olive
-            printf '#000080\n' > "$cachedir"/navy
-            printf '#800080\n' > "$cachedir"/purple
-            printf '#008080\n' > "$cachedir"/teal
-            printf '#c0c0c0\n' > "$cachedir"/silver
-
-            printf '#808080\n' > "$cachedir"/grey
-            printf '#ff0000\n' > "$cachedir"/red
-            printf '#00ff00\n' > "$cachedir"/lime
-            printf '#ffff00\n' > "$cachedir"/yellow
-            printf '#0000ff\n' > "$cachedir"/blue
-            printf '#ff00ff\n' > "$cachedir"/fuchsia
-            printf '#00ffff\n' > "$cachedir"/aqua
-            printf '#ffffff\n' > "$cachedir"/white
         fi
 
         touch -- "$cachedir"
