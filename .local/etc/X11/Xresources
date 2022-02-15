@@ -41,9 +41,9 @@ XTerm.vt100.metaSendsEscape: true
  * 48) to allow double-click selection of strings containing url characters. */
 XTerm.vt100.charClass: 33:48,35-47:48,58-59:48,61:48,63-64:48,126:48
 
+/* Shift Ctrl <KeyPress> U: select-needle("://") select-set(PRIMARY)\n \ */
 XTerm.vt100.translations: #override \
     Shift Ctrl <KeyPress> O: copy-selection(PRIMARY) exec-formatted("web '%t'", PRIMARY)\n \
-    Shift Ctrl <KeyPress> U: select-needle("://") select-set(PRIMARY)\n \
     Shift Ctrl <KeyPress> V: insert-selection(CLIPBOARD)\n \
     Shift Ctrl <KeyPress> C: copy-selection(CLIPBOARD)\n \
     Shift Ctrl <KeyPress> T: spawn-new-terminal()\n \
