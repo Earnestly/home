@@ -1,4 +1,4 @@
-Dotfiles <https://github.com/Earnestly/dotfiles>
+home <https://github.com/Earnestly/home>
 
 INTRODUCTION
 
@@ -23,4 +23,4 @@ ISSUES
 
   HOME/.pki
 
-    https://github.com/chromium/chromium/blob/master/crypto/nss_util.cc#L51
+    https://github.com/chromium/chromium/blob/master/crypto/nss_util.cc#L46
