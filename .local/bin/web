@@ -1,5 +1,6 @@
 #!/bin/bash --
 # web
+# requires qutebrowser svlogd md5sum
 
 # There is no reason to pay the storage cost for useless backtraces.
 ulimit -c 0
@@ -15,24 +16,30 @@ ulimit -c 0
 # --qt-flag enable-native-gpu-memory-buffers
 # --qt-flag num-raster-threads="$(nproc)"
 
+# --qt-flag enable-blink-features=feat,feat,...
+
+# Features
+#   JXL => JPEG XL
+
 # Display failed cookie storage attempts.
 # -dD log-cookies --logfilter network
 
-set -- --no-err-windows -dD log-cookies --logfilter network "$@"
+set -- --qt-flag js-flags=--jitless --no-err-windows -dD log-cookies --logfilter network "$@"
 
 read -r md5 _ < <(printf %s "$LOGNAME" | md5sum)
 
 if [[ -S $XDG_RUNTIME_DIR/qutebrowser/ipc-$md5 ]]; then
-    exec qutebrowser "$@"
+    qutebrowser "$@"
 else
     mkdir -p -- "$HOME"/.local/var/log/web
 
     # XXX --dbus-stub appears ineffective in preventing chromium from its
-    #       attempts to use dbus.
+    #       attempts to use dbus.  Instead an svlogd rule is used to prune
+    #       it out.
+
     #       >   [... ERROR:bus.cc(393)] Failed to connect to the bus: ...
     # export QTWEBENGINE_CHROMIUM_FLAGS=--dbus-stub
-    cat <<! > "$HOME"/.local/var/log/web/config
--*ERROR:bus.cc(*)] Failed to connect to the bus:*
-!
-    exec qutebrowser "$@" 2>&1 | svlogd -ttt "$HOME"/.local/var/log/web
+    printf '%s\n' '-*ERROR:bus.cc(*)] Failed to connect to the bus:*' > "$HOME"/.local/var/log/web/config
+
+    qutebrowser "$@" 2>&1 | svlogd -ttt "$HOME"/.local/var/log/web
 fi
