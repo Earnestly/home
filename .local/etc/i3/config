@@ -66,11 +66,13 @@ floating_modifier $mod
 bindsym $mod+Return exec --no-startup-id terminal
 bindsym XF86Launch1 exec --no-startup-id web
 
+bindsym $mod+Escape exec --no-startup-id exec peon \"$(xclip -o)\"
+
 # Global media keys.
-# bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
-# bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
-bindsym XF86AudioMute exec --no-startup-id amixer -Mq sset Master toggle
-bindsym XF86AudioMicMute exec --no-startup-id amixer -Mq sset Capture toggle
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
+# bindsym XF86AudioMute exec --no-startup-id amixer -Mq sset Master toggle
+# bindsym XF86AudioMicMute exec --no-startup-id amixer -Mq sset Capture toggle
 
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +3%
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -3%
@@ -187,12 +189,11 @@ mode "RESIZE" {
 bindsym $mod+r mode "RESIZE"
 
 mode "MENU" {
-    bindsym d exec --no-startup-id ditch < "$HOME"/.local/share/ditch/streamers; mode "default"
+    bindsym d exec --no-startup-id ditch < "$HOME"/.local/var/lib/ditch/streamers; mode "default"
     bindsym w exec --no-startup-id exec sh "$HOME"/study/shell/watchlater; mode "default"
     bindsym s exec --no-startup-id exec switch; mode "default"
     bindsym l exec --no-startup-id exec mpass; mode "default"
     bindsym y exec --no-startup-id exec mclip; mode "default"
-    bindsym v exec --no-startup-id exec peon \"$(xclip -o)\"; mode "default"
     bindsym p exec --no-startup-id exec dmenu_run; mode "default"
     bindsym o exec --no-startup-id exec sh "$HOME"/study/shell/book; mode "default"
 
@@ -201,6 +202,7 @@ mode "MENU" {
     bindsym Escape mode "default"
 }
 bindsym $mod+p mode "MENU"
+bindsym Menu nop
 
 # Music control.
 mode "MUSIC" {
