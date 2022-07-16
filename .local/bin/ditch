@@ -1,6 +1,6 @@
 #!/bin/sh --
 # ditch - display menu of twitch streamers currently online
-# requres jq curl bemenu mpv
+# requires jq curl bemenu mpv
 
 cachedir=${XDG_CACHE_HOME:-$HOME/.cache}/ditch
 mkdir -p -- "$cachedir"
@@ -28,10 +28,10 @@ else
 
                 printf "[{\"query\":\"query{users(logins:[%s]){login,stream{title,viewersCount,game{name}}}}\"}]", value > dest
 
-                # N.B. curl requires any double quotes or backslash characters
-                #      escaped in quoted input.
-                gsub("\\\\", "\\\\", dest)
-                gsub("\"", "\\\"", dest)
+                # Make filepath safe for curl config format.
+                gsub(/\\/, "\\\\", dest)
+                gsub(/"/, "\\\"", dest)
+                gsub(/\n/, "\\n", dest)
 
                 # N.B. Placing "next" first in the config seems harmless,
                 #      whereas if it were last curl would warn of a missing url.
@@ -40,14 +40,14 @@ else
                 printf "header \"Client-ID: kimne78kx3ncx6brgo4mv6wki5h1ko\"\n"
                 printf "data \"@%s\"\n", dest
                 printf "output \"%s.result\"\n", dest
-                printf "write-out %%{filename_effective}\\n\n"
+                printf "write-out %s\n", "%{filename_effective}\\n"
             }
 
             BEGIN             {path = ENVIRON["tmp"]}
             !((NR-1) % limit) {if(users) request(users); users = ""}
             NF && !/^#/       {users = users "\\\"" $1 "\\\""}
             END               {if(users) request(users)}' \
-        | curl --tcp-fastopen --parallel-max 15 -sSZK - \
+        | curl --parallel-max 15 -gqsSZK - \
         | xargs -E '' cat -- \
         | jq -sr '[.[] | arrays[] | select(.data.users).data.users[] | select(.stream)]
                        | sort_by(-.stream.viewersCount)[]
