@@ -46,7 +46,7 @@ if [ "$(git rev-parse --is-bare-repository 2> /dev/null)" != true ]; then
 fi
 
 if origin=$(git config remote.origin.url); then
-    branch=${2:-master}
+    branch=${2:-$(git symbolic-ref --short HEAD)}
 
     # https://github.com/git/git/commit/f269048754f3b835f4f7287c5a13271
     git symbolic-ref HEAD refs/heads/"$branch"
