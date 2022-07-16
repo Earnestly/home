@@ -17,6 +17,8 @@ config.set('session.lazy_restore', True)
 
 config.set('url.default_page', 'about:blank')
 config.set('url.start_pages', ['about:blank'])
+
+# XXX https://github.com/qutebrowser/qutebrowser/issues/5970
 config.set('url.searchengines', {'DEFAULT': 'https://duckduckgo.com/html/?q=!{}'})
 
 # XXX qutebrowser (webengine) cannot yet disable webrtc completely:
@@ -27,8 +29,18 @@ config.set('content.webgl', False)
 config.set('content.cookies.accept', 'never')
 config.set('content.javascript.enabled', False)
 config.set('content.dns_prefetch', False)
-config.set('content.notifications', False)
+config.set('content.notifications.enabled', False)
 config.set('content.register_protocol_handler', False)
+
+# Many websites use a placeholder for text that is fetched via javascript.
+# This placeholder uses a subtle phasing animation which ends up consuming an
+# obnoxious amount of CPU resources for something that will never be replaced
+# as javascript is typically disabled.
+# As a result all animations will be disabled; they often add nothing.  Most
+# other effects are obtained using the transition property which hasn't yet
+# caused problems.
+config.set('content.user_stylesheets', 'css/no-animation.css')
+
 
 config.set('tabs.background', True)
 config.set('tabs.last_close', 'close')
@@ -45,6 +57,8 @@ color_background = '#343d46'
 color_foreground = '#65737e'
 color_text = '#c0c5ce'
 color_red = '#cc6666'
+
+config.set('colors.webpage.bg', color_text)
 
 config.set('colors.tabs.indicator.system', 'none')
 config.set('colors.tabs.bar.bg', color_background)
@@ -67,6 +81,8 @@ config.set('fonts.tabs.selected', font_ui)
 config.set('fonts.tabs.unselected', font_ui)
 config.set('fonts.hints', font_ui)
 config.set('fonts.completion.category', font_ui)
+
+config.set('aliases', config.get('aliases').update({'help': 'help -t'}))
 
 config.bind('t', 'set-cmd-text -s :open -t')
 config.bind('O', 'set-cmd-text :open {url}')
@@ -104,15 +120,18 @@ config.bind('<Ctrl-r>', 'fake-key <Ctrl+z>', 'insert')
 # disabled which prevents the starting of multiple mpv instances directly.  By
 # using a script which starts mpv indirectly it appears Qt is willing to start
 # more.
-# config.bind('U', 'spawn -vd mpv --profile=url {url}')
-# config.bind(';q', 'hint links spawn -vd mpv --profile=url {hint-url}')
-config.bind('U', 'spawn -u video')
-config.bind(';q', 'hint links userscript video')
+# config.bind('gv', 'spawn -du video')
+# config.bind(';v', 'hint links spawn -du video')
+config.bind('gv', 'spawn -vd env PEON_ATTRS=video peon {url}')
+config.bind(';v', 'hint links spawn -vd env PEON_ATTRS=video peon {hint-url}')
+
+config.bind(';q', 'hint links spawn sh -c \'qrencode -o - "$1" | imv -\' _ {hint-url}')
+config.bind('gq', 'spawn sh -c \'qrencode -o - "$1" | imv -\' _ {url}')
 
 config.bind('Q', ':devtools window')
 
-config.bind('<Alt-x>', 'config-cycle -p content.javascript.enabled')
-config.bind('<Ctrl-Shift-p>', 'config-cycle -p content.private_browsing')
+config.bind('gj', 'config-cycle -p content.javascript.enabled')
+config.bind('gp', 'config-cycle -p content.private_browsing')
 
 # Remove return from the javascript question prompts to reduce the chance of
 # accidental acceptance.  Instead an explicit 'y' or 'n' will be required.
