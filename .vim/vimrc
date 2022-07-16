@@ -2,15 +2,10 @@
 
 " If I am going to tolerate a .vim directory then at least attempt to keep
 " everything isolated to that location.
-set undodir=$HOME/.vim/undo
-set directory=$HOME/.vim/swap
-set backupdir=$HOME/.vim/backup
+set undodir=$HOME/.vim/undo | call mkdir(&undodir, "p")
+set directory=$HOME/.vim/swap | call mkdir(&directory, "p")
+set backupdir=$HOME/.vim/backup | call mkdir(&backupdir, "p")
 set viminfofile=$HOME/.vim/viminfo
-
-" XXX Vim doesn't mkdir these paths when needed (bug?).
-call mkdir(&backupdir, "p")
-call mkdir(&directory, "p")
-call mkdir(&undodir, "p")
 
 " Replace ex-mode with vim's command-line window.
 map Q q:
@@ -33,6 +28,7 @@ set ignorecase
 set lazyredraw
 set nomodeline
 set nohlsearch
+set nostartofline
 set scrolloff=1
 set numberwidth=1
 set colorcolumn=81
