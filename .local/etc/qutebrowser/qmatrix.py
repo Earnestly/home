@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: BlueOak-1.0.0
+
 import os
 import logging
 import fnmatch
