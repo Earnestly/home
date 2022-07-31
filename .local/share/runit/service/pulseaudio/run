@@ -1,2 +1,2 @@
 #!/bin/sh --
-exec pulseaudio 2>&1
+exec pulseaudio --exit-idle-time=-1 2>&1
