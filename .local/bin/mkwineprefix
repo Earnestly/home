@@ -48,7 +48,7 @@ while getopts :a:d:r:gmh arg; do
         *) usage; exit 1
     esac
 done
-shift $((OPTIND - 1))
+shift "$((OPTIND-1))"
 
 prefix=$1
 
