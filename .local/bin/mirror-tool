@@ -1,6 +1,6 @@
 #!/bin/sh --
 # mirror-tool - track revisions and changes from various local git mirrors
-# requires git tig
+# requires git [tig]
 
 usage() {
     printf 'usage: mirror-tool [-ucq] repository [branch]\n'
@@ -58,7 +58,7 @@ if origin=$(git config remote.origin.url); then
     fi
 
     if [ "$count" ]; then
-        command printf '%s %s\n' "$distance" "$GIT_DIR"
+        command printf '%d %s\n' "$distance" "$GIT_DIR"
     fi
 
     if [ "$distance" -gt 0 ]; then
