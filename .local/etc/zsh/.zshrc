@@ -1,4 +1,5 @@
 # HOME/.local/etc/zsh/.zshrc
+# Requires /etc/zsh/zshenv to export ZDOTDIR=$HOME/.local/etc/zsh
 
 autoload -Uz edit-command-line run-help compinit zmv
 zmodload zsh/complist
