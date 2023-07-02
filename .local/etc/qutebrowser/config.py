@@ -31,6 +31,7 @@ config.set('content.javascript.enabled', False)
 config.set('content.dns_prefetch', False)
 config.set('content.notifications.enabled', False)
 config.set('content.register_protocol_handler', False)
+#config.set('content.headers.custom' '{"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"}')
 
 # Many websites use a placeholder for text that is fetched via javascript.
 # This placeholder uses a subtle phasing animation which ends up consuming an
@@ -44,9 +45,10 @@ config.set('content.user_stylesheets', 'css/no-animation.css')
 
 config.set('tabs.background', True)
 config.set('tabs.last_close', 'close')
+# config.set('tabs.mode_on_change', 'restore')
 config.set('tabs.show', 'multiple')
 
-config.set('hints.chars', 'fdsartgbvecwxqyiopmnhzuljk')
+config.set('hints.chars', 'fjghdkslaweqvrtponimub')
 config.set('hints.scatter', False)
 config.set('hints.uppercase', True)
 
@@ -77,6 +79,7 @@ config.set('colors.tabs.indicator.error', color_red)
 font_ui = '10pt Inter'
 config.set('fonts.default_family', 'Inconsolatazi4')
 config.set('fonts.default_size', '12pt')
+
 config.set('fonts.tabs.selected', font_ui)
 config.set('fonts.tabs.unselected', font_ui)
 config.set('fonts.hints', font_ui)
@@ -127,6 +130,8 @@ config.bind(';v', 'hint links spawn -vd env PEON_ATTRS=video peon {hint-url}')
 
 config.bind(';q', 'hint links spawn sh -c \'qrencode -o - "$1" | imv -\' _ {hint-url}')
 config.bind('gq', 'spawn sh -c \'qrencode -o - "$1" | imv -\' _ {url}')
+
+config.bind('gl', 'spawn -ou ledger')
 
 config.bind('Q', ':devtools window')
 
