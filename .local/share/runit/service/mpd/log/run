@@ -1,1 +1,2 @@
-/home/earnest/.local/share/runit/log
+#!/bin/sh --
+exec logger -t mpd

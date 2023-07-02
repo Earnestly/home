@@ -51,6 +51,8 @@ def qmatrix_read_config():
     #       globs.
 
     #       flags (default: sxctimf)
+    #           a  defailt flags
+    #           b  clear flags
     #           s  script
     #           x  xhr
     #           c  stylesheet

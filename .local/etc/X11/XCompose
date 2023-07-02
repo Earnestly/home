@@ -1,16 +1,18 @@
-# LOCALDIR/cfg/X11/XCompose
+# HOME/.local/etc/X11/XCompose
 
 include "%S/en_US.UTF-8/Compose"
 
 # Prefix 'm' mathematical symbols.
+# XXX This does not work for some reason
+<Multi-key> <m> <apostrophe> <apostrophe> <apostrophe> : "‴"
 <Multi_key> <m> <d> : "Δ"
 <Multi_key> <m> <e> : "ϵ"
 <Multi_key> <m> <E> : "∃"
 <Multi_key> <m> <F> : "∀"
 <Multi_key> <m> <l> : "λ"
 <Multi_key> <m> <N> : "ℕ"
-<Multi_key> <m> <p> : "π"
-<Multi_key> <m> <i> : "∞"
+<Multi_key> <m> <p> <i> : "π"
+<Multi_key> <m> <i> <n> <f> : "∞"
 <Multi_key> <m> <t> : "𝛩"
 <Multi_key> <m> <o> : "Ω"
 <Multi_key> <m> <a> : "𝑎"
@@ -26,17 +28,17 @@ include "%S/en_US.UTF-8/Compose"
 <Multi_key> <m> <bar> <underscore> : "⊥"
 <Multi_key> <m> <asciitilde> <asciitilde> : "≈"
 
-# Quotes.
+# Quotes
 <Multi_key> <bracketleft> <apostrophe> : "｢"
 <Multi_key> <bracketright> <apostrophe> : "｣"
 <Multi_key> <less> <parenleft> : "⟨"
 <Multi_key> <greater> <parenright> : "⟩"
 
-# Easier grammar.
+# Easier grammar
 <Multi_key> <semicolon> <apostrophe> : "’"
 <Multi_key> <colon> <apostrophe> : "‘"
 
-# Misc.
+# Misc
 <Multi_key> <colon> <bar> <bar> : "ಠ_ಠ"
 <Multi_key> <less> <3> : "❤"
 <Multi_key> <bar> <asciicircum> : "↑"
@@ -46,19 +48,19 @@ include "%S/en_US.UTF-8/Compose"
 <Multi_key> <v> <i> : "$EDITOR"
 
 # Fun with Paleotypography
-<Multi_key> <T> <H> : "Þ" # 'Th'e
+<Multi_key> <T> <H> : "Þ" # [Th]e
 <Multi_key> <t> <h> : "þ"
 
 <Multi_key> <D> <H> : "Ð"
 <Multi_key> <d> <h> : "ð"
 
-<Multi_key> <W> <W> : "Ƿ" # 'W'hen
+<Multi_key> <W> <W> : "Ƿ" # [W]hen
 <Multi_key> <w> <w> : "ƿ"
 
-<Multi_key> <s> <s> : "ſ" # 'S'ee
+<Multi_key> <s> <s> : "ſ" # [S]ee
 
-<Multi_key> <Y> <Y> : "Ȝ" # 'Plo'ugh'
+<Multi_key> <Y> <Y> : "Ȝ" # Plo[ugh]
 <Multi_key> <y> <y> : "ȝ"
 
-<Multi_key> <N> <G> : "Ŋ" # Si'ng'
+<Multi_key> <N> <G> : "Ŋ" # Si[ng]
 <Multi_key> <n> <g> : "ŋ"

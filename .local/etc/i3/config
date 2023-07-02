@@ -1,10 +1,8 @@
 # HOME/.local/etc/i3/config
 
-# Font for window titles and bar.
 # font pango: Source Sans Pro Semibold, Italic 11
 # font pango: Go Medium 10
 font pango: Inter Medium 10
-
 default_border pixel 2
 workspace_auto_back_and_forth yes
 workspace_layout tabbed
@@ -39,7 +37,7 @@ set_from_resource $fuchsia XTerm.vt100.color13 #ff00ff
 set_from_resource $aqua    XTerm.vt100.color14 #00ffff
 set_from_resource $white   XTerm.vt100.color15 #ffffff
 
-# class                 border  background text   indicator
+# Class                 Border  Background Text   Indicator
 client.focused          $grey   $grey      $black $maroon
 client.focused_inactive $black  $black     $grey  $maroon
 client.unfocused        $black  $black     $grey  $maroon
@@ -59,7 +57,6 @@ bar {
     }
 }
 
-# Keybinds.
 set $mod mod4
 floating_modifier $mod
 
@@ -68,7 +65,6 @@ bindsym XF86Launch1 exec --no-startup-id web
 
 bindsym $mod+Escape exec --no-startup-id exec peon \"$(xclip -o)\"
 
-# Global media keys.
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
 # bindsym XF86AudioMute exec --no-startup-id amixer -Mq sset Master toggle
@@ -149,7 +145,6 @@ bindsym $mod+F10 workspace 20
 bindsym $mod+F11 workspace 21
 bindsym $mod+F12 workspace 22
 
-# Move focused container to workspace.
 bindsym $mod+Shift+1 move container to workspace 1
 bindsym $mod+Shift+2 move container to workspace 2
 bindsym $mod+Shift+3 move container to workspace 3
@@ -190,12 +185,13 @@ bindsym $mod+r mode "RESIZE"
 
 mode "MENU" {
     bindsym d exec --no-startup-id ditch < "$HOME"/.local/var/lib/ditch/streamers; mode "default"
-    bindsym w exec --no-startup-id exec sh "$HOME"/study/shell/watchlater; mode "default"
-    bindsym s exec --no-startup-id exec switch; mode "default"
+    bindsym i exec --no-startup-id exec web-secure; mode "default"
     bindsym l exec --no-startup-id exec mpass; mode "default"
-    bindsym y exec --no-startup-id exec mclip; mode "default"
-    bindsym p exec --no-startup-id exec dmenu_run; mode "default"
     bindsym o exec --no-startup-id exec sh "$HOME"/study/shell/book; mode "default"
+    bindsym p exec --no-startup-id exec dmenu_run; mode "default"
+    bindsym s exec --no-startup-id exec switch; mode "default"
+    bindsym w exec --no-startup-id exec sh "$HOME"/study/shell/watchlater; mode "default"
+    bindsym y exec --no-startup-id exec mclip; mode "default"
 
     bindsym --whole-window button1 exec --no-startup-id maim -uso | pb | menu | xclip -i -r; mode "default"
 
@@ -204,7 +200,6 @@ mode "MENU" {
 bindsym $mod+p mode "MENU"
 bindsym Menu nop
 
-# Music control.
 mode "MUSIC" {
     bindsym s exec --no-startup-id mpc stop
     bindsym p exec --no-startup-id mpc toggle
@@ -221,12 +216,3 @@ mode "MUSIC" {
     bindsym Escape mode "default"
 }
 bindsym $mod+m mode "MUSIC"
-
-# mode "LAYOUT" {
-#     # XXX I should turn these into scripts so I can access environment
-#     #     variables and possibly do more with it.
-#     bindsym 3 exec --no-startup-id i3-msg "workspace 3; append_layout $HOME/.local/etc/i3/layouts/tabbed_nmaster.json"
-
-#     bindsym Escape mode "default"
-# }
-# bindsym $mod+t mode "LAYOUT"

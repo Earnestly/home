@@ -79,3 +79,6 @@ let g:tar_secure = 1
 autocmd BufReadCmd *.iso,*.rar,*.7z call tar#Browse(expand("<amatch>"))
 
 runtime! macros/matchit.vim
+
+" XXX
+"let g:vim_json_warnings=0

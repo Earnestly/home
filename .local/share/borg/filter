@@ -1,7 +1,7 @@
 # XDG_DATA_HOME/borg/filter
 
 # For use with borg and the following command-line:
-# borg create -C zstd -s -p --list --patterns-from "$HOME"/.local/share/borg/filter user@remote:/backup/location::archive .
+# borg -p create -C zstd -s --filter 'AMEdbchsfi-?' --list --patterns-from "$HOME"/.local/share/borg/filter user@remote:/backup/location::archive .
 
 # NOTES
 #   The default notation is sh: which mimics typical shell style globbing.  The
@@ -39,6 +39,8 @@
 ! build/**/.git
 + build
 
+! doc/scrape
+! doc/recovered
 + doc
 
 + music/playlists
@@ -66,12 +68,10 @@
 ! .local/srv/repo
 ! .local/share/wine
 ! .local/share/game
+! .local/share/cargo
 ! .local/share/appimage
 ! .local/share/qutebrowser
 ! .local/share/vimperator/info
-! .local/share/reddit-scrape
-! .local/share/nitter-scrape
-! .local/share/artstation-scrape
 + .local
 
 + .local/share/borg/filter
