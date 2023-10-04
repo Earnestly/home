@@ -47,10 +47,10 @@ else
                 printf "write-out %s\n", "%{filename_effective}\\n"
             }
 
-            BEGIN             {path = ENVIRON["tmp"]}
-            !((NR-1) % limit) {if(users) request(users); users = ""}
-            NF && !/^#/       {users = users "\\\"" $1 "\\\""}
-            END               {if(users) request(users)}' \
+            BEGIN           {path = ENVIRON["tmp"]}
+            NR % limit == 1 {if(users) request(users); users = ""}
+            NF && !/^#/     {users = users "\\\"" $1 "\\\""}
+            END             {if(users) request(users)}' \
         | curl --parallel-max 15 -gqsSZK - \
         | xargs -E '' cat -- \
         | jq -sr '[.[] | arrays[] | select(.data.users).data.users[] | select(.stream)]
