@@ -1,0 +1,26 @@
+# XDG_CONFIG_HOME/zathura/zathurarc
+
+include font
+include colours
+
+set guioptions ""
+set render-loading false
+
+set continuous-hist-save true
+
+set recolor true
+set recolor-keephue true
+set recolor-reverse-video true
+
+set zoom-step 5
+
+# Attempt to ensure the content remained centered while zooming in and out as
+# zathura, unlike llpp, has no key to recenter the page within the window.
+set vertical-center true
+set zoom-center true
+
+map p toggle_statusbar
+map <Space> navigate next
+map <BackSpace> navigate previous
+map d scroll half-down
+map u scroll half-up
