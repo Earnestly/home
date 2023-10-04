@@ -12,12 +12,14 @@ INTRODUCTION
     |- lib
     `- var
        |- cache
+       |- lib
        `- log
 
 ENVIRONMENTS
 
   XDG_CONFIG_HOME=$HOME/.local/etc
   XDG_CACHE_HOME=$HOME/.local/var/cache
+  XDG_STATE_HOME=$HOME/.local/var/lib
 
 ISSUES
 
