@@ -1,0 +1,7 @@
+# XDG_CONFIG_HOME/zathura/colours
+
+set default-bg "#dfe1e8"
+set default-fg "#343d46"
+
+set recolor-lightcolor "#dfe1e8"
+set recolor-darkcolor "#343d46"
