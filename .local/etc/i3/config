@@ -173,6 +173,8 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exit
 
+bindsym Menu nop
+
 mode "RESIZE" {
     bindsym h resize shrink width 1 px or 1 ppt
     bindsym j resize grow height 1 px or 1 ppt
@@ -192,13 +194,13 @@ mode "MENU" {
     bindsym s exec --no-startup-id exec switch; mode "default"
     bindsym w exec --no-startup-id exec sh "$HOME"/study/shell/watchlater; mode "default"
     bindsym y exec --no-startup-id exec mclip; mode "default"
+    bindsym t exec --no-startup-id exec sh "$HOME"/study/shell/type-primary; mode "default"
 
     bindsym --whole-window button1 exec --no-startup-id maim -uso | pb | menu | xclip -i -r; mode "default"
 
     bindsym Escape mode "default"
 }
 bindsym $mod+p mode "MENU"
-bindsym Menu nop
 
 mode "MUSIC" {
     bindsym s exec --no-startup-id mpc stop
