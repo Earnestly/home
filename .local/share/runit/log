@@ -4,5 +4,6 @@
 pwd=${PWD%/*}
 service=${pwd##*/}
 
-mkdir -p "$HOME"/.local/var/log/"$service"
-exec svlogd -ttt "$HOME"/.local/var/log/"$service"
+# mkdir -p "$HOME"/.local/var/log/"$service"
+# exec svlogd -ttt "$HOME"/.local/var/log/"$service"
+exec nice logger -et "$service" -p info
