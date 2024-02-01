@@ -22,21 +22,22 @@ resource_whitelist = [
 ]
 
 resource_flags = {
-    's': qutebrowser.api.interceptor.ResourceType.script,
-    'x': qutebrowser.api.interceptor.ResourceType.xhr,
     'c': qutebrowser.api.interceptor.ResourceType.stylesheet,
-    't': qutebrowser.api.interceptor.ResourceType.font_resource,
-    'i': qutebrowser.api.interceptor.ResourceType.image,
-    'm': qutebrowser.api.interceptor.ResourceType.media,
-    'w': qutebrowser.api.interceptor.ResourceType.service_worker,
     'd': qutebrowser.api.interceptor.ResourceType.sub_resource,
     'f': qutebrowser.api.interceptor.ResourceType.sub_frame,
+    'i': qutebrowser.api.interceptor.ResourceType.image,
+    'm': qutebrowser.api.interceptor.ResourceType.media,
     'p': qutebrowser.api.interceptor.ResourceType.ping,
+    'r': qutebrowser.api.interceptor.ResourceType.prefetch,
+    's': qutebrowser.api.interceptor.ResourceType.script,
+    't': qutebrowser.api.interceptor.ResourceType.font_resource,
+    'w': qutebrowser.api.interceptor.ResourceType.service_worker,
+    'x': qutebrowser.api.interceptor.ResourceType.xhr,
 }
 
 more_flags = ('=')
 
-default_flags = 'sxctimwdf'
+default_flags = 'sxctimwdfr'
 rules = []
 logger = logging.getLogger('qmatrix')
 
@@ -50,20 +51,22 @@ def qmatrix_read_config():
     #       primary and secondary hosts are matched according to fnmatch
     #       globs.
 
-    #       flags (default: sxctimf)
+    #       flags (default: sxctimwdfr)
     #           a  defailt flags
     #           b  clear flags
-    #           s  script
-    #           x  xhr
+    #           =  both primary and secondary domains must match
+
     #           c  stylesheet
-    #           t  font
-    #           i  image
-    #           m  media
-    #           w  service worker
     #           d  download (sub_resource)
     #           f  iframe (sub_frame)
+    #           i  image
+    #           m  media
     #           p  ping
-    #           =  both primary and secondary domains must match
+    #           r  prefetch
+    #           s  script
+    #           t  font
+    #           w  service worker
+    #           x  xhr
 
     #       resource
     #           A specific web resource upon which to act.
