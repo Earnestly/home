@@ -22,24 +22,27 @@ set -- --qt-flag enable-features=JXL,VaapiVideoEncoder,VaapiVideoDecoder,CanvasO
        --qt-flag enable-accelerated-video-decode \
        --qt-flag use-gl=desktop \
        --qt-flag single-process \
-       --no-err-windows --logfilter network -dD log-cookies "$@"
+       --no-err-windows "$@"
+# -dD log-cookies
 
-printf %s "$LOGNAME" | md5sum | {
-    read -r md5 _
+# https://github.com/qutebrowser/qutebrowser/issues/7769
+# --logfilter network
 
-    if [ -S "$XDG_RUNTIME_DIR"/qutebrowser/ipc-"$md5" ]; then
-        exec qutebrowser "$@"
-    else
-        mkdir -p -- "$HOME"/.local/var/log/web
+rundir=$XDG_RUNTIME_DIR/qutebrowser
+pipe=$rundir/log.pipe
 
-        # XXX --dbus-stub appears ineffective in preventing chromium from its
-        #       attempts to use dbus.  Instead an svlogd rule is used to prune
-        #       it out.
-        # export QTWEBENGINE_CHROMIUM_FLAGS=--dbus-stub
-        if [ -s "$HOME"/.local/var/log/web/config ]; then
-            printf '%s\n' '-*ERROR:bus.cc(*)] Failed to connect to the bus:*' > "$HOME"/.local/var/log/web/config
-        fi
+mkdir -pm0700 -- "$rundir"
 
-        exec qutebrowser "$@" 2>&1 | svlogd -ttt "$HOME"/.local/var/log/web
-    fi
-}
+if [ -e "$pipe" ] && ! [ -p "$pipe" ]; then
+    rm -f -- "$pipe"
+fi
+
+if ! [ -p "$pipe" ]; then
+    mkfifo -- "$pipe"
+fi
+
+nice logger -et qutebrowser -p info < "$pipe" &
+exec 9>"$pipe"
+rm -f -- "$pipe"
+
+exec qutebrowser "$@" >&9 2>&1
