@@ -2,8 +2,11 @@
 
 config.load_autoconfig(False)
 
-import setproctitle
-setproctitle.setproctitle('qutebrowser')
+try:
+    import setproctitle
+    setproctitle.setproctitle('qutebrowser')
+except Exception:
+    pass
 
 config.source(config.configdir / 'qmatrix.py')
 config.source(config.configdir / 'cookie.py')
@@ -31,7 +34,6 @@ config.set('content.javascript.enabled', False)
 config.set('content.dns_prefetch', False)
 config.set('content.notifications.enabled', False)
 config.set('content.register_protocol_handler', False)
-#config.set('content.headers.custom' '{"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"}')
 
 # Many websites use a placeholder for text that is fetched via javascript.
 # This placeholder uses a subtle phasing animation which ends up consuming an
@@ -87,8 +89,8 @@ config.set('fonts.completion.category', font_ui)
 
 config.set('aliases', config.get('aliases').update({'help': 'help -t'}))
 
-config.bind('t', 'set-cmd-text -s :open -t')
-config.bind('O', 'set-cmd-text :open {url}')
+config.bind('t', 'cmd-set-text -s :open -t')
+config.bind('O', 'cmd-set-text :open {url}')
 config.bind('<Alt-h>', 'tab-prev')
 config.bind('<Alt-l>', 'tab-next')
 
@@ -125,8 +127,8 @@ config.bind('<Ctrl-r>', 'fake-key <Ctrl+z>', 'insert')
 # more.
 # config.bind('gv', 'spawn -du video')
 # config.bind(';v', 'hint links spawn -du video')
-config.bind('gv', 'spawn -vd env PEON_ATTRS=video peon {url}')
-config.bind(';v', 'hint links spawn -vd env PEON_ATTRS=video peon {hint-url}')
+config.bind('gv', 'spawn -v env PEONATTRS=video peon {url}')
+config.bind(';v', 'hint links spawn -v env PEONATTRS=video peon {hint-url}')
 
 config.bind(';q', 'hint links spawn sh -c \'qrencode -o - "$1" | imv -\' _ {hint-url}')
 config.bind('gq', 'spawn sh -c \'qrencode -o - "$1" | imv -\' _ {url}')
