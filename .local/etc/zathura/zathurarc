@@ -6,6 +6,8 @@ include colours
 set guioptions ""
 set render-loading false
 
+set window-title-basename true
+
 set continuous-hist-save true
 
 set recolor true
