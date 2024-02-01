@@ -82,3 +82,5 @@ runtime! macros/matchit.vim
 
 " XXX
 "let g:vim_json_warnings=0
+" https://github.com/ledger/vim-ledger/issues/143
+let g:ledger_is_hledger=v:false
