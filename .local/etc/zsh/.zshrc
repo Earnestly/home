@@ -38,9 +38,11 @@ HISTFILE=$HOME/.local/share/zsh/zhistory
 HISTSIZE=50000
 SAVEHIST=$HISTSIZE
 
-# As we can't track directories alone with git and zsh won't make the needful
-# directories either, we make them ourselves instead.
-mkdir -p "$HISTFILE:h"
+# Create the needed directories here as git can't track empty directories and
+# zsh won't make them.
+if [[ ! -d $HISTFILE:h ]]; then
+    mkdir -p -- "$HISTFILE:h"
+fi
 
 HELPDIR=/usr/share/zsh/$ZSH_VERSION/help
 
@@ -49,6 +51,8 @@ PROMPT='${SSH_CONNECTION+%m }%n $vimode ${repo:+$repo }%F{cyan}%~%f '
 zstyle ':completion:*' menu select
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' rehash yes
+
+source <(dircolors)
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 function precmd {
@@ -150,12 +154,6 @@ bindkey          '^T' history-incremental-pattern-search-backward
 # Verify search result before accepting.
 bindkey -M isearch '^M' accept-search
 
-# Quick and easy note taking (I should make this into a seperate script).
-function n {
-    $EDITOR "${@[@]/#/"$HOME/doc/note/"}"
-}
-compdef "_files -W $HOME/doc/note -/" n
-
 alias -g ...='../..'
 alias -g ....='../../..'
 alias rm='rm -vI'
@@ -174,28 +172,24 @@ alias ls='ls --color=auto --show-control-chars --group-directories-first -AlhXF'
 alias v='editor'
 alias vi='editor'
 alias dmesg='dmesg -exL'
-alias weechat='dtach-weechat'
-alias mutt='dtach-mutt'
-alias tmux="tmux -f $HOME/.local/etc/tmux/tmux.conf"
-
-alias k='rlwrap k'
-
-alias aria2c="aria2c --dht-file-path $HOME/.local/var/cache/aria2/dht.dat"
-alias petite="petite --eehistory $HOME/.local/share/chezscheme/history"
-alias gdb="gdb -nh -x $HOME/.local/etc/gdb/init"
-
-if hash nvidia-settings 2> /dev/null; then
-    alias nvidia-settings="nvidia-settings --config=$HOME/.local/etc/nvidia/settings"
-fi
 
 # Bash-like help.
 unalias run-help
 alias help='run-help'
 
+# Quick note taking.
+function n { vi -- "${@[@]/#/"$HOME"/doc/note/}" }
+compdef "_files -W $HOME/doc/note" n
+
+# XXX Temporary!
+function s { vi -- "${@[@]/#/"$HOME"/CENTRAL/}" }
+compdef "_files -W $HOME/CENTRAL" s
+
 # Directory hashes.
 if [[ -d $HOME/study ]]; then
     for d in "$HOME"/study/*(/); do
-        hash -d "${d:t}"="$d"
+        tmp+=("${d:t}"="$d")
     done
-    unset d
+    hash -d "${tmp[@]}"
+    unset d tmp
 fi
