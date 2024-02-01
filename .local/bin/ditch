@@ -3,6 +3,7 @@
 # requires jq curl bemenu mpv
 
 cachedir=${XDG_CACHE_HOME:-$HOME/.cache}/ditch
+
 mkdir -p -- "$cachedir"
 
 # Ensure the file exists for find but without modifying its file information.
@@ -10,31 +11,46 @@ mkdir -p -- "$cachedir"
 
 # As the GraphQL API used by twitch is nominally private it might be
 # prudent to reduce the presence upon it by caching results.
-renew=$(touch -d "$(TZ=UTC+00:15:00 date +%FT%TZ)" -- "$cachedir"/timeref
-        TZ=UTC find "$cachedir"/livestreams ! -newer "$cachedir"/timeref
+renew=$(touch -d "$(TZ=UTC+00:05:00 date +%FT%TZ)" -- "$cachedir"/timeref
+        TZ=UTC find "$cachedir"/livestreams -newer "$cachedir"/timeref
         rm -f -- "$cachedir"/timeref)
 
-if [ -s "$cachedir"/livestreams ] && ! { [ "$renew" ] || [ "$1" = -f ]; }; then
+while getopts :f opt; do
+    case $opt in
+    f) unset -v renew ;;
+    *) ;;
+    esac
+done
+
+if [ -s "$cachedir"/livestreams ] && [ "$renew" ]; then
     prompt=STREAM
 else
     prompt='STREAM *'
-    tmp=${TMPDIR:-/tmp}/ditch_$$
+    tmp=${TMPDIR:-/tmp}/ditch-$$
 
     if mkdir -p -- "$tmp"/data; then
         # Despite having tested this query with a number of users greater than
         # 1800 successfully, I have chosen to use 500 as a reasonable limit as
         # no such figure is documented.
         # shellcheck disable=SC1004
-        tmp="$tmp"/data awk -v limit=500 '
-            function request(value,  dest){
-                dest = path "/" NR
+        jq --argjson limit 500 -scR '
+            (. / "\n")[:-1] | map(select((startswith("#") | not) and . != ""))
+                            | "query{users(logins:\(_nwise($limit))){login,stream{title,viewersCount,game{name}}}}"
+                            | [{"query": .}]' \
+        | tmp="$tmp"/data awk '
+            BEGIN {
+                path = safepath = ENVIRON["tmp"]
 
-                printf "[{\"query\":\"query{users(logins:[%s]){login,stream{title,viewersCount,game{name}}}}\"}]", value > dest
+                # Ensure the dest is safe for the format curl uses.
+                gsub(/\\/, "\\\\", safepath)
+                gsub(/"/, "\\\"", safepath)
+                gsub(/\n/, "\\n", safepath)
 
-                # Make filepath safe for curl config format.
-                gsub(/\\/, "\\\\", dest)
-                gsub(/"/, "\\\"", dest)
-                gsub(/\n/, "\\n", dest)
+            }
+
+            {
+                print > (path "/" NR)
+                dest = safepath "/" NR
 
                 # Placing "next" first in the config seems harmless, whereas if
                 # it were last curl would warn of a missing url.
@@ -44,14 +60,9 @@ else
                 printf "header \"Client-ID: kimne78kx3ncx6brgo4mv6wki5h1ko\"\n"
                 printf "data \"@%s\"\n", dest
                 printf "output \"%s.result\"\n", dest
-                printf "write-out %s\n", "%{filename_effective}\\n"
-            }
-
-            BEGIN           {path = ENVIRON["tmp"]}
-            NR % limit == 1 {if(users) request(users); users = ""}
-            NF && !/^#/     {users = users "\\\"" $1 "\\\""}
-            END             {if(users) request(users)}' \
-        | curl --parallel-max 15 -gqsSZK - \
+                printf "write-out %s\n", "%{filename_effective}%{onerror}%{stderr}twitch: warning: %{url}: %{errormsg}\\n"
+            }' \
+        | curl --parallel-max 15 -gsSZK - \
         | xargs -E '' cat -- \
         | jq -sr '[.[] | arrays[] | select(.data.users).data.users[] | select(.stream)]
                        | sort_by(-.stream.viewersCount)[]
