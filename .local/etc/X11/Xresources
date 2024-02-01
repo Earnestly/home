@@ -53,7 +53,7 @@ XTerm.vt100.translations: #override \
 /* Prevent xterm mapping the bright variants of the 16 colours for bold text. */
 XTerm.vt100.boldColors: false
 
-#include "colours/base16_yesterday_night"
+#include "colours/current"
 
 Sxiv.font: Inter Medium:size=10
 Sxiv.foreground: black
