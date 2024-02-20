@@ -1,163 +1,176 @@
 # SPDX-License-Identifier: BlueOak-1.0.0
 
 import os
-import logging
+import re
 import fnmatch
+import logging
 
-import qutebrowser.api.interceptor
-import qutebrowser.api.cmdutils
-import qutebrowser.api.message
-import qutebrowser.api.apitypes
+from types import SimpleNamespace
 
-# Unstable API
-import qutebrowser.utils
+from qutebrowser.api import interceptor, cmdutils, message, apitypes
+
+# Unstable APIs
 import qutebrowser.misc
 
-qmatrix_active = True
-
-resource_whitelist = [
-    qutebrowser.api.interceptor.ResourceType.main_frame,
-    qutebrowser.api.interceptor.ResourceType.favicon,
-    None
-]
-
-resource_flags = {
-    'c': qutebrowser.api.interceptor.ResourceType.stylesheet,
-    'd': qutebrowser.api.interceptor.ResourceType.sub_resource,
-    'f': qutebrowser.api.interceptor.ResourceType.sub_frame,
-    'i': qutebrowser.api.interceptor.ResourceType.image,
-    'm': qutebrowser.api.interceptor.ResourceType.media,
-    'p': qutebrowser.api.interceptor.ResourceType.ping,
-    'r': qutebrowser.api.interceptor.ResourceType.prefetch,
-    's': qutebrowser.api.interceptor.ResourceType.script,
-    't': qutebrowser.api.interceptor.ResourceType.font_resource,
-    'w': qutebrowser.api.interceptor.ResourceType.service_worker,
-    'x': qutebrowser.api.interceptor.ResourceType.xhr,
-}
-
-more_flags = ('=')
-
-default_flags = 'sxctimwdfr'
-rules = []
-logger = logging.getLogger('qmatrix')
-
-def qmatrix_read_config():
+def qmatrix_read_config(config):
     """Load qmatrix rules from configuration file into the global rules list."""
 
     #   SYNOPSIS
-    #       primary_host secondary_host [flags] [resource]
-
+    #       host_domain source_domain [flags [resource]]
+    #
     #   DESCRIPTION
-    #       primary and secondary hosts are matched according to fnmatch
-    #       globs.
-
-    #       flags (default: sxctimwdfr)
-    #           a  defailt flags
+    #       host_domain and source_domain are matched according to fnmatch
+    #       patterns. If no flags are provided the default set is used.
+    #
+    #       special flags
+    #           *  all flags
+    #           a  default flags (cdefikmorstwx)
     #           b  clear flags
-    #           =  both primary and secondary domains must match
-
+    #
+    #       resource flags
     #           c  stylesheet
     #           d  download (sub_resource)
+    #           e  csp_report
     #           f  iframe (sub_frame)
     #           i  image
+    #           k  worker
     #           m  media
+    #           o  websocket
     #           p  ping
     #           r  prefetch
     #           s  script
     #           t  font
     #           w  service worker
     #           x  xhr
-
+    #
     #       resource
     #           A specific web resource upon which to act.
 
-    global rules
+    # https://doc.qt.io/qt-6/qwebengineurlrequestinfo.html#ResourceType-enum
+    resource_flags = {
+        'c': interceptor.ResourceType.stylesheet,
+        'd': interceptor.ResourceType.sub_resource,
+        'e': interceptor.ResourceType.csp_report,
+        'f': interceptor.ResourceType.sub_frame,
+        'i': interceptor.ResourceType.image,
+        'k': interceptor.ResourceType.worker,
+        'm': interceptor.ResourceType.media,
+        'o': interceptor.ResourceType.websocket,
+        'p': interceptor.ResourceType.ping,
+        'r': interceptor.ResourceType.prefetch,
+        's': interceptor.ResourceType.script,
+        't': interceptor.ResourceType.font_resource,
+        'w': interceptor.ResourceType.service_worker,
+        'x': interceptor.ResourceType.xhr
+    }
 
-    # Clear out any existing rules.
-    rules = []
+    default_flags = list('cdefikmorstwx')
 
-    with open(config.configdir / 'qmatrix-rules') as f:
-        for line in f.read().splitlines():
+    def compile_regex(s, flags=0):
+        return re.compile(fnmatch.translate(s), flags)
+
+    qmatrix.logger.debug(f'{qmatrix.config}: loading ruleset')
+
+    with open(config) as f:
+        for i, line in enumerate(f.read().splitlines()):
             if not (line.startswith('#') or line.strip() == ''):
                 fields = line.split(' ')
-
                 length = len(fields)
-                flags = default_flags
                 granted = []
-                resource = ''
+                resource = None
 
-                if length >= 2:
-                    if length > 2:
-                        flags = fields[2]
+                if length < 2 or length > 4:
+                    qmatrix.logger.debug(f'{qmatrix.config}:{i}: {line}: invalid rule')
+                else:
+                    host_domain = compile_regex(fields[0], re.IGNORECASE)
+                    source_domain = compile_regex(fields[1], re.IGNORECASE)
+
+                    flags = default_flags if length == 2 else list(fields[2])
 
                     if 'a' in flags:
                         flags = default_flags
 
                     if 'b' in flags:
-                        flags = ''
+                        flags.clear()
+
+                    if '*' in flags:
+                        flags = list(resource_flags.keys())
 
                     for f in flags:
-                        if f in more_flags:
-                            granted.append(f)
-
                         if f in resource_flags:
                             granted.append(resource_flags[f])
+                        else:
+                            qmatrix.logger.debug(f'{qmatrix.config}:{i} {f}: unknown flag')
 
                     if length == 4:
-                        resource = fields[3]
+                        resource = compile_regex(fields[3])
 
-                    rules.append((fields[0], fields[1], tuple(granted), resource))
+                    qmatrix.rules.append((host_domain, source_domain, tuple(granted), resource))
 
-qmatrix_read_config()
+    qmatrix.logger.debug(f'{qmatrix.config}: {len(qmatrix.rules)} rules loaded')
 
-@qutebrowser.api.cmdutils.register()
+
+@cmdutils.register()
 def qmatrix_edit():
-    """Docstring."""
+    """Open qmatrix-rules with a text editor."""
     editor = qutebrowser.misc.editor.ExternalEditor(watch=True, parent=config._config)
 
     def on_file_updated():
-        qmatrix_read_config()
+        qmatrix_read_config(qmatrix.config)
 
+    # XXX This tends to produce File not Found errors messages when saving the
+    #     file without closing. It appears to work nevertheless.
     editor.file_updated.connect(on_file_updated)
-    editor.edit_file(str(config.configdir / 'qmatrix-rules'))
+    editor.edit_file(str(qmatrix.config))
 
-@qutebrowser.api.cmdutils.register()
+
+@cmdutils.register()
 def qmatrix_toggle():
     """Enable or disable qmatrix."""
 
-    global qmatrix_active
-    qmatrix_active = not qmatrix_active
-    message = 'qmatrix enabled' if qmatrix_active else 'qmatrix disabled'
-    qutebrowser.api.message.info(message)
+    qmatrix.active = not qmatrix.active
+    message.info('qmatrix enabled' if qmatrix.active else 'qmatrix disabled')
 
-def qmatrix_intercept(request: qutebrowser.api.interceptor.Request):
-    if qmatrix_active and not request.resource_type in resource_whitelist:
-        host_primary = request.first_party_url.host()
-        host_secondary = request.request_url.host()
-        resource_type = request.resource_type
-        resource = request.request_url.toString()
+
+def qmatrix_intercept(request: interceptor.Request):
+    if qmatrix.active and not request.resource_type in qmatrix.whitelist:
+        hosts = (request.first_party_url.host(), request.request_url.host())
+        resource = (request.resource_type, request.request_url.toString())
+
+        ruleset = qmatrix.rules
 
         access = False
 
-        global rules
-        for rule in rules:
-            if '=' in rule[2] and host_primary != host_secondary:
-                continue
+        # start = qmatrix.timer()
 
-            if fnmatch.fnmatch(host_primary, rule[0]) and fnmatch.fnmatch(host_secondary, rule[1]):
-                if resource_type in rule[2]:
+        for rule in ruleset:
+            if access:
+                break
+
+            if rule[0].match(hosts[0]) and rule[1].match(hosts[1]):
+                if resource[0] in rule[2]:
                     access = True
-                elif not rule[3]:
+
+                if rule[3] and not rule[3].match(resource[1]):
                     access = False
 
-                if resource == rule[3]:
-                    if resource_type in rule[2]:
-                        access = True
-                    else:
-                        access = False
+        # duration = qmatrix.timer() - start
+        # qmatrix.logger.info(f'{duration:.5f}s [{resource[0].name}] {host[0]} {resource[1]}')
 
         if not access:
-            logger.info('blocked: {} {} [{}] {}'.format(host_primary, host_secondary, resource_type.name, resource))
+            qmatrix.logger.info(f'blocked: [{resource[0].name}] {hosts[0]} {resource[1]}')
             request.block()
 
-qutebrowser.api.interceptor.register(qmatrix_intercept)
+
+qmatrix = SimpleNamespace()
+
+qmatrix.active = True
+qmatrix.config = config.configdir / 'qmatrix-rules'
+qmatrix.logger = logging.getLogger('qmatrix')
+qmatrix.rules = []
+qmatrix.whitelist = (interceptor.ResourceType.main_frame, interceptor.ResourceType.favicon, None)
+# import timeit
+# qmatrix.timer = timeit.default_timer
+
+qmatrix_read_config(qmatrix.config)
+interceptor.register(qmatrix_intercept)
