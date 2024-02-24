@@ -63,7 +63,7 @@ case ${arch:-win32} in
 esac
 
 case $prefix in
-    [!/]*) prefix=$PWD/$prefix
+    [!/]*) prefix=./$prefix
 esac
 
 mkdir -p -- "$prefix"
