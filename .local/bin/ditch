@@ -74,8 +74,6 @@ else
     fi
 fi
 
-prompt="$prompt $(wc -l < "$cachedir"/livestreams)"
-
 menu --ifne -l30 -p "$prompt" < "$cachedir"/livestreams | while read -r user _; do
     if [ "$user" ]; then
         printf '%s\n' "$user" >> "$cachedir"/stats
