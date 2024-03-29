@@ -1,32 +1,47 @@
-import qutebrowser.api.interceptor
+from qutebrowser.api import interceptor
 
-def rewrite(request: qutebrowser.api.interceptor.Request):
-    url = request.request_url.host()
+# XXX Internal API
+import qutebrowser.extensions
 
-    if url == 'reddit.com' or url == 'www.reddit.com':
-        request.request_url.setHost('teddit.net')
+def redirect(original, request: qutebrowser.api.interceptor.Request):
+    if original != request.request_url.toString():
         request.redirect(request.request_url)
 
-    if request.request_url.host().startswith('www.amazon.') and '/dp/' in request.request_url.path():
-        url = request.request_url.toString()
-        path = request.request_url.path().split('/')
-        i = path.index('dp')
+def rewrite(request: qutebrowser.api.interceptor.Request):
+    url = request.request_url.toString()
+    host = request.request_url.host()
+    path = request.request_url.path()
 
-        request.request_url.setPath('/' + '/'.join(path[i:i+2]))
+    if host == 'reddit.com' or host == 'www.reddit.com' or host == 'old.reddit.com':
+        request.request_url.setHost('libreddit.privacydev.net')
+        redirect(url, request)
+
+    if host.startswith('www.amazon.') and '/dp/' in path:
         request.request_url.setQuery(None)
 
-        if url != request.request_url.toString():
-            request.redirect(request.request_url)
+        parts = path.split('/')
+        i = parts.index('dp')
 
-    if request.request_url.host().startswith('www.ebay.') and '/itm/' in request.request_url.path():
-        url = request.request_url.toString()
-        path = request.request_url.path().split('/')
+        request.request_url.setPath('/' + '/'.join(parts[i:i+2]))
+        redirect(url, request)
 
-        if len(path) > 3:
-            request.request_url.setPath('/' + path[1] + '/' + path[3])
-            request.request_url.setQuery(None)
+    if host.startswith('www.ebay.') and '/itm/' in path:
+        request.request_url.setQuery(None)
 
-        if url != request.request_url.toString():
-            request.redirect(request.request_url)
+        parts = path.split('/')
 
-qutebrowser.api.interceptor.register(rewrite)
+        if len(parts) > 3:
+            request.request_url.setPath('/' + parts[1] + '/' + parts[3])
+
+        redirect(url, request)
+
+    if host == 'imgur.com':
+        request.request_url.setHost('rimgo.ducks.party')
+        redirect(url, request)
+
+
+for fn in qutebrowser.extensions.interceptors._interceptors:
+    if fn.__name__ == 'rewrite':
+        qutebrowser.extensions.interceptors._interceptors.remove(fn)
+
+interceptor.register(rewrite)

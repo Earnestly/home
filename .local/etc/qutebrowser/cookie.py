@@ -1,11 +1,19 @@
-import qutebrowser.api.cmdutils
+import logging
+
+from types import SimpleNamespace
+
+from qutebrowser.api import cmdutils
 
 # Unstable API
-import qutebrowser.utils
+import qutebrowser.misc
+
+cookie = SimpleNamespace()
+cookie.config = config.configdir / 'cookie-whitelist'
+cookie.logger = logging.getLogger('cookie')
 
 def cookie_whitelist_load():
     """Read in cookie whitelist and update global config accordingly."""
-    # Reset per-domain cookie.accept
+    # Reset per-domain cookie.accept to never.
     for line in config._config.dump_userconfig().splitlines():
         fields = line.split(' ')
 
@@ -14,20 +22,21 @@ def cookie_whitelist_load():
 
     whitelist = []
 
-    with open(config.configdir / 'cookie-whitelist') as f:
-        for line in f.read().splitlines():
+    with open(cookie.config) as f:
+        for i, line in enumerate(f.read().splitlines()):
             if not (line.startswith('#') or line.strip() == ''):
-                pairs = line.split(' ')
+                domain, *warrant = line.split(' ')
 
-                if len(pairs) > 1:
-                    whitelist.append((pairs[0], pairs[1]))
+                if len(warrant) > 1:
+                    cookie.logger.debug('cookie:{cookies.config}:{i}:{line}: expected 1 or 2 fields but saw {length}')
                 else:
-                    whitelist.append((pairs[0], 'no-3rdparty'))
+                    warrant = warrant[0] if warrant else 'no-3rdparty'
+                    config.set('content.cookies.accept', warrant, domain)
 
-    for domain, permit in whitelist:
-        config.set('content.cookies.accept', permit, domain)
 
-@qutebrowser.api.cmdutils.register()
+qutebrowser.misc.objects.commands.pop('cookie-whitelist-edit', None)
+
+@cmdutils.register()
 def cookie_whitelist_edit():
     """Open the cookie whitelist with the editor."""
     editor = qutebrowser.misc.editor.ExternalEditor(watch=True, parent=config._config)
@@ -36,6 +45,7 @@ def cookie_whitelist_edit():
         cookie_whitelist_load()
 
     editor.file_updated.connect(on_file_updated)
-    editor.edit_file(str(config.configdir / 'cookie-whitelist'))
+    editor.edit_file(str(cookie.config))
+
 
 cookie_whitelist_load()
