@@ -18,4 +18,5 @@ exec bemenu --tf "$white" --tb "$maroon" \
             --hf "$white" --hb "$black" \
             --scf "$grey" --scb "$black" \
             --af "$grey" --ab "$black" \
+            --counter always \
             --scrollbar autohide --fn "$font" -H 22 -ifw "$@"
