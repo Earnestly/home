@@ -39,13 +39,13 @@ error() {
 
 while getopts :a:d:r:gmh arg; do
     case $arg in
-        a) arch=$OPTARG ;;
-        g) with_gecko=1 ;;
-        m) with_mono=1 ;;
-        r) remap_z=$OPTARG ;;
-        d) regdir=$OPTARG ;;
-        h) usage; exit ;;
-        *) usage; exit 1
+    a) arch=$OPTARG ;;
+    g) with_gecko=1 ;;
+    m) with_mono=1 ;;
+    r) remap_z=$OPTARG ;;
+    d) regdir=$OPTARG ;;
+    h) usage; exit ;;
+    *) usage; exit 1
     esac
 done
 shift "$((OPTIND-1))"
@@ -57,13 +57,13 @@ if ! [ "$prefix" ]; then
 fi
 
 case ${arch:-win32} in
-    win32) arch=win32 ;;
-    win64) arch=win64 ;;
-    *) error 22 '%s: invalid architecture (win32 or win64)\n' "$arch"
+win32) arch=win32 ;;
+win64) arch=win64 ;;
+*) error 22 '%s: invalid architecture (win32 or win64)\n' "$arch"
 esac
 
 case $prefix in
-    [!/]*) prefix=./$prefix
+[!/]*) prefix=./$prefix
 esac
 
 mkdir -p -- "$prefix"
@@ -79,10 +79,10 @@ if [ -L "$WINEPREFIX"/dosdevices/c: ]; then
 fi
 
 case $with_mono-$with_gecko in
-    1-1) export WINEDLLOVERRIDES=winemenubuilder.exe=d ;;
-    1-*) export WINEDLLOVERRIDES=winemenubuilder.exe,mshtml=d ;;
-    *-1) export WINEDLLOVERRIDES=winemenubuilder.exe,mscoree=d ;;
-    *-*) export WINEDLLOVERRIDES=winemenubuilder.exe,mscoree,mshtml=d
+1-1) export WINEDLLOVERRIDES=winemenubuilder.exe=d ;;
+1-*) export WINEDLLOVERRIDES=winemenubuilder.exe,mshtml=d ;;
+*-1) export WINEDLLOVERRIDES=winemenubuilder.exe,mscoree=d ;;
+*-*) export WINEDLLOVERRIDES=winemenubuilder.exe,mscoree,mshtml=d
 esac
 
 # Initialise the prefix now so that is updated before any work is done with it.
