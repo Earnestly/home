@@ -39,11 +39,10 @@ config.set('content.register_protocol_handler', False)
 # This placeholder uses a subtle phasing animation which ends up consuming an
 # obnoxious amount of CPU resources for something that will never be replaced
 # as javascript is typically disabled.
-# As a result all animations will be disabled; they often add nothing.  Most
+# As a result all animations will be disabled; they often add nothing and most
 # other effects are obtained using the transition property which hasn't yet
 # caused problems.
 config.set('content.user_stylesheets', 'css/no-animation.css')
-
 
 config.set('tabs.background', True)
 config.set('tabs.last_close', 'close')
@@ -89,57 +88,64 @@ config.set('fonts.completion.category', font_ui)
 
 config.set('aliases', config.get('aliases').update({'help': 'help -t'}))
 
-config.bind('t', 'cmd-set-text -s :open -t')
-config.bind('O', 'cmd-set-text :open {url}')
-config.bind('<Alt-h>', 'tab-prev')
-config.bind('<Alt-l>', 'tab-next')
+c.bindings.commands = {
+    'insert': {
+        # The binding C-e is taken for insert mode and used to move the cursor
+        # to the end of the line.
+        '<Ctrl+Shift+e>': 'edit-text',
 
-config.bind(';a', 'hint images download')
+        # Attempt to mimic basic emacs editting in insert mode.
+        '<Alt+Backspace>': 'fake-key <Ctrl-Backspace>',
+        '<Alt+b>': 'fake-key <Ctrl-Left>',
+        '<Alt+f>': 'fake-key <Ctrl-Right>',
+        '<Ctrl+Shift+v>': 'fake-key <Ctrl-a>',
+        '<Ctrl+a>': 'fake-key <Home>',
+        '<Ctrl+e>': 'fake-key <End>',
+        '<Ctrl+h>': 'fake-key <Backspace>',
+        '<Ctrl+k>': 'fake-key <Shift-End> ;; fake-key <Delete>',
+        '<Ctrl+n>': 'fake-key Up',
+        '<Ctrl+p>': 'fake-key Down',
+        '<Ctrl+r>': 'fake-key <Ctrl+z>',
+        '<Ctrl+u>': 'fake-key <Shift+Home> ;; fake-key <Delete>',
+        '<Ctrl+w>': 'fake-key <Ctrl+Shift+Left> ;; fake-key <Delete>'
+    },
 
-# The binding C-e is taken for insert mode and used to move the cursor to the
-# end of the line.
-config.bind('<Ctrl-Shift-e>', 'edit-text', 'insert')
+    'normal': {
+        ';a': 'hint images download',
 
-# Configure everything to use primary selection by default instead of clipboard.
-config.bind('yy', 'yank -s')
-config.bind(';y', 'hint links yank-primary')
-config.bind('p', 'open -- {primary}')
-config.bind('P', 'open -t -- {primary}')
+        # Configure everything to use primary selection by default instead of
+        # clipboard.
+        ';y': 'hint links yank-primary',
+        'yy': 'yank -s',
+        'P': 'open -t -- {primary}',
 
-# Implement emacs/readline style key bindings for insert mode.
-config.bind('<Alt-Backspace>', 'fake-key <Ctrl-Backspace>', 'insert')
-config.bind('<Alt-f>', 'fake-key <Ctrl-Right>', 'insert')
-config.bind('<Alt-b>', 'fake-key <Ctrl-Left>', 'insert')
-config.bind('<Ctrl-Shift-v>', 'fake-key <Ctrl-a>', 'insert')
-config.bind('<Ctrl-h>', 'fake-key <Backspace>', 'insert')
-config.bind('<Ctrl-a>', 'fake-key <Home>', 'insert')
-config.bind('<Ctrl-n>', 'fake-key Up', 'insert')
-config.bind('<Ctrl-p>', 'fake-key Down', 'insert')
-config.bind('<Ctrl-e>', 'fake-key <End>', 'insert')
-config.bind('<Ctrl-k>', 'fake-key <Shift-End> ;; fake-key <Delete>', 'insert')
-config.bind('<Ctrl-w>', 'fake-key <Ctrl+Shift+Left> ;; fake-key <Delete>', 'insert')
-config.bind('<Ctrl-u>', 'fake-key <Shift+Home> ;; fake-key <Delete>', 'insert')
-config.bind('<Ctrl-r>', 'fake-key <Ctrl+z>', 'insert')
+        '<Alt+h>': 'tab-prev',
+        '<Alt+l>': 'tab-next',
 
-# Qt appears to be highly pessimistic about available memory when overcommit is
-# disabled which prevents the starting of multiple mpv instances directly.  By
-# using a script which starts mpv indirectly it appears Qt is willing to start
-# more.
-# config.bind('gv', 'spawn -du video')
-# config.bind(';v', 'hint links spawn -du video')
-config.bind('gv', 'spawn -v env PEONATTRS=video peon {url}')
-config.bind(';v', 'hint links spawn -v env PEONATTRS=video peon {hint-url}')
+        'O': 'cmd-set-text :open {url}',
+        't': 'cmd-set-text -s :open -t',
+        'p': 'open -- {primary}',
 
-config.bind(';q', 'hint links spawn sh -c \'qrencode -o - "$1" | imv -\' _ {hint-url}')
-config.bind('gq', 'spawn sh -c \'qrencode -o - "$1" | imv -\' _ {url}')
+        'Q': ':devtools window',
+        'gj': 'config-cycle -p content.javascript.enabled',
+        'gp': 'config-cycle -p content.private_browsing',
 
-config.bind('gl', 'spawn -ou ledger')
+        'gc': 'spawn web-secure {url}',
+        ';c': 'hint links spawn web-secure {hint-url}',
 
-config.bind('Q', ':devtools window')
+        'gq': 'spawn sh -c "qrencode -o - \"$1\" | imv -" _ {url}',
+        ';q': 'hint links spawn sh -c "qrencode -o - \"$1\" | imv -" _ {hint-url}',
 
-config.bind('gj', 'config-cycle -p content.javascript.enabled')
-config.bind('gp', 'config-cycle -p content.private_browsing')
+        'gv': 'spawn -dv env PEONATTRS=video peon {url}',
+        ';v': 'hint links spawn -dv env PEONATTRS=video peon {hint-url}',
 
-# Remove return from the javascript question prompts to reduce the chance of
-# accidental acceptance.  Instead an explicit 'y' or 'n' will be required.
-config.unbind('<Return>', mode='yesno')
+        'gl': 'spawn -ou ledger'
+    },
+
+    'yesno': {
+        # Remove return from the javascript question prompts to reduce the
+        # chance of accidental acceptance. Instead an explicit 'y' or 'n' will
+        # be required.
+        '<Return>': None
+        }
+    }
