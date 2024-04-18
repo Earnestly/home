@@ -1,11 +1,12 @@
-" HOME/.vim/vimrc
+" XDG_CONFIG_HOME/vim/vimrc
 
-" If I am going to tolerate a .vim directory then at least attempt to keep
-" everything isolated to that location.
-set undodir=$HOME/.vim/undo | call mkdir(&undodir, "p")
-set directory=$HOME/.vim/swap | call mkdir(&directory, "p")
-set backupdir=$HOME/.vim/backup | call mkdir(&backupdir, "p")
-set viminfofile=$HOME/.vim/viminfo
+" XXX Still necessary?
+let vimdir = fnamemodify($MYVIMRC, ':h')
+let &undodir = vimdir . '/undo' | call mkdir(&undodir, 'p')
+let &directory = vimdir . '/swap' | call mkdir(&directory, 'p')
+let &backupdir = vimdir . '/backup' | call mkdir(&backupdir, 'p')
+let &viminfofile = vimdir . '/viminfo'
+unlet vimdir
 
 " Replace ex-mode with vim's command-line window.
 map Q q:
