@@ -16,13 +16,18 @@ set recolor-reverse-video true
 
 set zoom-step 5
 
-# Attempt to ensure the content remained centered while zooming in and out as
+# Attempt to ensure the content remains centered while zooming in and out as
 # zathura, unlike llpp, has no key to recenter the page within the window.
 set vertical-center true
 set zoom-center true
 
+set first-page-column 1
+
 map p toggle_statusbar
+
 map <Space> navigate next
 map <BackSpace> navigate previous
+
+# map d set "pages-per-row 2"
 map d scroll half-down
 map u scroll half-up
