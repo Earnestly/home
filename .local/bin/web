@@ -22,6 +22,7 @@ set -- --qt-flag enable-features=JXL,VaapiVideoEncoder,VaapiVideoDecoder,CanvasO
        --qt-flag num-raster-threads="$(nproc)" \
        --qt-flag enable-accelerated-video-decode \
        --qt-flag use-gl=desktop \
+       --target=tab-bg-silent \
        --no-err-windows "$@"
 # -dD log-cookies
 
