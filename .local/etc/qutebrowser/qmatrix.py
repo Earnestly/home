@@ -1,5 +1,39 @@
 # SPDX-License-Identifier: BlueOak-1.0.0
 
+#   SYNOPSIS
+#       host [source [flags [resource]]]
+#
+#   DESCRIPTION
+#       The host and source are matched according to fnmatch patterns.
+#       If source is not provided then it is assumed to be equal to the
+#       host. If no flags are provided the default set is used.
+#
+#       For a given request only the first rule to match is used.
+#
+#       special flags
+#           *  all flags
+#           a  default flags (cdefikmorstwx)
+#           b  clear flags
+#
+#       resource flags
+#           c  stylesheet
+#           d  download (sub_resource)
+#           e  csp_report
+#           f  iframe (sub_frame)
+#           i  image
+#           k  worker
+#           m  media
+#           o  websocket
+#           p  ping
+#           r  prefetch
+#           s  script
+#           t  font
+#           w  service worker
+#           x  xhr
+#
+#       resource
+#           A specific web resource upon which to act.
+
 import os
 import re
 import fnmatch
@@ -52,37 +86,6 @@ qmatrix.whitelist = {
 
 def qmatrix_add_rule(host, source, flags, resource):
     """ Adds an individual rule to the rule list. """
-    #   SYNOPSIS
-    #       host [source [flags [resource]]]
-    #
-    #   DESCRIPTION
-    #       host and source are matched according to fnmatch patterns.
-    #       If source is not provided then it is assumed to be equal to the
-    #       host.  If no flags are provided the default set is used.
-    #
-    #       special flags
-    #           *  all flags
-    #           a  default flags (cdefikmorstwx)
-    #           b  clear flags
-    #
-    #       resource flags
-    #           c  stylesheet
-    #           d  download (sub_resource)
-    #           e  csp_report
-    #           f  iframe (sub_frame)
-    #           i  image
-    #           k  worker
-    #           m  media
-    #           o  websocket
-    #           p  ping
-    #           r  prefetch
-    #           s  script
-    #           t  font
-    #           w  service worker
-    #           x  xhr
-    #
-    #       resource
-    #           A specific web resource upon which to act.
 
     def compile_regex(s, flags=0):
         return re.compile(fnmatch.translate(s), flags)
@@ -109,7 +112,7 @@ def qmatrix_add_rule(host, source, flags, resource):
         if f in qmatrix.resources:
             access.add(qmatrix.resources[f])
         else:
-            qmatrix.logger.debug(f'{qmatrix.config}:{i} {f}: unknown flag')
+            qmatrix.logger.debug(f'{qmatrix.config}: {f}: unknown flag')
 
     qmatrix.rules.add((host, source, frozenset(access), resource))
 
@@ -136,8 +139,15 @@ def qmatrix_read_config(config):
                     qmatrix_add_rule(host_domain, source_domain, flags, resource)
 
 
-for cmdname in ['qmatrix-edit', 'qmatrix-toggle']:
+for cmdname in ['qmatrix-edit', 'qmatrix-toggle', 'qmatrix-load']:
     qutebrowser.misc.objects.commands.pop(cmdname, None)
+
+@cmdutils.register()
+def qmatrix_load():
+    """Compile existing qmatrix ruleset."""
+    qmatrix_read_config(qmatrix.config)
+    message.info(f'qmatrix: {qmatrix.config}: {len(qmatrix.rules)} rules loaded')
+
 
 @cmdutils.register()
 def qmatrix_edit():
@@ -147,11 +157,11 @@ def qmatrix_edit():
     def on_file_updated():
         # XXX This tends to produce File not Found errors messages when saving
         #     the file without closing. It appears to work nevertheless.
-        qmatrix_read_config(qmatrix.config)
-        message.info(f'qmatrix: {qmatrix.config}: {len(qmatrix.rules)} rules loaded')
+        qmatrix_load()
 
     editor.file_updated.connect(on_file_updated)
     editor.edit_file(str(qmatrix.config))
+
 
 @cmdutils.register()
 def qmatrix_toggle():
