@@ -24,9 +24,7 @@ end
 mp.register_script_message("super-quit-watch-later", function()
     mp.observe_property("metadata", "native", function(_, metadata)
         if not metadata then
-            -- XXX Maybe consider using osd-overlay to make this message
-            --     permanently visible until the video exits.
-            mp.osd_message("Waiting for the metadata property", 10)
+            mp.set_property("osd-msg1", "Waiting for the metadata property")
         else
             data.title = mp.get_property("media-title")
 
