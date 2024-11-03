@@ -37,6 +37,11 @@ error() {
     exit "$r"
 }
 
+arch=win32
+with_gecko=0
+with_mono=0
+
+OPTIND=1
 while getopts :a:d:r:gmh arg; do
     case $arg in
     a) arch=$OPTARG ;;
@@ -56,7 +61,7 @@ if ! [ "$prefix" ]; then
     error 22 'no prefix provided\n'
 fi
 
-case ${arch:-win32} in
+case $arch in
 win32) arch=win32 ;;
 win64) arch=win64 ;;
 *) error 22 '%s: invalid architecture (win32 or win64)\n' "$arch"
@@ -80,9 +85,9 @@ fi
 
 case $with_mono-$with_gecko in
 1-1) export WINEDLLOVERRIDES=winemenubuilder.exe=d ;;
-1-*) export WINEDLLOVERRIDES=winemenubuilder.exe,mshtml=d ;;
-*-1) export WINEDLLOVERRIDES=winemenubuilder.exe,mscoree=d ;;
-*-*) export WINEDLLOVERRIDES=winemenubuilder.exe,mscoree,mshtml=d
+1-0) export WINEDLLOVERRIDES=winemenubuilder.exe,mshtml=d ;;
+0-1) export WINEDLLOVERRIDES=winemenubuilder.exe,mscoree=d ;;
+0-0) export WINEDLLOVERRIDES=winemenubuilder.exe,mscoree,mshtml=d
 esac
 
 # Initialise the prefix now so that is updated before any work is done with it.
