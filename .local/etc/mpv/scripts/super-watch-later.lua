@@ -3,7 +3,7 @@ local utils = require "mp.utils"
 local data = {
     index,
     timestamp = 0,
-    type = "U",
+    kind = "U",
     title,
     author,
     path,
@@ -21,6 +21,23 @@ local function absolute(path)
     return path
 end
 
+local function isfile(path)
+    local r = false
+
+    -- Assuming file:// is local to avoid decoding the path.
+    if path:match("^file://") then
+        r = true
+    else
+        local stat = utils.file_info(path)
+
+        if stat then
+            r = stat.is_file
+        end
+    end
+
+    return r
+end
+
 mp.register_script_message("super-quit-watch-later", function()
     mp.observe_property("metadata", "native", function(_, metadata)
         if not metadata then
@@ -28,10 +45,10 @@ mp.register_script_message("super-quit-watch-later", function()
         else
             data.title = mp.get_property("media-title")
 
-            -- If no title was found mpv probably fell back to a filename, so try to
-            -- extract the basename as the title instead.
+            -- If no title was found mpv probably fell back to a filename, so
+            -- try to extract the basename as the title instead.
             -- XXX It may be better to let downstream users handle this.
-            if data.title and utils.file_info(data.title) then
+            if data.title and isfile(data.title) then
                 _, data.title = utils.split_path(data.title)
             end
 
@@ -43,30 +60,30 @@ mp.register_script_message("super-quit-watch-later", function()
 
             data.path = mp.get_property("path")
 
-            if data.path and utils.file_info(data.path) then
-                data.type = "F"
+            if data.path and isfile(data.path) then
+                data.kind = "F"
                 data.path = absolute(data.path)
             end
 
             data.index = data.path
 
-            -- XXX Local playlists could consist of a bunch of paths given to mpv. This
-            --     sort of playlist may(?) not really be supported.
+            -- XXX Local playlists could consist of a bunch of paths given to
+            --     mpv. This sort of playlist may(?) not really be supported.
             data.playlist_path = mp.get_property("playlist-path")
 
             if data.playlist_path then
-                data.type = "P"
+                data.kind = "P"
                 data.index = data.playlist_path
                 data.playlist_title = metadata.ytdl_playlist_title
                 data.playlist_position = mp.get_property("playlist-pos-1")
                 data.playlist_count = mp.get_property("playlist-count")
 
-                -- XXX Should go soon.
+                -- XXX This code should go soon.
                 if data.playlist_path:match("^https://") and not data.playlist_title then
                     mp.osd_message("Attempting to determine the playlist title (mpv/pr#15098)", 10)
 
-                    -- XXX ytdl_playlist_title not available to single videos that are
-                    --     part of a playlist.
+                    -- XXX ytdl_playlist_title not available to single videos
+                    --     that are part of a playlist.
                     --
                     --     https://github.com/yt-dlp/yt-dlp/issues/11234
                     --     https://github.com/mpv-player/mpv/pull/15098
@@ -82,7 +99,7 @@ mp.register_script_message("super-quit-watch-later", function()
                     end
                 end
 
-                if utils.file_info(data.playlist_path) then
+                if isfile(data.playlist_path) then
                     data.playlist_path = absolute(data.playlist_path)
                 end
             end
