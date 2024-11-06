@@ -22,7 +22,7 @@ config.set('url.default_page', 'about:blank')
 config.set('url.start_pages', ['about:blank'])
 
 # XXX https://github.com/qutebrowser/qutebrowser/issues/5970
-config.set('url.searchengines', {'DEFAULT': 'https://duckduckgo.com/html/?q=!{}'})
+config.set('url.searchengines', {'DEFAULT': 'https://html.duckduckgo.com/html?q=!{}'})
 
 # XXX qutebrowser (webengine) cannot yet disable webrtc completely:
 #     <https://bugreports.qt.io/browse/QTBUG-57505>
