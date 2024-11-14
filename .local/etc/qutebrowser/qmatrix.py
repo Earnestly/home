@@ -8,7 +8,7 @@
 #       If source is not provided then it is assumed to be equal to the
 #       host. If no flags are provided the default set is used.
 #
-#       For a given request only the first rule to match is used.
+#       For a given request the first matching rule is used.
 #
 #       special flags
 #           *  all flags
@@ -80,21 +80,15 @@ qmatrix.whitelist = {
     None
 }
 
-# import timeit
-# qmatrix.timer = timeit.default_timer
-
 
 def qmatrix_add_rule(host, source, flags, resource):
     """ Adds an individual rule to the rule list. """
 
-    def compile_regex(s, flags=0):
-        return re.compile(fnmatch.translate(s), flags)
-
     access = set()
 
-    host = compile_regex(host, re.IGNORECASE)
-    source = compile_regex(source, re.IGNORECASE) if source else host
-    resource = compile_regex(resource) if resource else None
+    host = re.compile(fnmatch.translate(host), re.IGNORECASE)
+    source = re.compile(fnmatch.translate(source), re.IGNORECASE) if source else host
+    resource = re.compile(fnmatch.translate(resource)) if resource else None
 
     if flags:
         if 'a' in flags:
@@ -196,9 +190,12 @@ def qmatrix_intercept(request: interceptor.Request):
         # qmatrix.logger.info(f'{duration:.5f}s [{resource[0].name}] {hosts[0]} {resource[1]}')
 
         if not access:
-            qmatrix.logger.info(f'blocked: [{resource[0].name}] {hosts[0]} {resource[1]}')
             request.block()
+            qmatrix.logger.info(f'blocked: [{resource[0].name}] {hosts[0]} {resource[1]}')
 
+
+# import timeit
+# qmatrix.timer = timeit.default_timer
 
 qmatrix_read_config(qmatrix.config)
 
