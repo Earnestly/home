@@ -86,7 +86,10 @@ config.set('fonts.tabs.unselected', font_ui)
 config.set('fonts.hints', font_ui)
 config.set('fonts.completion.category', font_ui)
 
-config.set('aliases', config.get('aliases').update({'help': 'help -t'}))
+config.set('aliases', config.get('aliases').update({
+    'help': 'help -t',
+    'view-source': 'view-source -e'
+}))
 
 c.bindings.commands = {
     'insert': {
