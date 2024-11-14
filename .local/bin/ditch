@@ -45,7 +45,6 @@ else
                 gsub(/\\/, "\\\\", safepath)
                 gsub(/"/, "\\\"", safepath)
                 gsub(/\n/, "\\n", safepath)
-
             }
 
             {
@@ -64,10 +63,11 @@ else
             }' \
         | curl --parallel-max 15 -gsSZK - \
         | xargs -E '' cat -- \
-        | jq -sr '[.[] | arrays[] | select(.data.users).data.users[] | select(.stream)]
-                       | sort_by(-.stream.viewersCount)[]
-                       | [.login, .stream.viewersCount, .stream.game.name[:50], .stream.title]
-                       | @tsv' \
+        | jq -sr '
+            [.[] | arrays[] | select(.data.users).data.users[] | select(.stream)]
+            | sort_by(-.stream.viewersCount)[]
+            | [.login, .stream.viewersCount, .stream.game.name[:50], .stream.title]
+            | @tsv' \
         | column -ts '	' > "$cachedir"/livestreams
 
         rm -rf -- "$tmp"
