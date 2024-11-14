@@ -31,7 +31,7 @@ local function isfile(path)
         local stat = utils.file_info(path)
 
         if stat then
-            r = stat.is_file
+            r = stat.is_file or stat.is_dir
         end
     end
 
@@ -47,6 +47,7 @@ mp.register_script_message("super-quit-watch-later", function()
 
             -- If no title was found mpv probably fell back to a filename, so
             -- try to extract the basename as the title instead.
+            --
             -- XXX It may be better to let downstream users handle this.
             if data.title and isfile(data.title) then
                 _, data.title = utils.split_path(data.title)
@@ -73,7 +74,6 @@ mp.register_script_message("super-quit-watch-later", function()
 
             if data.playlist_path then
                 data.kind = "P"
-                data.index = data.playlist_path
                 data.playlist_title = metadata.ytdl_playlist_title
                 data.playlist_position = mp.get_property("playlist-pos-1")
                 data.playlist_count = mp.get_property("playlist-count")
@@ -101,7 +101,14 @@ mp.register_script_message("super-quit-watch-later", function()
 
                 if isfile(data.playlist_path) then
                     data.playlist_path = absolute(data.playlist_path)
+
+                    -- XXX Same as above.
+                    if not data.playlist_title then
+                        _, data.playlist_title = utils.split_path(data.playlist_path)
+                    end
                 end
+
+                data.index = data.playlist_path
             end
 
             -- XXX Is os.time() accurate enough to order entries more or less
