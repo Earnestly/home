@@ -11,6 +11,7 @@ hide_edge_borders smart
 
 assign [class="qutebrowser"] 2
 assign [class="Chromium"] 2
+assign [class="firefox"] 2
 assign [class="mpv"] 3
 assign [title="Wine"] 9
 
@@ -192,7 +193,7 @@ mode "MENU" {
     bindsym o exec --no-startup-id exec sh "$HOME"/study/shell/book; mode "default"
     bindsym p exec --no-startup-id exec dmenu_run; mode "default"
     bindsym s exec --no-startup-id exec switch; mode "default"
-    bindsym w exec --no-startup-id exec sh "$HOME"/study/shell/watchlater; mode "default"
+    bindsym w exec --no-startup-id exec superwatchlater; mode "default"
     bindsym y exec --no-startup-id exec mclip; mode "default"
     bindsym t exec --no-startup-id exec sh "$HOME"/study/shell/type-primary; mode "default"
 
