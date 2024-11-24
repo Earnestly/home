@@ -1,0 +1,49 @@
+#!/bin/sh --
+# superwatchlater -
+# requires yt-dlp jq bemenu mpv
+
+statedir=${XDG_STATE_HOME:-$HOME/.local/state}/mpv
+
+watchlaterdir=$statedir/watch_later
+db=$statedir/super-watch-later.json
+
+if ! [ -f "$db" ]; then
+    printf 'superwatchlater: error: %s: no such file\n' "$db" >&2
+    exit 1
+fi
+
+renew=$(find "$watchlaterdir" -newer "$db")
+
+if [ "$renew" ]; then
+    # N.B. Rewriting the database should help keep it small in size as
+    #      duplicates are removed.
+    #
+    #      Adding an id makes retrieving entry data easier once it passes
+    #      through a menu like bemenu.
+    jq -cs '
+        sort_by(-.timestamp)
+        | reduce .[] as $o ([]; if any(.index == $o.index) | not then . + [$o] end)
+        | keys_unsorted[] as $i
+        | .[$i] + {id: ($i + 1)}' -- "$db" > "$db".new
+
+
+    if [ -s "$db".new ]; then
+        mv -f -- "$db".new "$db"
+    fi
+fi
+
+# shellcheck disable=SC2016
+jq -sr --argjson padding 1 '
+    def pad(n): tostring as $s | (n - ($s | length)) * " " + $s;
+
+    (length | tostring | length + $padding) as $radix
+    | .[]
+    | (.playlist_title // .author) as $title
+    | if $title then .title = "\($title): \(.title)" end
+    | "\(.id | pad($radix)) [\(.kind)] \(.title)"' -- "$db" \
+| menu --ifne -sl 30 -p 'RESUME PLAYBACK' \
+| jq --raw-output0 -srR --slurpfile db "$db" '
+    [((. / "\n")[:-1][] | trim / " ")[0] | tonumber] as $ids
+    | $db[]
+    | select(.id == $ids[]).index' \
+| xargs -r0n 1 -- sh -c 'exec mpv --profile=url -- "$1" &' _
