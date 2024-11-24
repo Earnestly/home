@@ -136,8 +136,8 @@ c.bindings.commands = {
         'gc': 'spawn web-secure {url}',
         ';c': 'hint links spawn web-secure {hint-url}',
 
-        'gq': 'spawn sh -c "qrencode -o - \"$1\" | imv -" _ {url}',
-        ';q': 'hint links spawn sh -c "qrencode -o - \"$1\" | imv -" _ {hint-url}',
+        'gq': 'spawn sh -c "qrencode -t svg -o - \"$1\" | imv -" _ {url}',
+        ';q': 'hint links spawn sh -c "qrencode -t svg -o - \"$1\" | imv -" _ {hint-url}',
 
         'gv': 'spawn -dv env PEONATTRS=video peon {url}',
         ';v': 'hint links spawn -dv env PEONATTRS=video peon {hint-url}',
