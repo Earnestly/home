@@ -35,14 +35,7 @@ config.set('content.dns_prefetch', False)
 config.set('content.notifications.enabled', False)
 config.set('content.register_protocol_handler', False)
 
-# Many websites use a placeholder for text that is fetched via javascript.
-# This placeholder uses a subtle phasing animation which ends up consuming an
-# obnoxious amount of CPU resources for something that will never be replaced
-# as javascript is typically disabled.
-# As a result all animations will be disabled; they often add nothing and most
-# other effects are obtained using the transition property which hasn't yet
-# caused problems.
-config.set('content.user_stylesheets', 'css/no-animation.css')
+config.set('content.user_stylesheets', 'css/quirks.css')
 
 config.set('tabs.background', True)
 config.set('tabs.last_close', 'close')

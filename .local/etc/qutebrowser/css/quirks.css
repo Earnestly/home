@@ -1,0 +1,15 @@
+* {
+    /* Many websites use a placeholder for text that is fetched via
+       javascript.  This placeholder uses a subtle phasing animation which
+       ends up consuming an obnoxious amount of CPU resources for something
+       that will never be replaced as javascript is typically disabled.  As a
+       result all animations will be disabled; they often add nothing and most
+       other effects are obtained using the transition property which hasn't
+       yet caused problems. */
+    animation: none !important;
+
+    /* Code blocks are starting to use this unfortunate feature and cannot be
+       excluded by setting common-ligatures, historical-ligatures, etc. so
+       they will have to be all disabled instead. */
+    font-variant-ligatures: none !important;
+}
