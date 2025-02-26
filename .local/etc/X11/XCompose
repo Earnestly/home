@@ -3,8 +3,7 @@
 include "%S/en_US.UTF-8/Compose"
 
 # Prefix 'm' mathematical symbols.
-# XXX This does not work for some reason
-<Multi-key> <m> <apostrophe> <apostrophe> <apostrophe> : "‴"
+<Multi_key> <m> <apostrophe> <apostrophe> <apostrophe> : "‴"
 <Multi_key> <m> <d> : "Δ"
 <Multi_key> <m> <e> : "ϵ"
 <Multi_key> <m> <E> : "∃"
