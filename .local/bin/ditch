@@ -34,10 +34,11 @@ else
         # no such figure is documented.
         # shellcheck disable=SC1004
         jq --argjson limit 500 -scR '
+            def nwise(n): range(length/n) as $i | .[n*$i : n*($i+1)];
             (. / "\n")[:-1] | map(select((startswith("#") | not) and . != ""))
-                            | "query{users(logins:\(_nwise($limit))){login,stream{title,viewersCount,game{name}}}}"
+                            | "query{users(logins:\(nwise($limit))){login,stream{title,viewersCount,game{name}}}}"
                             | [{"query": .}]' \
-        | tmp="$tmp"/data awk '
+        | tmp=$tmp/data awk '
             BEGIN {
                 path = safepath = ENVIRON["tmp"]
 
@@ -59,7 +60,7 @@ else
                 printf "header \"Client-ID: kimne78kx3ncx6brgo4mv6wki5h1ko\"\n"
                 printf "data \"@%s\"\n", dest
                 printf "output \"%s.result\"\n", dest
-                printf "write-out %s\n", "%{filename_effective}%{onerror}%{stderr}twitch: warning: %{url}: %{errormsg}\\n"
+                printf "write-out %s\n", "%{filename_effective}\\n%{onerror}%{stderr}twitch: warning: %{url}: %{errormsg}\\n"
             }' \
         | curl --parallel-max 15 -gsSZK - \
         | xargs -E '' cat -- \
