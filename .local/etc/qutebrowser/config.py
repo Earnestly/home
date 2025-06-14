@@ -35,7 +35,33 @@ config.set('content.dns_prefetch', False)
 config.set('content.notifications.enabled', False)
 config.set('content.register_protocol_handler', False)
 
-config.set('content.user_stylesheets', 'css/quirks.css')
+config.set('content.user_stylesheets', ['css/quirks.css'])
+
+adblocklist = [
+    'annoyances-cookies.txt',
+    'annoyances-others.txt',
+    'annoyances.txt',
+    'badlists.txt',
+    'badware.txt',
+    'filters-2020.txt',
+    'filters-2021.txt',
+    'filters-2022.txt',
+    'filters-2023.txt',
+    'filters-2024.txt',
+    'filters-2025.txt',
+    'filters-2025.txt',
+    'filters-general.txt',
+    'filters-mobile.txt',
+    'filters.txt',
+    'lan-block.txt',
+    'legacy.txt',
+    'privacy.txt',
+    'quick-fixes.txt',
+    'resource-abuse.txt',
+    'unbreak.txt'
+]
+
+config.set("content.blocking.adblock.lists", ['https://github.com/uBlockOrigin/uAssets/raw/master/filters/' + f for f in adblocklist])
 
 config.set('tabs.background', True)
 config.set('tabs.last_close', 'close')
