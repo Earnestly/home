@@ -6,7 +6,7 @@ cachedir=${XDG_CACHE_HOME:-$HOME/.cache}/ditch
 
 mkdir -p -- "$cachedir"
 
-# Ensure the file exists for find but without modifying its file information.
+# Ensure the file exists for find without modifying timestamps.
 : >> "$cachedir"/livestreams
 
 # As the GraphQL API used by twitch is nominally private it might be
@@ -69,7 +69,7 @@ else
             | sort_by(-.stream.viewersCount)[]
             | [.login, .stream.viewersCount, .stream.game.name[:50], .stream.title]
             | @tsv' \
-        | column -ts '	' > "$cachedir"/livestreams
+        | column -ts $'\t' > "$cachedir"/livestreams
 
         rm -rf -- "$tmp"
     fi
