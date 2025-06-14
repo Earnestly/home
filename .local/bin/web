@@ -1,6 +1,6 @@
 #!/bin/sh --
 # web - start a prefered web browser
-# requires qutebrowser svlogd md5sum
+# requires qutebrowser
 
 # --qt-flag no-sandbox
 
@@ -15,36 +15,48 @@
 # --qt-flag js-flags=--jitless
 # --qt-flag single-process
 
+# VAAPI
+# https://github.com/qutebrowser/qutebrowser/discussions/7917#discussioncomment-12123094
+# qt.args = [ "disable-logging", "enable-gpu-rasterization", "ignore-gpu-blocklist", "enable-features=VaapiVideoDecodeLinuxGL"]
+# QT_XCB_GL_INTEGRATION=xcb_egl was required
+
+rundir=$XDG_RUNTIME_DIR/qutebrowser
+log=$rundir/log.pipe
+
+unset -v debug
+
+while getopts :d opt; do
+    case $opt in
+    d) debug=1
+    esac
+done
+
+shift "$((OPTIND-1))"
+
 # XXX These are all mostly cargo-culted to try aid my poor x220 on a 2K monitor.
 set -- --qt-flag enable-features=JXL,VaapiVideoEncoder,VaapiVideoDecoder,CanvasOopRasterization \
        --qt-flag enable-gpu-rasterization \
        --qt-flag ignore-gpu-blacklist \
        --qt-flag num-raster-threads="$(nproc)" \
        --qt-flag enable-accelerated-video-decode \
-       --qt-flag use-gl=desktop \
        --target=tab-bg-silent \
-       --no-err-windows "$@"
-# -dD log-cookies
+       --no-err-windows \
+       ${debug+-dD log-cookies --logfilter network} "$@"
 
-# https://github.com/qutebrowser/qutebrowser/issues/7769
-# --logfilter network
-
-rundir=$XDG_RUNTIME_DIR/qutebrowser
-pipe=$rundir/log.pipe
-
+# shellcheck disable=SC2174
 mkdir -pm0700 -- "$rundir"
 
-if [ -e "$pipe" ] && ! [ -p "$pipe" ]; then
-    rm -f -- "$pipe"
+if [ -e "$log" ] && ! [ -p "$log" ]; then
+    rm -f -- "$log"
 fi
 
-if ! [ -p "$pipe" ]; then
-    mkfifo -- "$pipe"
+if ! [ -p "$log" ]; then
+    mkfifo -- "$log"
 fi
 
-nice logger -et qutebrowser -p info < "$pipe" &
-exec 9>"$pipe"
-rm -f -- "$pipe"
+nice logger -et qutebrowser -p info < "$log" &
+exec 9>"$log"
+rm -f -- "$log"
 
 # exec python -m cProfile -o qutebrowser.prof /usr/bin/qutebrowser "$@" >&9 2>&1
 exec qutebrowser "$@" >&9 2>&1
