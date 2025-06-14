@@ -12,9 +12,7 @@ if ! [ -f "$db" ]; then
     exit 1
 fi
 
-renew=$(find "$watchlaterdir" -newer "$db")
-
-if [ "$renew" ]; then
+if [ "$watchlaterdir" -nt "$db" ]; then
     # N.B. Rewriting the database should help keep it small in size as
     #      duplicates are removed.
     #
@@ -46,4 +44,5 @@ jq -sr --argjson padding 1 '
     [((. / "\n")[:-1][] | trim / " ")[0] | tonumber] as $ids
     | $db[]
     | select(.id == $ids[]).index' \
-| xargs -r0n 1 -- sh -c 'exec mpv --profile=url -- "$1" &' _
+| xargs -r0n 1 -- sh -c '
+    exec mpv --profile=url --ytdl-raw-options=playlist-items=1:100 -- "$1" &' _
