@@ -60,9 +60,21 @@ function precmd {
     print -Pn "\e];%n %~\a"
 
     case $(git rev-parse --is-bare-repository 2> /dev/null) in
-        false) repo=%F{green}${"$(git rev-parse --show-toplevel)":t}%f ;;
-        true)  repo=%F{blue}${"$(git rev-parse --git-dir)":P:t}%f ;;
-        *)     repo=
+    false)
+        repo=%F{green}${"$(git rev-parse --show-toplevel)":t}%f
+        branch=$(git symbolic-ref --short HEAD)
+
+        case $branch in
+        master|main) ;;
+        *) repo+="%F{red} $branch%f"
+        esac
+
+    ;;
+    true)
+        repo=%F{blue}${"$(git rev-parse --git-dir)":P:t}%f
+    ;;
+    *)
+        repo=
     esac
 }
 
