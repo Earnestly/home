@@ -11,7 +11,7 @@ usage() {
 usage: mkwineprefix [-gmh] [-a winearch] [-r destdir] [-d regdir] prefix
 
 options
-    -a winearch  win32 or win64 (default: win32)
+    -a winearch  win32 or win64 (default: win64)
     -g           enable gecko installation
     -m           enable mono installation
     -r destdir   symlinks WINEPREFIX/dosdevices/z: to dir instead of /
@@ -37,11 +37,10 @@ error() {
     exit "$r"
 }
 
-arch=win32
+arch=win64
 with_gecko=0
 with_mono=0
 
-OPTIND=1
 while getopts :a:d:r:gmh arg; do
     case $arg in
     a) arch=$OPTARG ;;
@@ -53,6 +52,7 @@ while getopts :a:d:r:gmh arg; do
     *) usage; exit 1
     esac
 done
+
 shift "$((OPTIND-1))"
 
 prefix=$1
@@ -115,7 +115,7 @@ done
 if [ -d "$regdir" ]; then
     for reg in "$regdir"/*.reg; do
         if [ -f "$reg" ]; then
-            wine regedit -S "$reg"
+            wine regedit "$reg"
         fi
     done
 fi
