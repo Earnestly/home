@@ -10,7 +10,9 @@ local data = {
     playlist_path,
     playlist_title,
     playlist_position,
-    playlist_count
+    playlist_count,
+    duration,
+    position
 }
 
 local function absolute(path)
@@ -43,6 +45,9 @@ mp.register_script_message("super-quit-watch-later", function()
         if not metadata then
             mp.set_property("osd-msg1", "Waiting for the metadata property")
         else
+            data.duration = mp.get_property("duration")
+            data.position = mp.get_property("percent-pos")
+
             data.title = mp.get_property("media-title")
 
             -- If no title was found mpv probably fell back to a filename, so
@@ -78,7 +83,8 @@ mp.register_script_message("super-quit-watch-later", function()
                 data.playlist_position = mp.get_property("playlist-pos-1")
                 data.playlist_count = mp.get_property("playlist-count")
 
-                -- XXX This code should go soon.
+                -- XXX This code should go soon but is still necessary for
+                --     rumble playlists.
                 if data.playlist_path:match("^https://") and not data.playlist_title then
                     mp.osd_message("Attempting to determine the playlist title (mpv/pr#15098)", 10)
 
@@ -102,7 +108,7 @@ mp.register_script_message("super-quit-watch-later", function()
                 if isfile(data.playlist_path) then
                     data.playlist_path = absolute(data.playlist_path)
 
-                    -- XXX Same as above.
+                    -- XXX Same as above, downstream should make this decision.
                     if not data.playlist_title then
                         _, data.playlist_title = utils.split_path(data.playlist_path)
                     end
