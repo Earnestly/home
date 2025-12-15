@@ -43,7 +43,7 @@ end
 mp.register_script_message("super-quit-watch-later", function()
     mp.observe_property("metadata", "native", function(_, metadata)
         if not metadata then
-            mp.set_property("osd-msg1", "Waiting for the metadata property")
+            mp.set_property("osd-msg1", "[super-watch-later]: Waiting for the metadata property")
         else
             data.duration = mp.get_property("duration")
             data.position = mp.get_property("percent-pos")
@@ -83,16 +83,11 @@ mp.register_script_message("super-quit-watch-later", function()
                 data.playlist_position = mp.get_property("playlist-pos-1")
                 data.playlist_count = mp.get_property("playlist-count")
 
-                -- XXX This code should go soon but is still necessary for
-                --     rumble playlists.
+                -- XXX This code should go but is still necessary for rumble
+                --     and odysee playlists.
                 if data.playlist_path:match("^https://") and not data.playlist_title then
-                    mp.osd_message("Attempting to determine the playlist title (mpv/pr#15098)", 10)
+                    mp.osd_message("[super-watch-later]: Attempting to determine the playlist title", 10)
 
-                    -- XXX ytdl_playlist_title not available to single videos
-                    --     that are part of a playlist.
-                    --
-                    --     https://github.com/yt-dlp/yt-dlp/issues/11234
-                    --     https://github.com/mpv-player/mpv/pull/15098
                     local r = mp.command_native({
                         name = "subprocess",
                         args = {"yt-dlp", "-JI", "0", "--flat-playlist", "--", data.playlist_path},
@@ -117,18 +112,15 @@ mp.register_script_message("super-quit-watch-later", function()
                 data.index = data.playlist_path
             end
 
-            -- XXX Is os.time() accurate enough to order entries more or less
-            --     faithfully?
-            --
-            --     local socket = require "socket"
-            --     socket.gettime()?
+            -- NB. Using os.time() is accurate enough to order entries more or
+            --     less faithfully.
             data.timestamp = os.time()
 
             local filename = mp.command_native({"expand-path", "~~state/super-watch-later.json"})
             local file, err = io.open(filename, 'a')
 
             if not file then
-                msg.error(string.format("watchlater: error: %s: %s\n", filename, err))
+                msg.error(string.format("super-watch-later: error: %s: %s\n", filename, err))
                 return
             end
 
