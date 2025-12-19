@@ -28,7 +28,7 @@ def cookie_whitelist_load():
                 domain, *warrant = line.split(' ')
 
                 if len(warrant) > 1:
-                    cookie.logger.debug('cookie:{cookies.config}:{i}:{line}: expected 1 or 2 fields but saw {length}')
+                    cookie.logger.debug('cookie:{cookies.config}:{i}:{line}: expected 1 or 2 fields but saw {len(warrant)}')
                 else:
                     warrant = warrant[0] if warrant else 'no-3rdparty'
                     config.set('content.cookies.accept', warrant, domain)
