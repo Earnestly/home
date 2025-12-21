@@ -1,0 +1,66 @@
+# HOME/.local/lib/udev/rc_keymaps/sony-rmt-d128p.toml
+
+[[protocols]]
+name = "Sony RMT-D128P"
+protocol = "sony"
+varient = "sony-20"
+
+[protocols.scancodes]
+0x1a4915 = "KEY_POWER"
+0x10015  = "KEY_POWER2" # TV Power.
+0x1a4916 = "KEY_EJECTCD"
+
+0x1a4900 = "KEY_1"
+0x1a4901 = "KEY_2"
+0x1a4902 = "KEY_3"
+0xa4003d = "KEY_FULL_SCREEN" # Wide Mode.
+
+0x1a4903 = "KEY_4"
+0x1a4904 = "KEY_5"
+0x1a4905 = "KEY_6"
+0x10025  = "KEY_VIDEO" # Source select icon, called TV/Video in manual.
+
+0x1a4906 = "KEY_7"
+0x1a4907 = "KEY_8"
+0x1a4908 = "KEY_9"
+0x1a4909 = "KEY_0"
+0x10012  = "KEY_VOLUMEUP"
+
+0x1a490f = "KEY_CLEAR"
+0x1a490b = "KEY_ENTER"
+0x10013  = "KEY_VOLUMEDOWN"
+
+0x1a4964 = "KEY_AUDIO" # Used to select audio tracks.
+0x1a4965 = "KEY_ANGLE"
+0x1a4963 = "KEY_SUBTITLE"
+
+0x1a4935 = "KEY_SHUFFLE"
+0x1a491f = "KEY_PROGRAM"
+0x1a492c = "KEY_AGAIN"
+0x1a4948 = "KEY_MUTE" # [BNR] (Block Noise Reduction)
+
+0x1a4931 = "KEY_NEXT"
+0x1a4930 = "KEY_PREVIOUS"
+0x1a4951 = "KEY_TV" # [TV/DVD]
+0x1a4928 = "KEY_INFO" # [TIME/TEXT] Used to display current title, chapter and playback time.
+
+0x1a4920 = "KEY_BACK"
+0x1a4921 = "KEY_FORWARD"
+0x1a4922 = "KEY_FASTREVERSE"
+0x1a4923 = "KEY_FASTFORWARD"
+
+0x1a4932 = "KEY_PLAY"
+0x1a4939 = "KEY_PAUSE"
+0x1a4938 = "KEY_STOP"
+
+0x1a491a = "KEY_TITLE"
+0x1a4979 = "KEY_UP"
+0x1a491b = "KEY_MEDIA_TOP_MENU"
+
+0x1a497b = "KEY_LEFT"
+# 0x1a490b = "KEY_ENTER" # Second [ENTER] button, generates scancode as above.
+0x1a497c = "KEY_RIGHT"
+
+0x1a4954 = "KEY_MENU" # [DISPLAY]
+0x1a497a = "KEY_DOWN"
+0x1a490e = "KEY_ESC" # [RETURN]
