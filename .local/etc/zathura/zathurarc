@@ -3,6 +3,8 @@
 include font
 include colours
 
+set database sqlite
+
 set guioptions ""
 set render-loading false
 
@@ -28,6 +30,8 @@ map p toggle_statusbar
 map <Space> navigate next
 map <BackSpace> navigate previous
 
-# map d set "pages-per-row 2"
+map D set "pages-per-row 2"
+map <C-D> set "pages-per-row 1"
+
 map d scroll half-down
 map u scroll half-up
