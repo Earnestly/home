@@ -47,10 +47,11 @@ mp.observe_property("path", "string", function(_, path)
                 from = tonumber(from)
                 to = tonumber(to)
 
-                -- NB. Preroll ads tend to always jump from 75.00xxx. Skipping
+                -- nb. Preroll ads tend to always jump from 75.00xxx. Skipping
                 --     a reload on that specific timestamp prevents infinite
-                --     restarts.
-                if jump and from ~= 75 and from < to then
+                --     restarts. However if the jump is from 75 (or any other
+                --     value) to 60 then a reload should trigger.
+                if jump and ((from == 75 and to == 60) or to == 60) or (from ~= 75 and from < to) then
                     mp.osd_message("[twitch]: Reloading stream", 4)
                     mp.command("playlist-play-index current")
                 end
