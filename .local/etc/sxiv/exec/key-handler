@@ -3,6 +3,6 @@
 # requires xclip gnu-xargs
 
 case $1 in
-    c) xclip -i -r ;;
-    r) xargs -d '\n' rm -f -- ;;
+c) xclip -i -r ;;
+r) xargs -d '\n' rm -f -- ;;
 esac
