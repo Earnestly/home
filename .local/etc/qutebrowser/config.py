@@ -34,6 +34,7 @@ config.set('content.javascript.enabled', False)
 config.set('content.dns_prefetch', False)
 config.set('content.notifications.enabled', False)
 config.set('content.register_protocol_handler', False)
+config.set('content.prefers_reduced_motion', True)
 
 config.set('content.user_stylesheets', ['css/quirks.css'])
 
@@ -72,6 +73,7 @@ config.set('hints.chars', 'fjghdkslaweqvrtponimub')
 config.set('hints.scatter', False)
 config.set('hints.uppercase', True)
 
+config.set('completion.delay', 150)
 config.set('completion.use_best_match', True)
 
 # Colours
