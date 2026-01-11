@@ -12,8 +12,8 @@ def rewrite(request: qutebrowser.api.interceptor.Request):
     host = request.request_url.host()
     path = request.request_url.path()
 
-    if host == 'reddit.com' or host == 'www.reddit.com' or host == 'old.reddit.com':
-        request.request_url.setHost('libreddit.privacydev.net')
+    if host == 'reddit.com' or host == 'www.reddit.com' and '/r/' in path:
+        request.request_url.setHost('old.reddit.com')
         redirect(url, request)
 
     if host.startswith('www.amazon.') and '/dp/' in path:
@@ -35,9 +35,9 @@ def rewrite(request: qutebrowser.api.interceptor.Request):
 
         redirect(url, request)
 
-    if host == 'imgur.com':
-        request.request_url.setHost('rimgo.ducks.party')
-        redirect(url, request)
+    # if host == 'imgur.com':
+    #     request.request_url.setHost('rimgo.ducks.party')
+    #     redirect(url, request)
 
 
 for fn in qutebrowser.extensions.interceptors._interceptors:
