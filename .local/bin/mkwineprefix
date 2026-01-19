@@ -8,10 +8,9 @@
 
 usage() {
     cat <<!
-usage: mkwineprefix [-gmh] [-a winearch] [-r destdir] [-d regdir] prefix
+usage: mkwineprefix [-gmh] [-r destdir] [-d regdir] prefix
 
 options
-    -a winearch  win32 or win64 (default: win64)
     -g           enable gecko installation
     -m           enable mono installation
     -r destdir   symlinks WINEPREFIX/dosdevices/z: to dir instead of /
@@ -37,13 +36,11 @@ error() {
     exit "$r"
 }
 
-arch=win64
 with_gecko=0
 with_mono=0
 
-while getopts :a:d:r:gmh arg; do
+while getopts :d:r:gmh arg; do
     case $arg in
-    a) arch=$OPTARG ;;
     g) with_gecko=1 ;;
     m) with_mono=1 ;;
     r) remap_z=$OPTARG ;;
@@ -61,19 +58,12 @@ if ! [ "$prefix" ]; then
     error 22 'no prefix provided\n'
 fi
 
-case $arch in
-win32) arch=win32 ;;
-win64) arch=win64 ;;
-*) error 22 '%s: invalid architecture (win32 or win64)\n' "$arch"
-esac
-
 case $prefix in
 [!/]*) prefix=./$prefix
 esac
 
 mkdir -p -- "$prefix"
 
-export WINEARCH="$arch"
 export WINEPREFIX="$prefix"
 
 # XXX This is a bit of a proxy condition but I'm not sure how else to detect
@@ -90,7 +80,7 @@ case $with_mono-$with_gecko in
 0-0) export WINEDLLOVERRIDES=winemenubuilder.exe,mscoree,mshtml=d
 esac
 
-# Initialise the prefix now so that is updated before any work is done with it.
+# Initialise the prefix before any work is done to it.
 if ! wine wineboot "${operation:--i}"; then
     exit
 fi
