@@ -39,8 +39,8 @@ varient = "sony-20"
 0x1a492c = "KEY_AGAIN"
 0x1a4948 = "KEY_MUTE" # [BNR] (Block Noise Reduction)
 
-0x1a4931 = "KEY_NEXT"
 0x1a4930 = "KEY_PREVIOUS"
+0x1a4931 = "KEY_NEXT"
 0x1a4951 = "KEY_TV" # [TV/DVD]
 0x1a4928 = "KEY_INFO" # [TIME/TEXT] Used to display current title, chapter and playback time.
 
