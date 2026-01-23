@@ -13,11 +13,11 @@ if ! [ -f "$db" ]; then
 fi
 
 if [ "$watchlaterdir" -nt "$db" ]; then
-    # N.B. Rewriting the database should help keep it small in size as
-    #      duplicates are removed.
+    # nb. Rewriting the database should help keep it small in size as
+    #     duplicates are removed.
     #
-    #      Adding an id makes retrieving entry data easier once it passes
-    #      through a menu like bemenu.
+    #     Adding an id makes retrieving entry data easier once it passes
+    #     through a menu like bemenu.
     jq -cs '
         sort_by(-.timestamp)
         | reduce .[] as $o ([]; if any(.index == $o.index) | not then . + [$o] end)
