@@ -31,28 +31,48 @@ if [ "$watchlaterdir" -nt "$db" ]; then
 fi
 
 # shellcheck disable=SC2016
-jq -sr --argjson padding 1 '
-    def pad(n): tostring as $s | (n - ($s | length)) * " " + $s;
-    def roundp($val): $val | if . != null then tonumber | round end;
-    def duration($seconds):
-        $seconds // 0
-        | tonumber
-        | [[(. / 3600 | trunc), . / 60 % 60, . % 60], ["h", "m", "s"]]
-        | [(0, 1, 2) as $i | select(.[0][$i] > 0) | .[][$i] | tostring]
-        | reduce .[] as $i (null; . + $i);
+slice=$(
+    jq -sr --argjson padding 1 '
+        def pad(n): tostring as $s | (n - ($s | length)) * " " + $s;
+        def roundp($val): $val | if . != null then tonumber | round end;
+        def duration($seconds):
+            $seconds // 0
+            | tonumber
+            | [[(. / 3600 | trunc), . / 60 % 60, . % 60], ["h", "m", "s"]]
+            | [(0, 1, 2) as $i | select(.[0][$i] > 0) | .[][$i] | tostring]
+            | reduce .[] as $i (null; . + $i);
 
 
-    (length | tostring | length + $padding) as $radix
-    | .[]
-    | (.playlist_title // .author) as $title
-    | roundp(.position) as $completion
-    | duration(.duration) as $duration
-    | if $title then .title = "\($title): \(.title) [\($completion)% \($duration)]" end
-    | "\(.id | pad($radix)) [\(.kind)] \(.title)"' -- "$db" \
-| menu --ifne -sl 30 -p 'RESUME PLAYBACK' \
-| jq --raw-output0 -srR --slurpfile db "$db" '
-    [((. / "\n")[:-1][] | trim / " ")[0] | tonumber] as $ids
-    | $db[]
-    | select(.id == $ids[]).index' \
-| xargs -r0n 1 -- sh -c '
-    exec mpv --profile=url --ytdl-raw-options-append=playlist-items=1:100 -- "$1" &' _
+        (length | tostring | length + $padding) as $radix
+        | .[]
+        | (.playlist_title // .author) as $title
+        | roundp(.position) as $completion
+        | duration(.duration) as $duration
+        | if $title then .title = "\($title): \(.title) [\($completion)% \($duration)]" end
+        | "\(.id | pad($radix)) [\(.kind)] \(.title)"' -- "$db" \
+    | menu --ifne -sl 30 -p 'RESUME PLAYBACK')
+
+case $? in
+0)
+    printf %s "$slice" \
+    | jq --raw-output0 -srR --slurpfile db "$db" '
+        [((. / "\n")[] | trim / " ")[0] | tonumber] as $ids
+        | $db[]
+        | select(.id == $ids[]).index' \
+    | xargs -r0n 1 -- sh -c '
+        exec mpv --profile=url --ytdl-raw-options-append=playlist-items=1:100 -- "$1" &' _
+;;
+
+10)
+    printf %s "$slice" \
+    | jq -srR --slurpfile db "$db" '
+        [((. / "\n")[] | trim / " ")[0] | tonumber] as $ids
+        | $db[]
+        | del(select(.id == $ids[])) // empty' > "$db".new
+
+    if [ -s "$db".new ]; then
+        mv -f -- "$db".new "$db"
+        touch -- "$watchlaterdir"
+    fi
+;;
+esac
