@@ -55,11 +55,11 @@
 
 ! .local/etc/pulse
 ! .local/etc/chromium
+! .local/etc/vim/backup
 ! .local/etc/mutt/cache
 ! .local/etc/retroarch/rom
 ! .local/etc/retroarch/core
 + .local/etc
-
 
 ! .local/mnt
 ! .local/src
