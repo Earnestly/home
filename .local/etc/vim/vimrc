@@ -55,7 +55,7 @@ endif
 
 if &t_Co >= 256 && (&term == 'xterm-256color' || &term == 'tmux-256color')
     " XXX This causes the :terminal feature to use libvterm's standard
-    "     palette.  See g:terminal_ansi_colors to set them.
+    "     palette. See g:terminal_ansi_colors to set them.
     set termguicolors
 
     " These are only set if TERM is equal to xterm.  See :help xterm-true-color
@@ -76,12 +76,37 @@ endif
 let g:tar_cmd = 'bsdtar'
 let g:tar_secure = 1
 
-" Tell vim about additional file extensions we can now use.
+" Tell vim about additional formats.
 autocmd BufReadCmd *.iso,*.rar,*.7z call tar#Browse(expand("<amatch>"))
 
 runtime! macros/matchit.vim
 
-" XXX
-"let g:vim_json_warnings=0
-" https://github.com/ledger/vim-ledger/issues/143
-let g:ledger_is_hledger=v:false
+function SetPluginSettings()
+    if get(g:, 'loaded_ledger')
+        " https://github.com/ledger/vim-ledger/issues/143
+        let g:ledger_is_hledger=v:false
+    endif
+
+    if get(g:, 'loaded_ale')
+        " Ideally only tigger on document save.
+        let g:ale_lint_on_save = 1
+        let g:ale_lint_on_text_changed = 0
+        let g:ale_lint_on_insert_leave = 0
+        let g:ale_lint_on_enter = 0
+        let g:ale_lint_on_filetype_changed = 0
+
+        " XXX There must be a better way than this to inherit a highlight group
+        "     while changing an aspect of it.
+        call hlset([hlget('LineNr', v:true)[0]->extend(#{name: 'ALEErrorSign', guifg: string(hlget('Error')[0].guibg)})])
+        call hlset([hlget('LineNr', v:true)[0]->extend(#{name: 'ALEWarningSign', guifg: string(hlget('Todo')[0].guifg)})])
+        call hlset([hlget('LineNr', v:true)[0]->extend(#{name: 'ALEInfoSign', guifg: string(hlget('Function')[0].guifg)})])
+
+        let g:ale_sign_error = '▐'
+        let g:ale_sign_style_error = '▐'
+        let g:ale_sign_warning = '▐'
+        let g:ale_sign_style_warning = '▐'
+        let g:ale_sign_info = '▐'
+    endif
+endfunc
+
+au VimEnter * call SetPluginSettings()
