@@ -88,6 +88,9 @@ function SetPluginSettings()
     endif
 
     if get(g:, 'loaded_ale')
+        " Remove the line noise.
+        let g:ale_virtualtext_cursor = 'disabled'
+
         " Ideally only tigger on document save.
         let g:ale_lint_on_save = 1
         let g:ale_lint_on_text_changed = 0
