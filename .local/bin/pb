@@ -2,9 +2,10 @@
 # pb - paste from standard input
 # requires curl
 
-case ${1:--0} in
-    -i) exec curl -sF f:1=\<- http://ix.io ;;
-    -s) exec curl -sF sprunge=@- http://sprunge.us ;;
-    -p) exec curl -s --data-binary @- https://paste.rs ;;
-    -0) exec curl -sF file=@- https://0x0.st
+case ${1:--p} in
+-i) exec curl -sF f:1=\<- http://ix.io ;;
+-s) exec curl -sF sprunge=@- http://sprunge.us ;;
+-p) exec curl -s --data-binary @- https://paste.rs ;;
+-x) exec curl -sF file=@- https://x0.at ;;
+-0) exec curl -sF file=@- https://0x0.st
 esac
