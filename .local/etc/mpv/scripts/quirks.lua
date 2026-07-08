@@ -41,10 +41,10 @@ mp.observe_property("path", "string", function(_, path)
                 local module = message.prefix
                 local content = string.gsub(message.text, "\n*$", "")
 
-                -- It appears possible to bypass adverts on twitch.tv by reloading
-                -- the stream when an advert is intending to play. Various messages
-                -- are used as sentinels to detect this condition but there may be
-                -- better ways.
+                -- It appears possible to bypass adverts on twitch.tv by
+                -- reloading the stream when an advert is intending to play.
+                -- Various messages are used as sentinels to detect this
+                -- condition but there may be better ways.
                 if module == "ffmpeg/demuxer" and fgrep({"hls: Packet corrupt (stream = 1, dts ="}, content) then
                     mp.osd_message("[twitch]: Advert incoming", 4)
                 end
@@ -57,19 +57,21 @@ mp.observe_property("path", "string", function(_, path)
                     from = tonumber(from)
                     to = tonumber(to)
 
-                    -- nb. Preroll ads tend to always jump from 75.00xxx. Skipping
-                    --     a reload on that specific timestamp prevents infinite
-                    --     restarts unless the jump is to 60.00xxx in which case
-                    --     the reload should proceed.
-                    if jump and (from ~= 75 or to == 60) then
+                    -- nb. Preroll ads tend to always jump from 75.00xxx or
+                    --     90.xxx. Skipping a reload on that specific timestamp
+                    --     prevents infinite restarts unless the jump is to
+                    --     60.00xxx in which case the reload should proceed.
+                    jump = jump and not (from == 75 or from == 90 or to == 60)
+
+                    if jump then
                         mp.osd_message("[twitch]: Reloading stream", 4)
                         mp.command("playlist-play-index current")
                     end
                 end
 
                 -- Some twitch.tv streams do not provide formats that can be
-                -- downloaded when using live-from-start so this attempts to reload
-                -- the stream without it.
+                -- downloaded when using live-from-start so this attempts to
+                -- reload the stream without it.
                 --
                 -- nb. This is part of the advert skipping strategy; the stream
                 --     itself does not actually start from the beginning if the
