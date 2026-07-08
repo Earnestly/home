@@ -210,8 +210,8 @@ volume() {
     procname "${FUNCNAME[0]}"
     local event type
 
-    if ! pulseaudio --check; then
-        printf 'statusbar: pulsemonitor: pulseaudio not running\n' >&2
+    if ! pactl info > /dev/null; then
+        printf 'statusbar: pulsemonitor: pulseaudio/pipewire-pulse not running\n' >&2
         return 1
     fi
 
