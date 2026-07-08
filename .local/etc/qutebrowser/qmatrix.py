@@ -22,6 +22,7 @@
 #           f  iframe (sub_frame)
 #           i  image
 #           k  worker
+#           l  preload_main_frame
 #           m  media
 #           o  websocket
 #           p  ping
@@ -54,7 +55,7 @@ qmatrix.active = True
 qmatrix.config = config.configdir / 'qmatrix-rules'
 qmatrix.logger = logging.getLogger('qmatrix')
 qmatrix.rules = set()
-qmatrix.default_flags = set(list('cdefikmorstwx'))
+qmatrix.default_flags = set(list('cdefiklmorstwx'))
 
 # https://doc.qt.io/qt-6/qwebengineurlrequestinfo.html#ResourceType-enum
 qmatrix.resources = {
@@ -64,6 +65,7 @@ qmatrix.resources = {
     'f': interceptor.ResourceType.sub_frame,
     'i': interceptor.ResourceType.image,
     'k': interceptor.ResourceType.worker,
+    'l': interceptor.ResourceType.preload_main_frame,
     'm': interceptor.ResourceType.media,
     'o': interceptor.ResourceType.websocket,
     'p': interceptor.ResourceType.ping,
