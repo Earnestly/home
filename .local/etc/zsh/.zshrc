@@ -15,7 +15,6 @@ setopt auto_cd \
     prompt_subst \
     rm_star_silent \
     print_exit_value \
-    complete_aliases \
     numeric_glob_sort \
     hist_verify \
     hist_append \
