@@ -4,6 +4,5 @@ cfgdir=${XDG_CONFIG_HOME:-$HOME/.config}/X11
 
 xrdb -load -all -I"$cfgdir" "$cfgdir"/Xresources
 xsetroot -mod 16 16 -fg '#343d46' -bg '#2b303b'
-# xrandr --dpi 125
 
-exec i3
+exec i3 --shmlog-size 0
