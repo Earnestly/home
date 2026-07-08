@@ -1,4 +1,5 @@
 from qutebrowser.api import interceptor
+from PySide6.QtCore import QUrlQuery
 
 # XXX Internal API
 import qutebrowser.extensions
@@ -11,21 +12,23 @@ def rewrite(request: qutebrowser.api.interceptor.Request):
     url = request.request_url.toString()
     host = request.request_url.host()
     path = request.request_url.path()
+    query = QUrlQuery(request.request_url.query())
 
     if host == 'reddit.com' or host == 'www.reddit.com' and '/r/' in path:
         request.request_url.setHost('old.reddit.com')
         redirect(url, request)
 
-    if host.startswith('www.amazon.') and '/dp/' in path:
-        request.request_url.setQuery(None)
+    # Causes SIGQUIT
+    # if host.startswith('www.amazon.') and '/dp/' in path:
+    #     request.request_url.setQuery(None)
 
-        parts = path.split('/')
-        i = parts.index('dp')
+    #     parts = path.split('/')
+    #     i = parts.index('dp')
 
-        request.request_url.setPath('/' + '/'.join(parts[i:i+2]))
-        redirect(url, request)
+    #     request.request_url.setPath('/' + '/'.join(parts[i:i+2]))
+    #     redirect(url, request)
 
-    if host.startswith('www.ebay.') and '/itm/' in path:
+    if host.startswith('www.ebay.') and '/itm/' in path and not (query and query.hasQueryItem('var')):
         request.request_url.setQuery(None)
 
         parts = path.split('/')
