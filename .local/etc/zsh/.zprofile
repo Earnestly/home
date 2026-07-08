@@ -1,5 +1,6 @@
 # HOME"/.local/etc/zsh/.zprofile
 
+typeset -U PATH
 export PATH="$HOME"/.local/bin:"$PATH"
 
 export XDG_CONFIG_HOME="$HOME"/.local/etc
@@ -64,6 +65,8 @@ export SDL_AUDIODRIVER=pulse
 
 # Disable initial installation of Mono and Gecko; prevent .desktop creation.
 export WINEDLLOVERRIDES=winemenubuilder.exe,mscoree,mshtml=d
+
+export MPD_HOST=$XDG_RUNTIME_DIR/mpd
 
 # LS_COLORS (or a valid TERM, which I don't have) is now required for ls to
 # use colour.  <https://savannah.gnu.org/forum/forum.php?forum_id=8032>
