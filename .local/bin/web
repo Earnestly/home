@@ -13,7 +13,7 @@
 # --qt-flag enable-blink-features=feat,feat,...
 
 # --qt-flag js-flags=--jitless
-# --qt-flag single-process
+# --qt-flag single-process | process-per-site
 
 # VAAPI
 # https://github.com/qutebrowser/qutebrowser/discussions/7917#discussioncomment-12123094
