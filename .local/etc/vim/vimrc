@@ -30,6 +30,7 @@ set lazyredraw
 set nomodeline
 set nohlsearch
 set nostartofline
+set relativenumber
 set scrolloff=1
 set numberwidth=1
 set colorcolumn=81
@@ -93,16 +94,18 @@ function SetPluginSettings()
 
         " Ideally only tigger on document save.
         let g:ale_lint_on_save = 1
+        let g:ale_lint_on_enter = 0
         let g:ale_lint_on_text_changed = 0
         let g:ale_lint_on_insert_leave = 0
-        let g:ale_lint_on_enter = 0
         let g:ale_lint_on_filetype_changed = 0
 
-        " XXX There must be a better way than this to inherit a highlight group
-        "     while changing an aspect of it.
-        call hlset([hlget('LineNr', v:true)[0]->extend(#{name: 'ALEErrorSign', guifg: string(hlget('Error')[0].guibg)})])
-        call hlset([hlget('LineNr', v:true)[0]->extend(#{name: 'ALEWarningSign', guifg: string(hlget('Todo')[0].guifg)})])
-        call hlset([hlget('LineNr', v:true)[0]->extend(#{name: 'ALEInfoSign', guifg: string(hlget('Function')[0].guifg)})])
+        if &t_Co >= 256 && (&term == 'xterm-256color' || &term == 'tmux-256color')
+            " XXX There must be a better way than this to inherit a highlight group
+            "     while changing an aspect of it.
+            call hlset([hlget('LineNr', v:true)[0]->extend(#{name: 'ALEErrorSign', guifg: string(hlget('Error')[0].guibg)})])
+            call hlset([hlget('LineNr', v:true)[0]->extend(#{name: 'ALEWarningSign', guifg: string(hlget('Todo')[0].guifg)})])
+            call hlset([hlget('LineNr', v:true)[0]->extend(#{name: 'ALEInfoSign', guifg: string(hlget('Function')[0].guifg)})])
+        endif
 
         let g:ale_sign_error = '▐'
         let g:ale_sign_style_error = '▐'
@@ -112,4 +115,4 @@ function SetPluginSettings()
     endif
 endfunc
 
-au VimEnter * call SetPluginSettings()
+autocmd VimEnter * call SetPluginSettings()
