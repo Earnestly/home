@@ -1,0 +1,63 @@
+#!/bin/sh --
+# seccache-menu -
+# requires seccache xdotool xclip column qrencode imv
+
+typeit() {
+    xdotool sleep 0.1 type --delay 7 -- "$1"
+    xdotool key "$2" sleep 0.7 type --delay 9 -- "$3"
+    xdotool key "$4"
+}
+
+decode() {
+    seccache -u "$1" -G "$2" | head -n 1
+}
+
+if [ "$DISPLAY" ]; then
+    trap 'xclip < /dev/null' EXIT
+
+    for signal in INT HUP QUIT TERM; do
+        # shellcheck disable=SC2064
+        trap "xclip < /dev/null; trap - $signal EXIT; kill -s $signal $$" "$signal"
+    done
+
+    xclip() { command -p xclip -r "$@"; }
+else
+    xclip() { cat; }
+fi
+
+delay=10
+
+seccache -G . \
+| column -ts / \
+| sort -k1,1 -k2,2 \
+| {
+    menu -l 30 -p SECRET
+    printf '%s\n' "$?"
+} \
+| awk 'NR==1 {$1=$1; s=$0} END {printf "%d %s\n", $0, s}' \
+| {
+    read -r status id proto dom user
+    selection=$proto/$dom/$user
+
+    case $status in
+    0) decode "$id" "$selection" | xclip -i; sleep -- "$delay" ;;
+    10) printf %s "$user" | xclip -i; sleep -- "$delay" ;;
+    11) printf %s "$dom" | xclip -i; sleep -- "$delay" ;;
+    12)
+        case $dom in
+        # amazon.co*)
+        #     typeit "$user" Return
+        #     typeit "$(decode "$id" "$selection")" Return
+        # ;;
+        # fs.co.uk)
+        #     typeit "$user" Tab Tab "$(decode "$id" "$selection")" Return
+        # ;;
+        *) typeit "$user" Tab "$(decode "$id" "$selection")" Return
+        esac
+    ;;
+    13)
+        decode "$id" "$selection" \
+        | qrencode -t svg --size 10 -o - \
+        | imv -w "seccache: $selection" -
+    esac
+}

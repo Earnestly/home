@@ -1,0 +1,138 @@
+.TH SECCACHE 1 "22 February 2026" 1.0.0
+.SH NAME
+seccache \- poorman secstore
+.SH SYNOPSIS
+.B seccache
+.RB [ \-vi ]
+.RB [ \-a
+.IR archive ]
+.RB [ \-G
+.IR getfile ]
+.RB [ \-p
+.IR putfile ]
+.RB [ \-r
+.IR rmfile ]
+.RB [ \-u
+.IR id ]
+.RB [ \-t
+.IR timeout ]
+.SH DESCRIPTION
+.B seccache
+is designed to ease the use of storing and retrieving
+.BR age (1)
+encrypted content from a passphrase protected
+.B 7z
+.IR archive .
+It uses
+.BR pinentry (1)
+to prompt for input and
+.BR keyctl (1)
+as an agent for caching passphrases and keys.
+.P
+When using
+.B seccache
+for the first time a passphrase will be requested which will be used to encrypt
+the
+.IR archive .
+A key will be generated using
+.B age
+and protected with a random passphrase using the archive's passphrase as its
+seed. The name of this key can be set using the
+.I id
+option and will be stored under the
+.BI .keyring
+directory within the
+.IR archive .
+.P
+When content is added to the archive with
+.I putfile
+it will be compressed with
+.BR zstd (1)
+and encrypted using the key
+.IR id .
+The filename specified by
+.I putfile
+will be rooted as-is under a directory named by
+.I id
+to associate the key with its encrypted content.
+.SH OPTIONS
+.TP
+.B \-v
+Be more verbose about the operations taking place.
+.TP
+.B \-i
+Always read from standard input when using
+.IR putfile .
+.TP
+.BI \-a\~ archive
+Specify an alterative archive. Must end with the
+.RB \(aq .7z \(aq
+extension.
+(Default:
+.BR \%XDG_DATA_HOME/seccache/seccache.7z .)
+.TP
+.BI \-G\~ getfile
+Write the content of the file to standard output. List the content of the
+archive if
+.I getfile
+is specified as a <period>
+.RB \(aq . \(aq.
+.TP
+.BI \-p\~ putfile
+Add the
+.I putfile
+to the archive if it exists or read from standard input if it does not. Use the
+.RB \- i
+option to use standard input even if the file exists.
+.TP
+.BI \-r\~ rmfile
+Specify the target
+.I rmfile
+.TP
+.BI \-u\~ id
+Use an alternative
+.I id
+when encryption content. (Default:
+.BR general )
+.TP
+.BI \-t\~ timeout
+Set the archive passphrase timeout in seconds. (Default:
+.BR 300 )
+.SH EXIT STATUS
+.B seccache
+will return zero on success and nonzero on failure.
+.SH NOTES
+Currently
+.B seccache
+requires a patch[1] applied to
+.B 7z
+so that it may read data from standard input while accepting a passphrase on a
+different file descriptor. Without this feature it would require creating a
+temporary file before it can be added.
+.IP 1.
+.UR \%https://github.com/ip7z/7zip/pull/186
+.UE
+.P
+The
+.I rmfile
+can not be used to remove the
+.B .keyring
+directory as its existence is used to guarantee that the
+.B 7z
+archive will never become empty. If the archive were to reach this state it
+would lose its passphase protection and open a window of opportunity for
+content to be added without needing a passphrase. To alter the content of the
+.B .keyring
+directory,
+.B 7z
+will have to be used manually.
+.SH SOURCE
+.UR seccache
+.UE
+.SH SEE ALSO
+.BR age (1),
+.BR age-keygen (1),
+.BR age-plugin-batchpass (1),
+.BR keyctl (1),
+.BR zstd (1)
+

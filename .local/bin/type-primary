@@ -1,0 +1,7 @@
+#!/bin/sh --
+# type-primary -
+# requires xdotool xclip
+
+# XXX sleep 0.1 prevents the first eight bytes being excluded when this script
+#     invoked from an i3/config exec command.
+xdotool sleep 0.1 type -- "$(xclip -o)"

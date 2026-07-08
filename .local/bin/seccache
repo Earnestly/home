@@ -1,0 +1,380 @@
+#!/bin/sh --
+# seccache - poorman secstore
+# requires 7z keyctl zstd age age-keygen pinentry-qt|pinentry-tty pwgen /dev/fd/0
+
+# NOTES
+#   - The 7z commands specifically exclude removal interactions with the
+#     .keyring directory where such operations are exposed to the user.
+#
+#     The primary reason for this is to use the keyring as a permanent set of
+#     files that cannot be removed. This is done to prevent the archive itself
+#     from becoming empty. If the archive were to become empty it would lose
+#     its password protection and attempting to track this state is difficult.
+#     See https://github.com/ip7z/7zip/issues/191
+#
+#   - zstd -qqf acts as transparent cat but I have no idea if this can lead to
+#     corruption.
+
+usage() {
+    printf 'usage: seccache [-vi] [-a archive] [-G getfile] [-p putfile] [-r rmfile] [-u id] [-t timeout]\n'
+}
+
+iscapable() {
+    # XXX The -h flag is undocumented, as is --help. Running 7z without any
+    #     command will also produce help output.
+    if ! 7z -h | grep -Fq -- '-pfd{N} : read Password from fd'; then
+        cat <<'!'
+    Your 7z does not support reading passwords from an fd.
+
+    This capability is needed for adding data to the archive without creating
+    temporary files.
+
+    If you would like to use this feature please rebuild 7z with the following
+    patch applied:
+
+        https://patch-diff.githubusercontent.com/raw/ip7z/7zip/pull/186.patch
+
+    Alternatively you could manually add files by first creating them somewhere
+    and then adding them to the archive:
+
+        # As defined by the -u id flag, default: general.
+        $ mkdir "$id"
+
+        # Compress (optional) and encrypt file using the public key.
+        $ zstd -qqfcz < file | age -r "$public" -e > "$id"/file
+
+        # Add to the archive.
+        $ 7z a -mhe=on -bso0 -bsp0 -mx0 -spf -- "$archive".7z "$id"/file
+
+    To add an identity the process is slightly different:
+
+        # Create the .keyring directory into which identities are stored.
+        $ mkdir .keyring
+
+        # Generate a passphrase with pwgen for the key using the archive's
+        # password with the identity's name as the seed.
+        $ age-keygen -pq 2> /dev/null | AGE_PASSPHRASE_FD=9 9<(printf %s "$password" | pwgen -H /dev/fd/0#"$id" -1yv 50) AGE_PASSPHRASE_WORK_FACTOR=14 age -j batchpass -eo .keyring/"$id"
+
+        # Add to the archive.
+        $ 7z a -mhe=on -bso0 -bsp0 -mx0 -spf -- "$archive".7z .keyring/"$id"
+
+    Sorry about this.
+!
+        exit 111
+    fi
+}
+
+error() {
+    m=$1
+    shift
+    printf "%s: error: $m" seccache "$@" >&2
+    exit 1
+}
+
+verbose() {
+    m=$1
+    shift
+    printf "%s: $m" seccache "$@" >&2
+}
+
+nofail() {
+    "$@" || error '%s\n' "$*"
+}
+
+# XXX This does not work with SETREPEAT when combined with pinentry-curses as
+#     pinentry-curses implicitly requests SETQUALITYBAR which requires INQUERY
+#     responses which are not implemented.
+pin() {
+    tty=$(LC_MESSAGES=C tty)
+
+    if [ "$tty" = 'not a tty' ]; then
+        pinentry() { pinentry-qt; }
+    else
+        pinentry() { pinentry-tty -T "$tty" -C "$LANG"; }
+    fi
+
+    {
+        printf 'SETTITLE seccache\n'
+        printf 'SETPROMPT Passphrase:\n'
+
+        if [ "$1" = confirm ]; then
+            printf 'SETDESC Create new passphrase for the %s archive:\n' "$archive"
+            printf 'SETREPEAT Confirm:\n'
+        else
+            printf 'SETDESC Enter passphrase for the %s archive:\n' "$archive"
+        fi
+
+        printf 'GETPIN\n'
+    } \
+    | pinentry \
+    | awk '$1=="D" {gsub(/%25/,"%"); printf "%s", substr($0,3); r=1; exit}
+           END {exit !r}'
+}
+
+salt() {
+    pwgen -H /dev/fd/0#"$id" -1yv 50
+}
+
+key_desc2id() {
+    # XXX Errors are redirected to /dev/null to suppress the typical reporting
+    #     on key expiration: "keyctl_search: Key has expired". However, other
+    #     types of error should probably still be visible.
+    keyctl search %:"$keyring" user "$1" 2> /dev/null
+}
+
+key_desc2pipe() {
+    keyctl pipe "$(key_desc2id "$1")"
+}
+
+key_request_with() (
+    desc=$1
+    seconds=$2
+    shift 2
+
+    cache() {
+        kid=$("$@") && {
+            keyctl timeout "$kid" "$seconds"
+            keyctl setperm "$kid" 0x2f000000
+        }
+    }
+
+    cache key_desc2id "$desc" || "$@" | cache keyctl padd user "$desc" %:"$keyring"
+
+    # Use the exit status of key_desc2id as the return value.
+    key_desc2id "$desc" > /dev/null
+)
+
+archive_add() {
+    # nb. 7z converts a subset of the control characters to an <underscore> in
+    #     filenames when listing them. It is still possible to extract a file
+    #     containing these bytes if it can be provided exactly as argument to
+    #     the extract command but it is not possible to derive the correct name
+    #     from the listing output alone.
+    #
+    #       if ((c <= 13 && c >= 7) || c == 0x1b)
+    #         d[i] = '_';
+    #
+    #       if (c == '\n')
+    #         d[i] = '_';
+    #
+    #     It is much simpler to accept only printable characters including
+    #     <space> instead of dealing with the particular limits of the 7z
+    #     list command.
+    case $1 in
+    *[![:print:]]*) error '%s: unsupported bytes in filename\n' "$1"
+    esac
+
+    # XXX Temporary bodge until I can figure out why -p is needed if the
+    #     archive does not exist. I probably missed a callback.
+    unset -v new; [ -f "$archive" ] || new=
+
+    7z a -mhe=on -bso0 -bsp0 -mx0 ${new+'-p'} -pfd9 -si"$1" -- "$archive" 9<<!
+$(key_desc2pipe passphrase)
+!
+}
+
+archive_extract() {
+    key_desc2pipe passphrase | 7z e -spd -spf -so -- "$archive" "$1"
+}
+
+archive_exists_file() {
+    key_desc2pipe passphrase | 7z l -ba -slt -spd -spf -- "$archive" "$1" | sed -n '/^Path = /s///p' | {
+        read -r path && [ "$path" ]
+    }
+}
+
+archive_verify() {
+    # XXX TOCTOU and possibly slow.
+    result=$(key_desc2pipe passphrase | 7z t -bso0 -bse1 -- "$archive")
+
+    case $? in
+    0) ;;
+    2)
+        keyctl revoke "$(key_desc2id passphrase)"
+        error '%s: wrong passphrase\n' "$archive"
+    ;;
+    *) error '%s: unhandled error:\n%s\n' "$archive" "$result"
+    esac
+
+#     format=1
+#     printf 1 | archive_add .metadata/VERSION
+#     version=$(archive_extract .metadata/VERSION)
+#     if ! [ "$version" ]; then
+#         error 'unable to determine archive version\n'
+#     elif [ "$format" != "$version" ]; then
+#         error 'expected version %s but found %s\n' "$format" "$version"
+#     fi
+}
+
+archive_add_key() {
+    # nb. The work factor is set to the "minimum" recommended value for scrypt
+    #     to significantly improve the speed at which the key is decrypted.
+    #     This corresponds to a near instant response on a i5-2540m as compared
+    #     to 1500ms with a work factor of 18.
+    #
+    # nb. age-plugin-batchpass will remove trailing newlines from data read
+    #     from AGE_PASSPHRASE_FD.
+    age-keygen -pq 2> /dev/null | AGE_PASSPHRASE_FD=9 9<<! AGE_PASSPHRASE_WORK_FACTOR=14 age -j batchpass -e | archive_add "$1"
+$(key_desc2pipe passphrase | salt)
+!
+}
+
+archive_extract_private_key() {
+    archive_extract "$1" | AGE_PASSPHRASE_FD=9 9<<! age -j batchpass -d
+$(key_desc2pipe passphrase | salt)
+!
+}
+
+archive_extract_public_key() {
+    archive_extract "$1" | AGE_PASSPHRASE_FD=9 9<<! age -j batchpass -d | age-keygen -y
+$(key_desc2pipe passphrase | salt)
+!
+}
+
+datadir=${XDG_DATA_HOME:-$HOME/.local/share}/seccache
+
+verbose=0
+stdin=0
+archive=$datadir/seccache.7z
+getfile=
+putfile=
+rmfile=
+id=general
+timeout=300
+
+while getopts :via:G:p:r:u:t: opt; do
+    case $opt in
+    v) verbose=1 ;;
+    i) stdin=1 ;;
+    u) id=$OPTARG ;;
+    a) archive=$OPTARG ;;
+    G) getfile=$OPTARG ;;
+    p) putfile=$OPTARG ;;
+    r) rmfile=$OPTARG ;;
+    t) timeout=$OPTARG ;;
+    *) usage >&2; exit 1
+    esac
+done
+shift "$((OPTIND - 1))"
+
+case $timeout in
+*[![1234567890]*) error '%s: not a number\n' "$timeout"
+esac
+
+if [ "$verbose" -eq 0 ]; then
+    verbose() { :; }
+fi
+
+archive=${archive%/}
+
+case $archive in
+*.7z) ;;
+'') usage >&2; exit 1 ;;
+*) error '%s: archive must end with .7z\n' "$archive"
+esac
+
+keyfile=.keyring/$id
+keyring=seccache://${archive##*/}
+
+if ! keyctl id @u > /dev/null 2>&1; then
+    # XXX If the user keyring is missing then it seems a bit random as to when
+    #     it comes back. The user-keyring(7) manual suggests this keyring is
+    #     created when it is accessed but this is not the case, at least not
+    #     immediately. Once it does show up again it can be linked back into
+    #     the current session with:
+    #
+    #           keyctl link @u @s
+    #
+    #     Until I understand how this works there's no point providing bad
+    #     advice to users.
+    error 'user keyring unavailable (maybe: keyctl link @u @s)\n'
+fi
+
+if ! [ -f "$archive" ] && iscapable; then
+    # nb. The use of >> avoids updating timestamps while testing the
+    #     feasibility of file creation. The subshell prevents redirection
+    #     errors frm terminating the main shell.
+    if (: >> "$archive") 2> /dev/null; then
+        rm -f -- "$archive"
+    else
+        error '%s: no such file or directory\n' "$archive"
+    fi
+
+    # As the keyring is derived from the archive filename it would be
+    # prudent to clear out any cached creditials when initialising the new
+    # archive if it happens to share the same name.
+    nofail keyctl newring "$keyring" @u > /dev/null
+
+    verbose '%s: creating archive\n' "$archive"
+
+    nofail key_request_with passphrase "$timeout" pin confirm
+    archive_add_key "$keyfile"
+fi
+
+if ! keyctl id %:"$keyring" > /dev/null 2>&1; then
+    nofail keyctl newring "$keyring" @u > /dev/null
+fi
+
+nofail key_request_with passphrase "$timeout" pin noconfirm
+
+verbose '%s: verifying authorisation\n' "$archive"
+archive_verify
+
+# If a provided id does not exist then assume the user wants it created.
+if ! archive_exists_file "$keyfile"; then
+    verbose '%s: adding new key\n' "$id"
+    archive_add_key "$keyfile"
+fi
+
+if [ "$getfile" ]; then
+    if [ "$getfile" = . ]; then
+        key_desc2pipe passphrase | 7z l -ba -slt -spf -x'!.keyring/*' -- "$archive" | sed -n '/^Path = /s///p'
+    else
+        if ! archive_exists_file "$id"/"$getfile"; then
+            error '%s: no such file\n' "$getfile"
+        fi
+
+        if ! key_request_with "$id"/private 10 archive_extract_private_key "$keyfile"; then
+            error '%s: no such key\n' "$id"/private
+        else
+            verbose 'get %s\n' "$getfile"
+            archive_extract "$id"/"$getfile" | age -i /dev/fd/9 9<<! -d | zstd -qqfcd
+$(key_desc2pipe "$id"/private)
+!
+        fi
+    fi
+fi
+
+if [ "$putfile" ]; then
+    if [ "$stdin" -eq 0 ]; then
+        if [ -f "$putfile" ]; then
+            exec < "$putfile"
+        else
+            verbose 'using stdin\n'
+        fi
+    fi
+
+    if ! key_request_with "$id"/public 0 archive_extract_public_key "$keyfile"; then
+        error '%s: no such key\n' "$id"/public
+    else
+        verbose 'put %s\n' "$putfile"
+
+        if iscapable; then
+            zstd -qqfcz | age -r "$(key_desc2pipe "$id"/public)" -e | archive_add "$id"/"$putfile"
+        fi
+    fi
+fi
+
+if [ "$rmfile" ]; then
+    if ! archive_exists_file "$id"/"$rmfile"; then
+        error '%s: no such file\n' "$rmfile"
+    else
+        verbose 'rm %s\n' "$rmfile"
+
+        # nb. A file named a/../../c was not removable without the -spf flag.
+        #     Despite its name, "Use fully qualified file paths", the actual
+        #     meaning is that 7z will not "process or convert paths."
+        #     See https://7-zip.opensource.jp/chm/cmdline/switches/spf.htm
+        key_desc2pipe passphrase | 7z d -spd -spf -bso0 -x'!.keyring/*' -- "$archive" "$id"/"$rmfile"
+    fi
+fi

@@ -1,0 +1,135 @@
+.TH SX 1 "3 October 2025" 4.0
+.SH NAME
+sx \- start an x server
+.SH SYNOPSIS
+.B sx
+.RI [ "command " [ arguments ]...]
+.SH DESCRIPTION
+.B sx
+can be used to replace both
+.BR xinit (1)
+and
+.BR startx (1)
+for starting a
+.BR Xorg (1)
+with an initial client.  By default
+.B sx
+will attempt to execute
+.I \%XDG_CONFIG_HOME/sx/sxrc
+unless a
+.I command
+is provided.  The
+.I command
+may have additional
+.IR arguments .
+.PP
+.B sx
+can additionally execute
+.I XDG_CONFIG_HOME/sx/sxsv
+to start an X server with custom command line arguments if it is executable.
+.SH EXIT STATUS
+.B sx
+will attempt to inherit the exit status from the X server. If
+.B sx
+was signalled then the exit status will reflect this, otherwise it will be
+zero.
+.SH ENVIRONMENT
+.TP
+.B DISPLAY
+The display name used for the X server that is provided for
+.IR sxrc .
+.TP
+.B XAUTHORITY
+This environment references a file which stores authorisation entries
+used to secure the X server. If this environment is not set then
+.B sx
+will create and use
+.I \%XDG_DATA_HOME/sx/xauthority
+instead while also exporting this value to
+.BR XAUTHORITY .
+.TP
+.B XDG_CONFIG_HOME
+The directory used when searching for
+.I sxrc
+and
+.IR sxsv .
+.B \%HOME/.config
+will be used if not set.
+.TP
+.B XDG_DATA_HOME
+The directory used for storing the
+.I xauthority
+file.
+.B \%HOME/.local/share
+will be used if not set.
+.SH FILES
+.TP
+.B XDG_CONFIG_HOME/sx/sxrc
+The default command started by
+.BR sx .
+This file must be executable.
+.TP
+.B XDG_CONFIG_HOME/sx/sxsv
+The file used instead of
+.BR Xorg (1).
+The first argument will be the display number and the
+.B XAUTHORITY
+environment will made be available. This file must be executable.
+.TP
+.B XDG_DATA_HOME/sx/xauthority
+The default authority used by
+.B sx
+if an alternative file is not provided with
+.BR XAUTHORITY .
+.SH NOTES
+With the addition of
+.BR Xorg.wrap (1)
+it may be necessary to set
+.I allowed_users
+to
+.I anybody
+in
+.I \%/etc/X11/Xwrapper.config
+if
+.B sx
+is used in a pipeline or its standard output and standard error is redirected
+to a file as it will not be considered a console user.
+.SH EXAMPLES
+Use an existing
+.I .Xinitrc
+by specifying an appropriate interpreter such as
+.BR sh (1)
+or making it executable with a correct interpreter line:
+.IP
+.EX
+.B sx sh ~/.Xinitrc
+.EE
+.PP
+Pass arguments to the standard
+.I sxrc
+by presenting it to
+.B sx
+as a
+.IR command :
+.IP
+.EX
+.B sx ~/.config/sx/sxrc arg1 arg2
+.EE
+.PP
+Specify custom XKEYBOARD extension options using
+.IR \%XDG_CONFIG_HOME/sx/sxsv :
+.IP
+.EX
+.B #!/bin/sh \-\-
+.B Xorg :\[dq]$1\[dq] vt\[dq]$1\[dq] -keeptty -noreset -auth \[dq]$XAUTHORITY\[dq] -ardelay 200 -arinterval 20
+.EE
+.SH SOURCE
+.UR https://github.com/Earnestly/sx
+.UE
+.SH SEE ALSO
+.BR startx (1),
+.BR xinit (1),
+.BR Xorg (1),
+.BR X (7),
+.BR Xsecurity (7),
+.BR Xwrapper.config (5)

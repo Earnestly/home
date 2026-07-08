@@ -1,7 +1,5 @@
 # HOME/.local/etc/i3/config
 
-# font pango: Source Sans Pro Semibold, Italic 11
-# font pango: Go Medium 10
 font pango: Inter Medium 10
 default_border pixel 2
 workspace_auto_back_and_forth yes
@@ -102,10 +100,10 @@ bindsym $mod+Ctrl+j move container to output down
 bindsym $mod+Ctrl+k move container to output up
 bindsym $mod+Ctrl+l move container to output right
 
-bindsym $mod+Ctrl+Shift+h move workspace to output right
+bindsym $mod+Ctrl+Shift+h move workspace to output left
 bindsym $mod+Ctrl+Shift+j move workspace to output down
 bindsym $mod+Ctrl+Shift+k move workspace to output up
-bindsym $mod+Ctrl+Shift+l move workspace to output left
+bindsym $mod+Ctrl+Shift+l move workspace to output right
 
 bindsym $mod+semicolon split h
 bindsym $mod+v split v
@@ -189,13 +187,13 @@ bindsym $mod+r mode "RESIZE"
 mode "MENU" {
     bindsym d exec --no-startup-id ditch < "$HOME"/.local/var/lib/ditch/streamers; mode "default"
     bindsym i exec --no-startup-id exec web-secure; mode "default"
-    bindsym l exec --no-startup-id exec mpass; mode "default"
+    bindsym l exec --no-startup-id exec seccache-menu; mode "default"
     bindsym o exec --no-startup-id exec sh "$HOME"/study/shell/book; mode "default"
     bindsym p exec --no-startup-id exec dmenu_run; mode "default"
     bindsym s exec --no-startup-id exec switch; mode "default"
     bindsym w exec --no-startup-id exec superwatchlater; mode "default"
     bindsym y exec --no-startup-id exec mclip; mode "default"
-    bindsym t exec --no-startup-id exec sh "$HOME"/study/shell/type-primary; mode "default"
+    bindsym t exec --no-startup-id exec type-primary; mode "default"
 
     bindsym --whole-window button1 exec --no-startup-id maim -uso | pb | menu | xclip -i -r; mode "default"
 
