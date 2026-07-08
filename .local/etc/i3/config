@@ -44,7 +44,7 @@ client.urgent           $maroon $maroon    $white $maroon
 
 bar {
     position top
-    status_command exec "$HOME"/study/shell/statusbar
+    status_command exec statusbar
 
     colors {
         background         $black
@@ -64,13 +64,13 @@ bindsym XF86Launch1 exec --no-startup-id web
 
 bindsym $mod+Escape exec --no-startup-id exec peon \"$(xclip -o)\"
 
-bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
-bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
+bindsym XF86AudioMute exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+bindsym XF86AudioMicMute exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 # bindsym XF86AudioMute exec --no-startup-id amixer -Mq sset Master toggle
 # bindsym XF86AudioMicMute exec --no-startup-id amixer -Mq sset Capture toggle
 
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +3%
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -3%
+bindsym XF86AudioRaiseVolume exec --no-startup-id wpctl set-volume @DEFAULT_AUDIO_SINK@ 3%+
+bindsym XF86AudioLowerVolume exec --no-startup-id wpctl set-volume @DEFAULT_AUDIO_SINK@ 3%-
 # bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -Mq -- sset Master 3%+
 # bindsym XF86AudioLowerVolume exec --no-startup-id amixer -Mq -- sset Master 3%-
 
@@ -185,7 +185,7 @@ mode "RESIZE" {
 bindsym $mod+r mode "RESIZE"
 
 mode "MENU" {
-    bindsym d exec --no-startup-id ditch < "$HOME"/.local/var/lib/ditch/streamers; mode "default"
+    bindsym d exec --no-startup-id ditch < "${XDG_DATA_HOME:-$HOME/.local/share}"/ditch/streamers; mode "default"
     bindsym i exec --no-startup-id exec web-secure; mode "default"
     bindsym l exec --no-startup-id exec seccache-menu; mode "default"
     bindsym o exec --no-startup-id exec sh "$HOME"/study/shell/book; mode "default"
