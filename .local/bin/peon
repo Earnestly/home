@@ -1,0 +1,41 @@
+#!/bin/sh --
+# peon - zug zug
+# requires file(-b --mime-type)
+
+warn() { m=$1; shift; printf >&2 "%s: $m" peon "$@"; }
+attr() { case ,$PEONATTRS, in *,"$1",*) return 0; esac; return 1; }
+addattr() { printf %s "${PEONATTRS:+$PEONATTRS,}$1"; }
+isatty() { [ -t 0 ]; }
+echo() { IFS=' '; printf '%s\n' "$*"; exit; }
+verbose() { IFS=' '; printf '%s\n' "$*"; exec "$@"; }
+term() { exec "${TERMINAL:-xterm}" -e "$@"; }
+
+if attr trace; then
+    set -x
+fi
+
+if attr noexec; then
+    alias exec=echo
+fi
+
+if attr verbose; then
+    alias exec=verbose
+fi
+
+if attr term; then
+    alias exec=term
+fi
+
+cfgdir=${XDG_CONFIG_HOME:-$HOME/.config}/peon
+mkdir -p -- "$cfgdir"
+
+if ! [ "$1" ] || [ "$#" -ne 1 ]; then
+    printf 'usage: peon file|uri\n' >&2
+    exit 1
+elif ! [ -e "$1" ]; then
+    set -- "$1"
+    . "$cfgdir"/url
+else
+    set -- "$(file -b --mime-type -- "$1")" "$1"
+    . "$cfgdir"/file
+fi

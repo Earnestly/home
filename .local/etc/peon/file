@@ -1,0 +1,85 @@
+#!/bin/sh --
+# peon/file
+# requires mpv imv pdf xxd
+
+withterm() {
+    less=0 OPTIND=1
+
+    while getopts :l opt; do
+        case $opt in
+        l) less=1 ;;
+        *)
+        esac
+    done
+
+    shift "$((OPTIND-1))"
+
+    if ! isatty; then
+        PEONATTRS=term exec peon "$2"
+    else
+        shift 2
+
+        if [ "$less" -eq 1 ]; then
+            if attr term; then
+                exec sh -c '"$@" | less' _ "$@"
+            else
+                exec "$@" | less
+            fi
+        else
+            if attr term; then
+                exec sh -c '"$@"' _ "$@"
+            else
+                exec "$@"
+            fi
+        fi
+    fi
+}
+
+case $1 in
+text/*)
+    withterm "$@" less -- "$2"
+;;
+
+application/mbox)
+    withterm "$@" less -- "$2"
+;;
+
+video/*)
+    exec mpv -- "$2"
+;;
+
+audio/*)
+    exec mpv -- "$2"
+;;
+
+image/*)
+    exec imv -- "$2"
+;;
+
+application/pdf)
+    exec pdf -- "$2"
+;;
+
+application/epub+zip)
+    exec pdf -- "$2"
+;;
+
+application/x-*executable)
+    withterm -l "$@" xxd -- "$2"
+;;
+
+inode/directory)
+    cd -- "$2" && exec "${TERMINAL:-xterm}"
+;;
+
+application/vnd.openxmlformats-officedocument.wordprocessingml.document)
+    withterm -l "$@" docx2txt "$2" -
+;;
+
+application/vnd.oasis.opendocument.spreadsheet)
+    withterm "$@" visidata -- "$2"
+;;
+
+*)
+    warn '%s (%s): no matching rule\n' "$2" "$1"
+esac
