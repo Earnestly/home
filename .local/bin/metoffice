@@ -1,0 +1,272 @@
+#!/bin/sh --
+# metoffice - weather report from the met office
+# requires curl fq
+
+# TODO:
+#   All of the xml parsing has been roughly ported to fq(1) from a mixture
+#   xmlstarlet utils and hq. However as fq provides jq's language it should be
+#   possible to rewrite much of this script in fq instead of using it to
+#   provide a simpler data format for awk.
+
+usage() {
+    cat <<!
+usage: metoffice [-v] geohash
+       metoffice [-v] -s location
+!
+}
+
+verbose=0
+search=0
+
+while getopts :vs opt; do
+    case $opt in
+    v) verbose=1 ;;
+    s) search=1 ;;
+    *) usage >&2; exit 1
+    esac
+done
+shift "$((OPTIND - 1))"
+
+geohash=$1
+
+if ! [ "$1" ]; then
+    usage >&2
+    exit 1
+fi
+
+if [ "$search" -eq 1 ]; then
+    geohash=$(
+        curl -Gsg --data-urlencode query="$1" https://www.metoffice.gov.uk/search \
+        | fq -rd html '
+            .. | select(.["@class"]? == "location-group").ul
+               | if .li | type == "array" then .li[].a else .li.a end
+               | .["#text"] as $location
+               | .["@href"] | from_url | (.path / "/")[-1] as $geohash
+               | if has("query") then
+                     "\($geohash) \($location) [Nearest to \(.query.nearestTo)]"
+                 else
+                     "\($geohash) \($location)"
+                 end' \
+        | {
+            set --
+            i=1
+
+            while IFS=' ' read -r geohash location; do
+                set -- "$@" "$i) $geohash - $location"
+                i=$((i + 1))
+            done
+
+            if [ "$#" -eq 0 ]; then
+                exit 1
+            elif [ "$#" -gt 1 ]; then
+                {
+                    printf 'Possible locations:\n'
+                    printf '%s\n' "$@" | pr -to 4
+                } >&2
+                exit 2
+            else
+                printf %s "$1"
+            fi
+        })
+
+    case $? in
+    0) printf '%s\n' "$geohash"; exit 0 ;;
+    1) printf 'metoffice: warning: no results found for \047%s\047\n' "$1" >&2; exit 1 ;;
+    2) printf '%s\n' >&2; exit 0
+    esac
+fi
+
+# nb. There is no point in memoising this as the metoffice does not use etags,
+# timestamps, etc. to compare against.
+curl -sg https://weather.metoffice.gov.uk/forecast/"$geohash" \
+| fq -rd html '
+    .html.head.title[:-21],
+    (.. | select(.["@class"]? == "day-tabs").li[].a.div
+        | ["h",
+           (.h3.time | .["@datetime"], (.span[] | select(.["@class"] | contains("date-long")).["#text"])),
+           (.div.div | .[1].span[].span[0].["@data-c"], .[0].img.["@alt"][:-1])] | join(",")),
+    (.. | select(.["@class"]? == "snapshot next-day")
+        | ["s",
+           (.h2.time.["@datetime"]),
+           (.h2.time.["#text"]),
+           (.ul.li[2].["@title"]),
+           (.ul.li[1].span[1])] | join(",")),
+    (.. | select(.["@class"]? == "forecast-table-section forecast-section").table[]
+        | "T",
+          (.thead.tr.td[] | if . | type == "object" then .["#text"] else . end),
+          "K",
+          (.tbody.tr[] | select(.["@class"]? | contains("weather-temperature-row")?) | .td[].["#text"], "C", .td[].img.["@alt"]),
+          "P",
+          (.tbody.tr[] | select(.["@class"]? | contains("precipitation-chance-row")?).td[].["#text"]),
+          "D",
+          (.tbody.tr[] | select(.["@class"]? | contains("wind")?) | .td[].span.["@data-value"], "I", .td[].["#text"]))' \
+| geohash=$geohash awk -v verbose="$verbose" '
+    BEGIN{
+        FS = ","
+
+        # Various cursors.
+        s = 1 # summary day tracking.
+        d = 0 # detailed day tracking.
+        h = 1 # detailed hour tracking.
+
+        # States for detailed data parsing.
+        states["T"] # time (%l%P).
+        states["K"] # temperature (°C).
+        states["P"] # precipitation.
+        states["C"] # description.
+        states["I"] # wind speed (m/s).
+        states["D"] # wind direction.
+    }
+
+    NR==1{
+        location = $0
+        next
+    }
+
+    $1=="h"{
+        # NB. Used to preserve ordering.
+        date[s] = $2
+
+        # XXX This section of the HTML refers to todays day as "Today" instead
+        #     of the day name. A later section corrects this which is then
+        #     substituted in.
+        summary[$2, "day"] = $3
+        summary[$2, "high"] = $4
+        summary[$2, "low"] = $5
+        summary[$2, "desc"] = $6
+
+        s = s + 1
+    }
+
+    $1=="s"{
+        if(summary[$2, "day"] == "Today")
+            summary[$2, "day"] = $3
+
+        summary[$2, "wind"] = $4
+        summary[$2, "desc"] = sprintf("%s, %s", summary[$2, "desc"], tolower($5))
+    }
+
+    $1=="T"{
+        hours[d] = h
+        d = d + 1
+    }
+
+    state=="T" {detail[d, "time", ++h] = $0 == "Midday" ? "12pm" : $0 == "Midnight" ? "12am" : $0}
+    state=="K" {detail[d, "temp", ++h] = $0}
+    state=="P" {detail[d, "rain", ++h] = $0; gsub(/[^[:digit:]]/, "", detail[d, "rain", h])}
+    state=="C" {detail[d, "desc", ++h] = $0}
+    state=="I" {detail[d, "wind", ++h] = sprintf("%.0fmph", $0 * 2.2369363)}
+    state=="D" {detail[d, "cart", ++h] = $0}
+
+    $1 in states {h=0; state=$1; next}
+
+    # XXX The Met Office includes almost 80 days in their HTML, most values
+    #     above week 10 become gibberish or missing.
+    d==8{exit}
+
+    END{
+        # SGR colour sequences.
+        highlight["damp"] = "2;7;34;47"
+        highlight["wet"] = "1;7;34;40"
+
+        highlight["warm"] = "2;7;33;47"
+        highlight["hot"] = "2;7;31;47"
+        highlight["cold"] = "2;7;36;47"
+        highlight["freezing"] = "1;7;36;40"
+
+        highlight["sunny"] = "1;33"
+        highlight["sunny_intervals"] = "1;2;33"
+        highlight["heavy_rain"] = "1;34"
+
+        highlight["normal"] = "37"
+
+        # Temperature limits.
+        freezing = 0
+        cold = 5
+        warm = 10
+        hot = 25
+
+        if(ENVIRON["NOCOLOR"])
+            delete highlight
+
+        printf "Weather Report for \033[1m%s\033[0m [geohash: %s]\n\n", location, ENVIRON["geohash"]
+
+        printf "Summary for the Next 7 Days Starting %s:\n\n", date[1]
+
+        for(i=1; i<s; ++i){
+            low = summary[date[i], "low"] + 0
+
+            if(low <= freezing)
+                t = "freezing"
+            else if(low < cold)
+                t = "cold"
+            else if(low > hot)
+                t = "hot"
+            else if(low > warm)
+                t = "warm"
+            else
+                t = "normal"
+
+            printf "%10s  %-6s \033[%sm %-5s\033[0m  %-10s  %s\n",
+                summary[date[i], "day"],
+                summary[date[i], "high"],
+                highlight[t], low "°",
+                summary[date[i], "wind"],
+                summary[date[i], "desc"]
+        }
+
+        if(verbose){
+            printf "\nHourly Report for the Next 7 Days:\n\n"
+
+            # d = 8 includes all hours of the 7th day.
+            d = d - 1
+
+            for(i=1; i<=d; ++i){
+                printf "%10s (%s):\n\n", summary[date[i], "day"], date[i]
+
+                for(hour=1; hour<=hours[i]; ++hour){
+                    rain = detail[i, "rain", hour] + 0
+                    temp = detail[i, "temp", hour] + 0
+                    desc = detail[i, "desc", hour]
+
+                    if(temp <= freezing)
+                        t = "freezing"
+                    else if(temp < cold)
+                        t = "cold"
+                    else if(temp > hot)
+                        t = "hot"
+                    else if(temp > warm)
+                        t = "warm"
+                    else
+                        t = "normal"
+
+                    if(rain >= 80)
+                        r = "wet"
+                    else if(rain >= 60)
+                        r = "damp"
+                    else
+                        r = "normal"
+
+                    if(index(desc, "Sunny day"))
+                        s = "sunny"
+                    else if(index(desc, "Sunny intervals"))
+                        s = "sunny_intervals"
+                    else if(index(desc, "Heavy rain"))
+                        s = "heavy_rain"
+                    else
+                        s = "normal"
+
+                    printf "%10s \033[%sm %-6s\033[0m\033[%sm %-5s\033[0m %-7s %-5s \033[%sm%s\033[0m\n",
+                        detail[i, "time", hour],
+                        highlight[t], detail[i, "temp", hour],
+                        highlight[r], detail[i, "rain", hour] "%",
+                        detail[i, "wind", hour],
+                        detail[i, "cart", hour],
+                        highlight[s], detail[i, "desc", hour]
+                }
+
+                if(i < d)
+                    printf "\n"
+            }
+        }
+    }'
