@@ -1,4 +1,4 @@
-# HOME/.local/lib/udev/rc_keymaps/sony-rmt-d128p.toml
+# XDG_CONFIG_HOME/udev/rc_keymaps/sony-rmt-d128p.toml
 
 [[protocols]]
 name = "Sony RMT-D128P"
