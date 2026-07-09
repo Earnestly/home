@@ -217,7 +217,7 @@ volume() {
 
     pastat() {
         pactl -f json list "$1" | jq -r '
-            .[] | select(.state == "RUNNING" and (.muted | not)).volume
+            .[] | select(.state == "RUNNING" and (.mute | not)).volume
                 | [keys_unsorted[] as $k | .[$k].value_percent[:-1] | tonumber]
                 | add / length'
     }
