@@ -118,7 +118,7 @@ def qmatrix_read_config(config):
     qmatrix.rules.clear()
     qmatrix.logger.debug(f'{qmatrix.config}: loading ruleset')
 
-    with open(config) as f:
+    with open(config, 'a+') as f:
         for i, line in enumerate(f.read().splitlines()):
             if not (line.startswith('#') or line.strip() == ''):
                 fields = line.split(' ')
