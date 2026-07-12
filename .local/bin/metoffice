@@ -80,6 +80,8 @@ fi
 # timestamps, etc. to compare against.
 curl -sg https://weather.metoffice.gov.uk/forecast/"$geohash" \
 | fq -rd html '
+    def maybe_array($o): if $o | type == "array" then $o[] else $o end;
+
     .html.head.title[:-21],
     (.. | select(.["@class"]? == "day-tabs").li[].a.div
         | ["h",
@@ -95,12 +97,27 @@ curl -sg https://weather.metoffice.gov.uk/forecast/"$geohash" \
         | "T",
           (.thead.tr.td[] | if . | type == "object" then .["#text"] else . end),
           "K",
-          (.tbody.tr[] | select(.["@class"]? | contains("weather-temperature-row")?) | .td[].["#text"], "C", .td[].img.["@alt"]),
+          (.tbody.tr[] | select(.["@class"]? | contains("weather-temperature-row")?) | maybe_array(.td).["#text"], "C", maybe_array(.td).img.["@alt"]),
           "P",
-          (.tbody.tr[] | select(.["@class"]? | contains("precipitation-chance-row")?).td[].["#text"]),
+          (.tbody.tr[] | select(.["@class"]? | contains("precipitation-chance-row")?) | maybe_array(.td).["#text"]),
           "D",
-          (.tbody.tr[] | select(.["@class"]? | contains("wind")?) | .td[].span.["@data-value"], "I", .td[].["#text"]))' \
+          (.tbody.tr[] | select(.["@class"]? | contains("wind")?) | maybe_array(.td).span.["@data-value"], "I", maybe_array(.td).["#text"]))' \
 | geohash=$geohash awk -v verbose="$verbose" '
+    function desc_temp(temp,  t) {
+        if(temp <= freezing)
+            t = "freezing"
+        else if(temp < cold)
+            t = "cold"
+        else if(temp > hot)
+            t = "hot"
+        else if(temp > warm)
+            t = "warm"
+        else
+            t = "normal"
+
+        return t
+    }
+
     BEGIN{
         FS = ","
 
@@ -116,6 +133,12 @@ curl -sg https://weather.metoffice.gov.uk/forecast/"$geohash" \
         states["C"] # description.
         states["I"] # wind speed (m/s).
         states["D"] # wind direction.
+
+        # Temperature limits.
+        freezing = 0
+        cold = 5
+        warm = 10
+        hot = 25
     }
 
     NR==1{
@@ -180,12 +203,6 @@ curl -sg https://weather.metoffice.gov.uk/forecast/"$geohash" \
 
         highlight["normal"] = "37"
 
-        # Temperature limits.
-        freezing = 0
-        cold = 5
-        warm = 10
-        hot = 25
-
         if(ENVIRON["NOCOLOR"])
             delete highlight
 
@@ -195,22 +212,12 @@ curl -sg https://weather.metoffice.gov.uk/forecast/"$geohash" \
 
         for(i=1; i<s; ++i){
             low = summary[date[i], "low"] + 0
+            high = summary[date[i], "high"] + 0
 
-            if(low <= freezing)
-                t = "freezing"
-            else if(low < cold)
-                t = "cold"
-            else if(low > hot)
-                t = "hot"
-            else if(low > warm)
-                t = "warm"
-            else
-                t = "normal"
-
-            printf "%10s  %-6s \033[%sm %-5s\033[0m  %-10s  %s\n",
+            printf "%10s \033[%sm %-6s\033[0m\033[%sm %-5s\033[0m  %-10s  %s\n",
                 summary[date[i], "day"],
-                summary[date[i], "high"],
-                highlight[t], low "°",
+                highlight[desc_temp(high)], high "°",
+                highlight[desc_temp(low)], low "°",
                 summary[date[i], "wind"],
                 summary[date[i], "desc"]
         }
@@ -226,19 +233,9 @@ curl -sg https://weather.metoffice.gov.uk/forecast/"$geohash" \
 
                 for(hour=1; hour<=hours[i]; ++hour){
                     rain = detail[i, "rain", hour] + 0
-                    temp = detail[i, "temp", hour] + 0
                     desc = detail[i, "desc", hour]
 
-                    if(temp <= freezing)
-                        t = "freezing"
-                    else if(temp < cold)
-                        t = "cold"
-                    else if(temp > hot)
-                        t = "hot"
-                    else if(temp > warm)
-                        t = "warm"
-                    else
-                        t = "normal"
+                    t = desc_temp(detail[i, "temp", hour] + 0)
 
                     if(rain >= 80)
                         r = "wet"
