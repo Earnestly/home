@@ -1,62 +1,58 @@
 #!/bin/sh --
 # web - start a prefered web browser
-# requires qutebrowser
 
-# --qt-flag no-sandbox
+qutebrowser() {
+    rundir=$XDG_RUNTIME_DIR/qutebrowser
+    log=$rundir/log.pipe
 
-# --qt-flag disable-gpu
-# --qt-flag disable-gpu-compositing
-# --qt-flag disable-gpu-rasterization
+    # --qt-flag no-sandbox
+    # --qt-flag disable-gpu
+    # --qt-flag disable-gpu-compositing
+    # --qt-flag disable-gpu-rasterization
+    # --qt-flag enable-native-gpu-memory-buffers
+    # --qt-flag enable-blink-features=feat,...
+    # --qt-flag js-flags=--jitless
+    # --qt-flag single-process|process-per-site
 
-# --qt-flag enable-native-gpu-memory-buffers
-#
-# --qt-flag enable-blink-features=feat,feat,...
+    set -- --qt-flag enable-features=JXL \
+           --target=tab-bg-silent \
+           --no-err-windows \
+           ${debug+-dD log-cookies --logfilter network} "$@"
 
-# --qt-flag js-flags=--jitless
-# --qt-flag single-process | process-per-site
+    # shellcheck disable=SC2174
+    mkdir -pm0700 -- "$rundir"
 
-# VAAPI
-# https://github.com/qutebrowser/qutebrowser/discussions/7917#discussioncomment-12123094
-# qt.args = [ "disable-logging", "enable-gpu-rasterization", "ignore-gpu-blocklist", "enable-features=VaapiVideoDecodeLinuxGL"]
-# QT_XCB_GL_INTEGRATION=xcb_egl was required
+    if [ -e "$log" ] && ! [ -p "$log" ]; then
+        rm -f -- "$log"
+    fi
 
-rundir=$XDG_RUNTIME_DIR/qutebrowser
-log=$rundir/log.pipe
+    if ! [ -p "$log" ]; then
+        mkfifo -- "$log"
+    fi
+
+    nice logger -et qutebrowser -p info < "$log" &
+    exec 9>"$log"
+    rm -f -- "$log"
+
+    # exec python -m cProfile -o qutebrowser.prof /usr/bin/qutebrowser "$@" >&9 2>&1
+    exec qutebrowser "$@" >&9 2>&1
+}
 
 unset -v debug
+browser=qutebrowser
 
-while getopts :d opt; do
+while getopts :db: opt; do
     case $opt in
-    d) debug=1
+    d) debug=1 ;;
+    b) browser=$OPTARG
     esac
 done
 
-shift "$((OPTIND-1))"
+shift "$((OPTIND - 1))"
 
-# XXX These are all mostly cargo-culted to try aid my poor x220 on a 2K monitor.
-set -- --qt-flag enable-features=JXL,VaapiVideoEncoder,VaapiVideoDecoder,CanvasOopRasterization \
-       --qt-flag enable-gpu-rasterization \
-       --qt-flag ignore-gpu-blacklist \
-       --qt-flag num-raster-threads="$(nproc)" \
-       --qt-flag enable-accelerated-video-decode \
-       --target=tab-bg-silent \
-       --no-err-windows \
-       ${debug+-dD log-cookies --logfilter network} "$@"
+case $browser in
+qutebrowser|firefox|chromium) ;;
+*) exit 1
+esac
 
-# shellcheck disable=SC2174
-mkdir -pm0700 -- "$rundir"
-
-if [ -e "$log" ] && ! [ -p "$log" ]; then
-    rm -f -- "$log"
-fi
-
-if ! [ -p "$log" ]; then
-    mkfifo -- "$log"
-fi
-
-nice logger -et qutebrowser -p info < "$log" &
-exec 9>"$log"
-rm -f -- "$log"
-
-# exec python -m cProfile -o qutebrowser.prof /usr/bin/qutebrowser "$@" >&9 2>&1
-exec qutebrowser "$@" >&9 2>&1
+"$browser" "$@"
