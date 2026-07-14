@@ -1,26 +1,26 @@
 #!/bin/sh --
 # web - start a prefered web browser
+# requires xdg-user-dir jq
+
+firefox-private() {
+    mkdir -m 0700 -- "$tmp"/profile "$tmp"/tmp
+
+    cat <<! > "$tmp"/profile/user.js
+# Use XDG_DOWNLOAD_DIR to determine the download.dir location instead of
+# it being determined by the HOME environment.
+user_pref("browser.download.folderList", 2);
+user_pref("browser.download.dir", $(jq -rcn --arg dir "$(xdg-user-dir DOWNLOAD)" '$dir | @json'));
+!
+
+    HOME=$tmp XDG_CONFIG_HOME=$tmp TMP=$tmp/tmp firefox --new-instance --no-remote --profile "$tmp"/profile "$@"
+}
 
 qutebrowser() {
     rundir=$XDG_RUNTIME_DIR/qutebrowser
     log=$rundir/log.pipe
 
-    # --qt-flag no-sandbox
-    # --qt-flag disable-gpu
-    # --qt-flag disable-gpu-compositing
-    # --qt-flag disable-gpu-rasterization
-    # --qt-flag enable-native-gpu-memory-buffers
-    # --qt-flag enable-blink-features=feat,...
-    # --qt-flag js-flags=--jitless
-    # --qt-flag single-process|process-per-site
-
-    set -- --qt-flag enable-features=JXL \
-           --target=tab-bg-silent \
-           --no-err-windows \
-           ${debug+-dD log-cookies --logfilter network} "$@"
-
     # shellcheck disable=SC2174
-    mkdir -pm0700 -- "$rundir"
+    mkdir -pm 0700 -- "$rundir"
 
     if [ -e "$log" ] && ! [ -p "$log" ]; then
         rm -f -- "$log"
@@ -34,25 +34,48 @@ qutebrowser() {
     exec 9>"$log"
     rm -f -- "$log"
 
-    # exec python -m cProfile -o qutebrowser.prof /usr/bin/qutebrowser "$@" >&9 2>&1
+    set -- --qt-flag enable-features=JXL \
+           --target=tab-bg-silent \
+           --no-err-windows \
+           ${debug+-dD log-cookies --logfilter network} "$@"
+
+    # python -m cProfile -o qutebrowser.prof /usr/bin/qutebrowser "$@" >&9 2>&1
     exec qutebrowser "$@" >&9 2>&1
 }
 
-unset -v debug
+unset -v debug private
 browser=qutebrowser
 
-while getopts :db: opt; do
+while getopts :dpb: opt; do
     case $opt in
     d) debug=1 ;;
+    p) private=1 ;;
     b) browser=$OPTARG
     esac
 done
 
 shift "$((OPTIND - 1))"
 
-case $browser in
-qutebrowser|firefox|chromium) ;;
-*) exit 1
-esac
+if [ "$private" ]; then
+    browser=$browser-private
 
-"$browser" "$@"
+    cleanup() { rm -rf -- "$tmp"; }
+
+    tmp=${TMPDIR:-/tmp}/web-$browser-$$
+
+    trap cleanup EXIT
+
+    for signal in HUP INT QUIT TERM; do
+        # shellcheck disable=SC2064
+        trap "cleanup; trap - $signal EXIT; kill -s $signal $$" "$signal"
+    done
+
+    # shellcheck disable=SC2174
+    mkdir -pm 0700 -- "$tmp"
+fi
+
+if hash -- "$browser" 2> /dev/null; then
+    "$browser" "$@"
+else
+    printf 'web: error: \047%s\047: no such command\n' "$browser" >&2
+fi
