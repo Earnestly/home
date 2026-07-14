@@ -29,8 +29,8 @@ config.set('url.searchengines', {'DEFAULT': 'https://html.duckduckgo.com/html?q=
 config.set('content.webrtc_ip_handling_policy', 'default-public-interface-only')
 
 config.set('content.webgl', False)
-config.set('content.cookies.accept', 'never')
-config.set('content.javascript.enabled', False)
+config.set('content.cookies.accept', 'all')
+config.set('content.javascript.enabled', True)
 config.set('content.dns_prefetch', False)
 config.set('content.notifications.enabled', False)
 config.set('content.register_protocol_handler', False)

@@ -51,7 +51,7 @@ import qutebrowser.extensions
 
 qmatrix = SimpleNamespace()
 
-qmatrix.active = True
+qmatrix.active = False
 qmatrix.config = config.configdir / 'qmatrix-rules'
 qmatrix.logger = logging.getLogger('qmatrix')
 qmatrix.rules = set()
@@ -84,7 +84,7 @@ qmatrix.whitelist = {
 
 
 def qmatrix_add_rule(host, source, flags, resource):
-    """ Adds an individual rule to the rule list. """
+    """Adds an individual rule to the rule list."""
 
     access = set()
 
@@ -162,7 +162,6 @@ def qmatrix_edit():
 @cmdutils.register()
 def qmatrix_toggle():
     """Enable or disable qmatrix."""
-
     qmatrix.active = not qmatrix.active
     message.info('qmatrix enabled' if qmatrix.active else 'qmatrix disabled')
 
