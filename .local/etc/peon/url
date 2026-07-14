@@ -1,11 +1,11 @@
 #!/bin/sh --
 # peon/uri - for anything that is not a local file
-# requires curl mpv web peon trurl
+# requires mpv web peon trurl
 
 if attr web; then
     case $1 in
     https://*|http://*)
-        exec web "$1"
+        exec web -- "$1"
     ;;
 
     *)
@@ -15,12 +15,16 @@ fi
 
 if attr video; then
     case $1 in
+    https://xcancel.com/*|https://nitter.*)
+        exec mpv --profile=doomscroll "$(trurl --set host=x.com -- "$1")"
+    ;;
+
     https://www.twitch.tv/*|https://twitch.tv/*)
-        exec mpv --mute=yes --terminal=no --gamma=10 --ytdl-raw-options=live-from-start= -- "$1"
+        exec mpv -- "$1"
     ;;
 
     *)
-        exec mpv --profile=url -- "$1"
+        exec mpv --profile=doomscroll -- "$1"
     esac
 fi
 
@@ -28,8 +32,8 @@ case $1 in
 file://*)
     # nb. Decodes a percent-encoded filepath and guards against trailing
     #     newline removal caused by process substitution.
-    path=$(trurl -g {path}z -- "$1") path=${path%z}
-    exec peon "${path#file://}"
+    path=$(trurl -g {path}z -- "$1")
+    exec peon "${path%z}"
 ;;
 
 https://*.youtube.com/watch\?v=*|https://youtu.be/*)
@@ -51,10 +55,13 @@ https://www.twitch.tv/*)
 https://*|http://*)
     case $1 in
     *.webm|*.mp4|*.m4a|*.mp3|*.gifv|*.opus)
-        exec mpv --profile=url -- "$1"
+        exec mpv --profile=doomscroll -- "$1"
+    ;;
+
+    *)
+        exec web -- "$1"
     esac
 
-    exec web "$1"
 ;;
 
 ytdl://*)
@@ -62,6 +69,6 @@ ytdl://*)
 ;;
 
 *)
-    web "g $1"
+    web -- "g $1"
     warn '%s: no matching candidates\n' "$1"
 esac

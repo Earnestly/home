@@ -60,7 +60,7 @@ case $? in
         | $db[]
         | select(.id == $ids[]).index' \
     | xargs -r0n 1 -- sh -c '
-        exec mpv --profile=url --ytdl-raw-options-append=playlist-items=1:100 -- "$1" &' _
+        exec mpv --profile=doomscroll --ytdl-raw-options-append=playlist-items=1:100 -- "$1" &' _
 ;;
 
 10)
