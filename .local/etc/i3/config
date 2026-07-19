@@ -195,7 +195,7 @@ mode "MENU" {
     bindsym y exec --no-startup-id exec mclip; mode "default"
     bindsym t exec --no-startup-id exec type-primary; mode "default"
 
-    bindsym --whole-window button1 exec --no-startup-id maim -uso | pb | menu | xclip -i -r; mode "default"
+    bindsym --whole-window button1 exec --no-startup-id maim -Duso | pb | menu | xclip -i -r; mode "default"
 
     bindsym Escape mode "default"
 }
