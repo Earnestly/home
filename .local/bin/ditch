@@ -64,8 +64,8 @@ else
             }' \
         | curl --parallel-max 15 -gsSZK - \
         | xargs -E '' cat -- \
-        | jq -sr '
-            [.[] | arrays[] | select(.data.users).data.users[] | select(.stream)]
+        | jq -r '
+            map(.data.users[] | select(.stream != null))
             | sort_by(-.stream.viewersCount)[]
             | [.login, .stream.viewersCount, .stream.game.name[:50], .stream.title]
             | @tsv' \
