@@ -106,11 +106,11 @@ curl -sg https://weather.metoffice.gov.uk/forecast/"$geohash" \
     function desc_temp(temp,  t) {
         if(temp <= freezing)
             t = "freezing"
-        else if(temp < cold)
+        else if(temp <= cold)
             t = "cold"
-        else if(temp > hot)
+        else if(temp >= hot)
             t = "hot"
-        else if(temp > warm)
+        else if(temp >= warm)
             t = "warm"
         else
             t = "normal"
@@ -136,9 +136,9 @@ curl -sg https://weather.metoffice.gov.uk/forecast/"$geohash" \
 
         # Temperature limits.
         freezing = 0
-        cold = 5
-        warm = 10
-        hot = 25
+        cold = 10
+        warm = 20
+        hot = 30
     }
 
     NR==1{
