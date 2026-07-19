@@ -1,6 +1,14 @@
 #!/bin/sh --
 # seccache-menu -
-# requires seccache xdotool xclip column qrencode imv
+# requires seccache menu xdotool xclip column qrencode imv
+
+# NOTES
+# seccache -G cotp/... \
+# | cotp --password-stdin -d /dev/stderr 2< ~/.local/share/cotp/db.cotp extract -l "$label" -s "$issuer"
+#
+# seccache -G cotp/... \
+# | cotp --password-stdin -d /dev/stderr 2< ~/.local/share/cotp/db.cotp list -e \
+# | jq -r --arg issuer ... --arg label ... 'first(.[] | select(.issuer == $issuer and .label == $label).otp_code)'
 
 typeit() {
     xdotool sleep 0.1 type --delay 7 -- "$1"
