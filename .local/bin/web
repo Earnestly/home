@@ -12,7 +12,11 @@ user_pref("browser.download.folderList", 2);
 user_pref("browser.download.dir", $(jq -rcn --arg dir "$(xdg-user-dir DOWNLOAD)" '$dir | @json'));
 !
 
-    HOME=$tmp XDG_CONFIG_HOME=$tmp TMP=$tmp/tmp firefox --new-instance --no-remote --profile "$tmp"/profile "$@"
+    HOME=$tmp XDG_CONFIG_HOME=$tmp TMP=$tmp/tmp firefox --no-remote --profile "$tmp"/profile --private-window "$@"
+}
+
+chromium-private() {
+    XDG_CONFIG_HOME=$tmp command chromium --user-data-dir="$tmp" --incognito "$@"
 }
 
 qutebrowser() {
@@ -50,7 +54,8 @@ while getopts :dpb: opt; do
     case $opt in
     d) debug=1 ;;
     p) private=1 ;;
-    b) browser=$OPTARG
+    b) browser=$OPTARG ;;
+    *) printf 'usage: web [-dp] [-b browser] [--] [args]...\n' >&2; exit 1
     esac
 done
 
