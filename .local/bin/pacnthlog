@@ -1,0 +1,70 @@
+#!/bin/sh --
+# pacnthlog - print specific transaction from pacman.log
+# requires [pacman-conf]
+
+usage() {
+    printf 'usage: pacnthlog [-h] [-L logfile] [[+-]number]\n'
+}
+
+error() {
+    m=$1
+    shift
+    printf "pacnthlog: error: $m" "$@" >&2
+    exit 1
+}
+
+isnum() {
+    case ${1#[+-]} in ''|*[!0123456789]*) return 1; esac
+}
+
+logfile=
+n=-1
+
+while getopts :hL: opt; do
+    case $opt in
+    h) usage; exit ;;
+    L) logfile=$OPTARG ;;
+   \?) if isnum "$OPTARG"; then n=-$OPTARG; else usage >&2; exit 1; fi ;;
+    *) usage >&2; exit 1
+    esac
+done
+
+shift "$((OPTIND-1))"
+
+logfile=${logfile:-$(pacman-conf LogFile)}
+
+
+if ! [ -f "$logfile" ]; then
+    error '%s: no such file\n' "$logfile"
+fi
+
+if ! isnum "$1"; then
+    error '%s: not a number\n' "$1"
+fi
+
+n=${1:-$n} awk '
+    BEGIN {
+        n = ENVIRON["n"] + 0
+    }
+
+    # nb. length($1) = 26
+    NR == FNR && index($0, "] [PACMAN] Running") == 26 {
+        transaction[++s] = NR
+    }
+
+    NR == FNR {
+        next
+    }
+
+    FNR == 1 {
+        if(n < 0)
+            n = s - (n*-1) + 1
+
+        start = transaction[n]-1
+        end = transaction[n+1]
+
+        if(n == s)
+            end = NR
+    }
+
+    FNR > start && FNR < end' "$logfile" "$logfile"
