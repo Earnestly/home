@@ -1,0 +1,20 @@
+#!/bin/sh --
+# iommugroups - list pci devices in their iommu groupings
+
+{
+    find /sys/kernel/iommu_groups -type l
+    lspci -Dnn
+} | awk '
+    NF==1 {
+        split($0, path, /\//)
+        groups[path[7]] = path[5]
+    }
+
+    NF>1 {
+        lspci[$1] = $0
+    }
+
+    END {
+        for(slot in groups)
+            printf "%-3d %s\n", groups[slot], lspci[slot]
+    }' | sort -n
