@@ -32,17 +32,17 @@ done
 shift "$((OPTIND-1))"
 
 logfile=${logfile:-$(pacman-conf LogFile)}
+n=${1:-$n}
 
-
-if ! [ -f "$logfile" ]; then
-    error '%s: no such file\n' "$logfile"
+if ! [ -r "$logfile" ]; then
+    error '%s: unable to read file\n' "$logfile"
 fi
 
-if ! isnum "$1"; then
-    error '%s: not a number\n' "$1"
+if ! isnum "$n"; then
+    error '%s: not a number\n' "$n"
 fi
 
-n=${1:-$n} awk '
+n=$n awk '
     BEGIN {
         n = ENVIRON["n"] + 0
     }
