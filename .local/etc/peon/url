@@ -16,7 +16,7 @@ fi
 if attr video; then
     case $1 in
     https://xcancel.com/*|https://nitter.*)
-        exec mpv --profile=doomscroll "$(trurl --set host=x.com -- "$1")"
+        exec mpv --profile=doomscroll "$(trurl -s host=x.com -- "$1")"
     ;;
 
     https://www.twitch.tv/*|https://twitch.tv/*)
@@ -44,7 +44,7 @@ https://www.youtube.com/shorts/*)
     PEONATTRS=$(addattr video) exec peon "$1"
 ;;
 
-https://*.youtube.com/playlist?list=PL*)
+https://*.youtube.com/playlist\?list=PL*)
     PEONATTRS=$(addattr video) exec peon "$1"
 ;;
 
