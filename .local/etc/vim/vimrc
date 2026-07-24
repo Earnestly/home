@@ -1,18 +1,23 @@
 " XDG_CONFIG_HOME/vim/vimrc
 
 " XXX Still necessary?
-let vimdir = fnamemodify($MYVIMRC, ':h')
-let &undodir = vimdir . '/undo' | call mkdir(&undodir, 'p')
-let &directory = vimdir . '/swap' | call mkdir(&directory, 'p')
-let &backupdir = vimdir . '/backup' | call mkdir(&backupdir, 'p')
-let &viminfofile = vimdir . '/viminfo'
-unlet vimdir
+"     In 2026? Yes.
+let &undodir = $MYVIMDIR . 'undo' | call mkdir(&undodir, 'p')
+let &directory = $MYVIMDIR . 'swap' | call mkdir(&directory, 'p')
+let &backupdir = $MYVIMDIR . 'backup' | call mkdir(&backupdir, 'p')
+let &viminfofile = $MYVIMDIR . 'viminfo'
 
 " Replace ex-mode with vim's command-line window.
 map Q q:
 
 syntax on
 filetype indent plugin on
+
+" XXX Without patching vim there is no way to remove the condescending delay
+"     on initial edits in readonly buffers. Instead the readonly option is
+"     simply removed to workaround this limitation.
+"     https://github.com/vim/vim/issues/472
+autocmd BufReadPost * setlocal noreadonly
 
 set title
 set number
@@ -50,7 +55,7 @@ set tabstop=4
 set shiftwidth=4
 
 if !empty($DISPLAY)
-    " Use the Xorg's primary buffer as default register.
+    " Use the Xorg's primary selection as default register.
     set clipboard=unnamed
 endif
 
@@ -77,10 +82,38 @@ endif
 let g:tar_cmd = 'bsdtar'
 let g:tar_secure = 1
 
-" Tell vim about additional formats.
+" Tell vim about the additional filetypes supported by bsdtar.
 autocmd BufReadCmd *.iso,*.rar,*.7z call tar#Browse(expand("<amatch>"))
 
 runtime! macros/matchit.vim
+
+function! MinpacInit() abort
+    try
+        packadd minpac
+
+    catch /^Vim(packadd):E919:/
+        call systemlist(['git', 'clone', 'https://github.com/k-takata/minpac.git', $MYVIMDIR . 'pack/minpac/opt/minpac'])
+
+        packadd minpac
+    endtry
+
+    call minpac#init()
+    call minpac#add('k-takata/minpac', {'type': 'opt'})
+
+    call minpac#add('dense-analysis/ale')
+    call minpac#add('oils-for-unix/oils.vim')
+    call minpac#add('kaarmu/typst.vim')
+    call minpac#add('vim-erlang/vim-erlang-runtime')
+    call minpac#add('ledger/vim-ledger')
+    call minpac#add('tpope/vim-repeat')
+    call minpac#add('tpope/vim-surround')
+    call minpac#add('ziglang/zig.vim')
+
+    silent! helptags ALL
+endfunc
+
+command! MinpacUpdate call MinpacInit() | call minpac#update()
+command! MinpacClean  call MinpacInit() | call minpac#clean()
 
 function SetPluginSettings()
     if get(g:, 'loaded_ledger')
@@ -100,8 +133,8 @@ function SetPluginSettings()
         let g:ale_lint_on_filetype_changed = 0
 
         if &t_Co >= 256 && (&term == 'xterm-256color' || &term == 'tmux-256color')
-            " XXX There must be a better way than this to inherit a highlight group
-            "     while changing an aspect of it.
+            " XXX There must be a better way than this to inherit a highlight
+            "     group when making adjustments to it.
             call hlset([hlget('LineNr', v:true)[0]->extend(#{name: 'ALEErrorSign', guifg: string(hlget('Error')[0].guibg)})])
             call hlset([hlget('LineNr', v:true)[0]->extend(#{name: 'ALEWarningSign', guifg: string(hlget('Todo')[0].guifg)})])
             call hlset([hlget('LineNr', v:true)[0]->extend(#{name: 'ALEInfoSign', guifg: string(hlget('Function')[0].guifg)})])
