@@ -2,7 +2,7 @@
 # web - start a prefered web browser
 # requires xdg-user-dir jq
 
-firefox-private() {
+firefox-transient() {
     mkdir -m 0700 -- "$tmp"/profile "$tmp"/tmp
 
     cat <<! > "$tmp"/profile/user.js
@@ -11,19 +11,25 @@ firefox-private() {
 user_pref("browser.download.folderList", 2);
 user_pref("browser.download.dir", $(jq -rcn --arg dir "$(xdg-user-dir DOWNLOAD)" '$dir | @json'));
 !
+    set -- --no-remote --profile "$tmp"/profile ${private+--private-window} "$@"
 
-    HOME=$tmp XDG_CONFIG_HOME=$tmp TMP=$tmp/tmp firefox --no-remote --profile "$tmp"/profile --private-window "$@"
+    HOME=$tmp XDG_CONFIG_HOME=$tmp TMP=$tmp/tmp command firefox "$@"
 }
 
-chromium-private() {
-    XDG_CONFIG_HOME=$tmp command chromium --user-data-dir="$tmp" --incognito "$@"
+chromium-transient() {
+    mkdir -m 0700 -- "$tmp"/Default
+
+    jq -n --arg default_directory "$(xdg-user-dir DOWNLOAD)" '{"download": {$default_directory}}' > "$tmp"/Default/Preferences
+
+    set -- --user-data-dir="$tmp" ${private+--ephemeral} "$@"
+
+    XDG_CONFIG_HOME=$tmp command chromium "$@"
 }
 
 qutebrowser() {
     rundir=$XDG_RUNTIME_DIR/qutebrowser
     log=$rundir/log.pipe
 
-    # shellcheck disable=SC2174
     mkdir -pm 0700 -- "$rundir"
 
     if [ -e "$log" ] && ! [ -p "$log" ]; then
@@ -34,35 +40,36 @@ qutebrowser() {
         mkfifo -- "$log"
     fi
 
+    # nb. This was more useful when developing qmatrix.py and cookies.py as it
+    #     allowed me to see what was being blocked and why.
     nice logger -et qutebrowser -p info < "$log" &
     exec 9>"$log"
     rm -f -- "$log"
 
-    set -- --qt-flag enable-features=JXL \
-           --target=tab-bg-silent \
-           --no-err-windows \
-           ${debug+-dD log-cookies --logfilter network} "$@"
+    set -- --qt-flag enable-features=JXL --target=tab-bg-silent --no-err-windows ${debug+-dD log-cookies --logfilter network} "$@"
 
     # python -m cProfile -o qutebrowser.prof /usr/bin/qutebrowser "$@" >&9 2>&1
     exec qutebrowser "$@" >&9 2>&1
 }
 
-unset -v debug private
+unset -v debug private transient
+
 browser=qutebrowser
 
-while getopts :dpb: opt; do
+while getopts :dptb: opt; do
     case $opt in
     d) debug=1 ;;
     p) private=1 ;;
+    t) transient=1 ;;
     b) browser=$OPTARG ;;
-    *) printf 'usage: web [-dp] [-b browser] [--] [args]...\n' >&2; exit 1
+    *) printf 'usage: web [-dpt] [-b browser] [--] [args]...\n' >&2; exit 1
     esac
 done
 
 shift "$((OPTIND - 1))"
 
-if [ "$private" ]; then
-    browser=$browser-private
+if [ "$transient" ]; then
+    browser=$browser-transient
 
     cleanup() { rm -rf -- "$tmp"; }
 
@@ -75,7 +82,6 @@ if [ "$private" ]; then
         trap "cleanup; trap - $signal EXIT; kill -s $signal $$" "$signal"
     done
 
-    # shellcheck disable=SC2174
     mkdir -pm 0700 -- "$tmp"
 fi
 
