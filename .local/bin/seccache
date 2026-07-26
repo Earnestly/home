@@ -1,6 +1,6 @@
 #!/bin/sh --
 # seccache - poorman secstore
-# requires 7z keyctl zstd age age-keygen pinentry-qt|pinentry-tty pwgen /dev/fd/0
+# requires 7z keyctl zstd age age-keygen pinentry-qt|pinentry-tty pwgen /dev/stdin
 
 # NOTES
 #   - The 7z commands specifically exclude removal interactions with the
@@ -38,7 +38,7 @@ iscapable() {
     and then adding them to the archive:
 
         # As defined by the -u id flag, default: general.
-        $ mkdir "$id"
+        $ mkdir -- "$id"
 
         # Compress (optional) and encrypt file using the public key.
         $ zstd -qqfcz < file | age -r "$public" -e > "$id"/file
@@ -53,7 +53,7 @@ iscapable() {
 
         # Generate a passphrase with pwgen for the key using the archive's
         # password with the identity's name as the seed.
-        $ age-keygen -pq 2> /dev/null | AGE_PASSPHRASE_FD=9 9<(printf %s "$password" | pwgen -H /dev/fd/0#"$id" -1yv 50) AGE_PASSPHRASE_WORK_FACTOR=14 age -j batchpass -eo .keyring/"$id"
+        $ age-keygen -pq 2> /dev/null | AGE_PASSPHRASE_FD=9 9<(printf %s "$password" | pwgen -H "/dev/stdin#$id" -1yv 50) AGE_PASSPHRASE_WORK_FACTOR=14 age -j batchpass -eo .keyring/"$id"
 
         # Add to the archive.
         $ 7z a -mhe=on -bso0 -bsp0 -mx0 -spf -- "$archive".7z .keyring/"$id"
@@ -112,7 +112,7 @@ pin() {
 }
 
 salt() {
-    pwgen -H /dev/fd/0#"$id" -1yv 50
+    pwgen -H "/dev/stdin#$id" -1yv 50
 }
 
 key_desc2id() {
