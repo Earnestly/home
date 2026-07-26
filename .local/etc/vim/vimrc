@@ -100,14 +100,17 @@ function! MinpacInit() abort
     call minpac#init()
     call minpac#add('k-takata/minpac', {'type': 'opt'})
 
-    call minpac#add('dense-analysis/ale')
-    call minpac#add('oils-for-unix/oils.vim')
-    call minpac#add('kaarmu/typst.vim')
-    call minpac#add('vim-erlang/vim-erlang-runtime')
-    call minpac#add('ledger/vim-ledger')
     call minpac#add('tpope/vim-repeat')
     call minpac#add('tpope/vim-surround')
+    call minpac#add('tpope/vim-commentary')
+
+    call minpac#add('dense-analysis/ale')
+
     call minpac#add('ziglang/zig.vim')
+    call minpac#add('kaarmu/typst.vim')
+    call minpac#add('oils-for-unix/oils.vim')
+    call minpac#add('vim-erlang/vim-erlang-runtime')
+    call minpac#add('ledger/vim-ledger')
 
     silent! helptags ALL
 endfunc
