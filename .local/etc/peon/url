@@ -52,6 +52,13 @@ https://www.twitch.tv/*)
     PEONATTRS=$(addattr video) exec peon "$1"
 ;;
 
+# Imgur blocked the YooKay due to the Online Safety Act, thankfully
+# duckduckgo.com can be used to proxy access.
+https://i.imgur.com/*)
+    # nb. The url given to u= must not be encoded.
+    exec peon "https://external-content.duckduckgo.com/iu/?u=$1"
+;;
+
 https://*|http://*)
     case $1 in
     *.webm|*.mp4|*.m4a|*.mp3|*.gifv|*.opus)

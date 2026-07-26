@@ -1,6 +1,6 @@
 #!/bin/sh --
 # peon/file
-# requires mpv imv pdf xxd
+# requires mpv imv pdf xxd docx2txt visidata
 
 withterm() {
     less=0 OPTIND=1
@@ -15,7 +15,7 @@ withterm() {
     shift "$((OPTIND-1))"
 
     if ! isatty; then
-        PEONATTRS=term exec peon "$2"
+        PEONATTRS=$(addattr term) exec peon "$2"
     else
         shift 2
 
