@@ -84,8 +84,19 @@ mp.observe_property("path", "string", function(_, path)
 
                     if fgrep(triggers, content) then
                         mp.osd_message("[yt-dlp]: live-from-start not available", 4)
-                        mp.command("no-osd change-list ytdl-raw-options remove live-from-start; \
-                                    playlist-play-index current")
+                        mp.command("no-osd change-list ytdl-raw-options remove live-from-start")
+
+                        -- XXX Bodge to prevent the [twitch] profile from
+                        --     re-applying live-from-start after the stream
+                        --     reloads.
+                        local raw_options = mp.get_property("options/ytdl-raw-options") or ""
+
+                        mp.register_event("start-file", function()
+                            mp.set_property("file-local-options/ytdl-raw-options", raw_options)
+                            mp.unregister_event(debug.getinfo(1, "f").func)
+                        end)
+
+                        mp.command("playlist-play-index current")
                     end
                 end
             end)
