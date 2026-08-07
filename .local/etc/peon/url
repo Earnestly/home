@@ -20,7 +20,7 @@ if attr video; then
     ;;
 
     https://www.twitch.tv/*|https://twitch.tv/*)
-        exec mpv -- "$1"
+        exec mpv --profile=twitch -- "$1"
     ;;
 
     *)
