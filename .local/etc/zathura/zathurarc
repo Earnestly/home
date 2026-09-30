@@ -16,7 +16,16 @@ set recolor true
 set recolor-keephue true
 set recolor-reverse-video true
 
+# nb. When true this causes redraw on zoom to become 100% slower without
+#     apparent improvement.
+set recolor-adjust-lightness false
+
 set zoom-step 5
+
+# XXX When using "best-fit" (default) zathura appears determined to lock
+#     horizonal scroll so that regardless of zoom level it is not possible to
+#     pan the document left or right.
+set adjust-open "width"
 
 # Attempt to ensure the content remains centered while zooming in and out as
 # zathura, unlike llpp, has no key to recenter the page within the window.
