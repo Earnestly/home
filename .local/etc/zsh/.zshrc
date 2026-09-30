@@ -48,6 +48,7 @@ HELPDIR=/usr/share/zsh/$ZSH_VERSION/help
 PROMPT='${SSH_CONNECTION+%m }%n $vimode ${repo:+$repo }%F{cyan}%~%f '
 
 zstyle ':completion:*' menu select
+zstyle ':completion:*' insert-tab false
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' rehash yes
 
