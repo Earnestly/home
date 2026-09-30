@@ -1,8 +1,9 @@
 #!/bin/sh --
 # web - start a prefered web browser
 # requires xdg-user-dir jq
+# license AGPL-3.0-only
 
-firefox-transient() {
+librewolf_transient() {
     mkdir -m 0700 -- "$tmp"/profile "$tmp"/tmp
 
     cat <<! > "$tmp"/profile/user.js
@@ -13,10 +14,10 @@ user_pref("browser.download.dir", $(jq -rcn --arg dir "$(xdg-user-dir DOWNLOAD)"
 !
     set -- --no-remote --profile "$tmp"/profile ${private+--private-window} "$@"
 
-    HOME=$tmp XDG_CONFIG_HOME=$tmp TMP=$tmp/tmp command firefox "$@"
+    HOME=$tmp XDG_CONFIG_HOME=$tmp TMP=$tmp/tmp command librewolf "$@"
 }
 
-chromium-transient() {
+chromium_transient() {
     mkdir -m 0700 -- "$tmp"/Default
 
     jq -n --arg default_directory "$(xdg-user-dir DOWNLOAD)" '{"download": {$default_directory}}' > "$tmp"/Default/Preferences
@@ -46,7 +47,7 @@ qutebrowser() {
     exec 9>"$log"
     rm -f -- "$log"
 
-    set -- --qt-flag enable-features=JXL --target=tab-bg-silent --no-err-windows ${debug+-dD log-cookies --logfilter network} "$@"
+    set -- --qt-flag enable-features=JxlDecoder --target=tab-bg-silent --no-err-windows ${debug+-dD log-cookies --logfilter network} "$@"
 
     # python -m cProfile -o qutebrowser.prof /usr/bin/qutebrowser "$@" >&9 2>&1
     exec qutebrowser "$@" >&9 2>&1
@@ -62,18 +63,19 @@ while getopts :dptb: opt; do
     p) private=1 ;;
     t) transient=1 ;;
     b) browser=$OPTARG ;;
-    *) printf 'usage: web [-dpt] [-b browser] [--] [args]...\n' >&2; exit 1
+    *) printf 'usage: web [-dpt] [-b browser] [-- [args]...]\n' >&2; exit 1
     esac
 done
 
 shift "$((OPTIND - 1))"
 
 if [ "$transient" ]; then
-    browser=$browser-transient
-
-    cleanup() { rm -rf -- "$tmp"; }
-
+    browser=${browser}_transient
     tmp=${TMPDIR:-/tmp}/web-$browser-$$
+
+    # nb. It is possible for rm -rf to fail with a "directory not empty"
+    #     error, so the cleanup will keep trying until it succeeds.
+    cleanup() { until rm -rf -- "$tmp"; do :; done; }
 
     trap cleanup EXIT
 
@@ -82,7 +84,7 @@ if [ "$transient" ]; then
         trap "cleanup; trap - $signal EXIT; kill -s $signal $$" "$signal"
     done
 
-    mkdir -pm 0700 -- "$tmp"
+    mkdir -m 0700 -- "$tmp" || exit
 fi
 
 if hash -- "$browser" 2> /dev/null; then
