@@ -1,6 +1,7 @@
 #!/bin/sh --
 # peon - zug zug
 # requires file(-b --mime-type)
+# license AGPL-3.0-only
 
 warn() { m=$1; shift; printf >&2 "%s: $m" peon "$@"; }
 attr() { case ,$PEONATTRS, in *,"$1",*) return 0; esac; return 1; }

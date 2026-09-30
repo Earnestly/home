@@ -1,6 +1,8 @@
 #!/bin/sh --
 # peon/uri - for anything that is not a local file
-# requires mpv web peon trurl
+# requires mpv web peon trurl streamlink
+
+fmatch() { printf %s "$1" | grep -Eqf "$2"; }
 
 if attr web; then
     case $1 in
@@ -15,12 +17,21 @@ fi
 
 if attr video; then
     case $1 in
-    https://xcancel.com/*|https://nitter.*)
-        exec mpv --profile=doomscroll "$(trurl -s host=x.com -- "$1")"
+    https://x.n0g.xyz/*|https://xcancel.com/*|https://nitter.*)
+        exec mpv --profile=doomscroll -- "$(trurl -s host=x.com -- "$1")"
     ;;
 
     https://www.twitch.tv/*|https://twitch.tv/*)
-        exec mpv --profile=twitch -- "$1"
+        case $1 in
+        */videos)
+            exec mpv --profile=doomscroll -- "$1"
+        ;;
+
+        *)
+            # XXX Needed to handle twitch's split live/vod mix audio streams.
+            #     ytdl-raw-options-append=--audio-multistream= does not help.
+            exec streamlink -p mpv -a --profile=twitch -t '{author}: {title}' "$1" '<=1080p60,best'
+        esac
     ;;
 
     *)
@@ -36,22 +47,6 @@ file://*)
     exec peon "${path%z}"
 ;;
 
-https://*.youtube.com/watch\?v=*|https://youtu.be/*)
-    PEONATTRS=$(addattr video) exec peon "$1"
-;;
-
-https://www.youtube.com/shorts/*)
-    PEONATTRS=$(addattr video) exec peon "$1"
-;;
-
-https://*.youtube.com/playlist\?list=PL*)
-    PEONATTRS=$(addattr video) exec peon "$1"
-;;
-
-https://www.twitch.tv/*)
-    PEONATTRS=$(addattr video) exec peon "$1"
-;;
-
 # Imgur blocked the YooKay due to the Online Safety Act, thankfully
 # duckduckgo.com can be used to proxy access.
 https://i.imgur.com/*)
@@ -60,15 +55,11 @@ https://i.imgur.com/*)
 ;;
 
 https://*|http://*)
-    case $1 in
-    *.webm|*.mp4|*.m4a|*.mp3|*.gifv|*.opus)
-        exec mpv --profile=doomscroll -- "$1"
-    ;;
-
-    *)
+    if fmatch "$1" "$cfgdir"/patterns-video-url; then
+        PEONATTRS=$(addattr video) exec peon "$1"
+    else
         exec web -- "$1"
-    esac
-
+    fi
 ;;
 
 ytdl://*)
@@ -76,6 +67,8 @@ ytdl://*)
 ;;
 
 *)
-    web -- "g $1"
+    # XXX Injection.
+    exec web -- "g $1"
+
     warn '%s: no matching candidates\n' "$1"
 esac
