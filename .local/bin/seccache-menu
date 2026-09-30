@@ -1,6 +1,6 @@
 #!/bin/sh --
 # seccache-menu -
-# requires seccache menu xdotool xclip column qrencode imv
+# requires seccache menu xdotool xclip column qrencode feh
 
 # NOTES
 # seccache -G cotp/... \
@@ -66,6 +66,6 @@ seccache -G . \
     13)
         decode "$id" "$selection" \
         | qrencode -t svg --size 10 -o - \
-        | imv -w "seccache: $selection" -
+        | feh -^ "seccache: $selection" -
     esac
 }
