@@ -1,6 +1,7 @@
 #!/bin/sh --
 # superwatchlater -
 # requires yt-dlp jq bemenu mpv
+# license AGPL-3.0-only
 
 statedir=${XDG_STATE_HOME:-$HOME/.local/state}/mpv
 

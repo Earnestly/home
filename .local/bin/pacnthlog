@@ -1,6 +1,7 @@
 #!/bin/sh --
 # pacnthlog - print specific transaction from pacman.log
 # requires [pacman-conf]
+# license AGPL-3.0-only
 
 usage() {
     printf 'usage: pacnthlog [-h] [-L logfile] [[+-]number]\n'

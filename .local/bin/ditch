@@ -1,6 +1,7 @@
 #!/bin/sh --
 # ditch - display menu of twitch streamers currently online
 # requires jq curl bemenu mpv
+# license AGPL-3.0-only
 
 cachedir=${XDG_CACHE_HOME:-$HOME/.cache}/ditch
 

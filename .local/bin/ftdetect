@@ -1,18 +1,23 @@
 #!/bin/sh --
 # ftdetect - attempts to detect the fallback family used for a given glyph
 # requires pango-view
+# license AGPL-3.0-only
+
+usage() { printf 'usage: ftdetect [-f font] glyph\n'; }
 
 while getopts :f: arg; do
     case $arg in
-        f) family=$OPTARG ;;
-        *) exit
+    f) font=$OPTARG ;;
+    *) usage >&2; exit 1
     esac
 done
-shift "$((OPTIND - 1))"
+
+shift "$((OPTIND-1))"
 
 if ! [ "$1" ]; then
-    printf 'usage: ftdetect [-f family] glyph\n' >&2
+    usage >&2
     exit 1
 fi
 
-FC_DEBUG=4 pango-view -qt "$1" --font "${family:-sans}" 2>&1 | awk 'BEGIN{FS="\""}/family: /{m = $2}END{print m}'
+FC_DEBUG=4 pango-view -qt "$1" --font "${font:-sans}" 2>&1 \
+| awk '$1 == "fullname:" {m = $0}; END {print m}'
