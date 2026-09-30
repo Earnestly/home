@@ -1,6 +1,7 @@
 #!/bin/sh --
 # seccache - poorman secstore
 # requires 7z keyctl zstd age age-keygen pinentry-qt|pinentry-tty pwgen /dev/stdin
+# license AGPL-3.0-only
 
 # NOTES
 #   - The 7z commands specifically exclude removal interactions with the
@@ -41,10 +42,18 @@ iscapable() {
         $ mkdir -- "$id"
 
         # Compress (optional) and encrypt file using the public key.
-        $ zstd -qqfcz < file | age -r "$public" -e > "$id"/file
+        #
+        #   The public key keyctl id can be found from keyctl show and
+        #   should usually be available if you have attempted to use
+        #   seccache -p at least once.
+        #   Alternatively you could determine the id with keyctl search:
+        #
+        #     public=$(keyctl search %:seccache://"$archive".7z user "$id"/public)
+        #
+        $ zstd -qqfcz < file | age -r "$(keyctl pipe "$public")" -e > "$id"/file
 
         # Add to the archive.
-        $ 7z a -mhe=on -bso0 -bsp0 -mx0 -spf -- "$archive".7z "$id"/file
+        $ 7z a -mhe=on -- "$archive".7z "$id"/file
 
     To add an identity the process is slightly different:
 
@@ -56,7 +65,7 @@ iscapable() {
         $ age-keygen -pq 2> /dev/null | AGE_PASSPHRASE_FD=9 9<(printf %s "$password" | pwgen -H "/dev/stdin#$id" -1yv 50) AGE_PASSPHRASE_WORK_FACTOR=14 age -j batchpass -eo .keyring/"$id"
 
         # Add to the archive.
-        $ 7z a -mhe=on -bso0 -bsp0 -mx0 -spf -- "$archive".7z .keyring/"$id"
+        $ 7z a -mhe=on -- "$archive".7z .keyring/"$id"
 
     Sorry about this.
 !
@@ -196,14 +205,13 @@ archive_verify() {
     *) error '%s: unhandled error:\n%s\n' "$archive" "$result"
     esac
 
-#     format=1
-#     printf 1 | archive_add .metadata/VERSION
-#     version=$(archive_extract .metadata/VERSION)
-#     if ! [ "$version" ]; then
-#         error 'unable to determine archive version\n'
-#     elif [ "$format" != "$version" ]; then
-#         error 'expected version %s but found %s\n' "$format" "$version"
-#     fi
+    # archive_format=$(archive_extract .metadata/format)
+    #
+    # if ! [ "$archive_format" ]; then
+    #     error 'unable to determine archive version\n'
+    # elif [ "$format" != "$archive_format" ]; then
+    #     error 'expected version %s but found %s\n' "$format" "$archive_format"
+    # fi
 }
 
 archive_add_key() {
@@ -241,6 +249,7 @@ putfile=
 rmfile=
 id=general
 timeout=300
+# format=1
 
 while getopts :via:G:p:r:u:t: opt; do
     case $opt in
@@ -273,6 +282,7 @@ case $archive in
 *) error '%s: archive must end with .7z\n' "$archive"
 esac
 
+# keyfile=.metadata/keys/$id
 keyfile=.keyring/$id
 keyring=seccache://${archive##*/}
 
@@ -309,6 +319,8 @@ if ! [ -f "$archive" ] && iscapable; then
 
     nofail key_request_with passphrase "$timeout" pin confirm
     archive_add_key "$keyfile"
+
+    # printf %d "$format" | archive_add .metadata/format
 fi
 
 if ! keyctl id %:"$keyring" > /dev/null 2>&1; then
@@ -328,6 +340,7 @@ fi
 
 if [ "$getfile" ]; then
     if [ "$getfile" = . ]; then
+        # key_desc2pipe passphrase | 7z l -ba -slt -spf -x'!.metadata/*' -- "$archive" | sed -n '/^Path = /s///p'
         key_desc2pipe passphrase | 7z l -ba -slt -spf -x'!.keyring/*' -- "$archive" | sed -n '/^Path = /s///p'
     else
         if ! archive_exists_file "$id"/"$getfile"; then
@@ -376,5 +389,6 @@ if [ "$rmfile" ]; then
         #     meaning is that 7z will not "process or convert paths."
         #     See https://7-zip.opensource.jp/chm/cmdline/switches/spf.htm
         key_desc2pipe passphrase | 7z d -spd -spf -bso0 -x'!.keyring/*' -- "$archive" "$id"/"$rmfile"
+        # key_desc2pipe passphrase | 7z d -spd -spf -bso0 -x'!.metadata/*' -- "$archive" "$id"/"$rmfile"
     fi
 fi
