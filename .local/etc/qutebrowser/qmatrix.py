@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: BlueOak-1.0.0
+# SPDX-License-Identifier: AGPL-3.0-only
 
 #   SYNOPSIS
 #       host [source [flags [resource]]]
@@ -35,7 +35,6 @@
 #       resource
 #           A specific web resource upon which to act.
 
-import os
 import re
 import fnmatch
 import logging
@@ -46,35 +45,43 @@ from qutebrowser.api import interceptor, cmdutils, message, apitypes
 
 # XXX Internal APIs
 import qutebrowser.misc
+
 # Used to update the interceptor if it already exists.
 import qutebrowser.extensions
 
 qmatrix = SimpleNamespace()
 
 qmatrix.active = False
-qmatrix.config = config.configdir / 'qmatrix-rules'
-qmatrix.logger = logging.getLogger('qmatrix')
+qmatrix.config = config.configdir / "qmatrix-rules"
+qmatrix.logger = logging.getLogger("qmatrix")
 qmatrix.rules = set()
-qmatrix.default_flags = set(list('cdefiklmorstwx'))
+qmatrix.default_flags = set(list("cdefhijklmnorstwx"))
 
 # https://doc.qt.io/qt-6/qwebengineurlrequestinfo.html#ResourceType-enum
 qmatrix.resources = {
-    'c': interceptor.ResourceType.stylesheet,
-    'd': interceptor.ResourceType.sub_resource,
-    'e': interceptor.ResourceType.csp_report,
-    'f': interceptor.ResourceType.sub_frame,
-    'i': interceptor.ResourceType.image,
-    'k': interceptor.ResourceType.worker,
-    'l': interceptor.ResourceType.preload_main_frame,
-    'm': interceptor.ResourceType.media,
-    'o': interceptor.ResourceType.websocket,
-    'p': interceptor.ResourceType.ping,
-    'r': interceptor.ResourceType.prefetch,
-    's': interceptor.ResourceType.script,
-    't': interceptor.ResourceType.font_resource,
-    'w': interceptor.ResourceType.service_worker,
-    'x': interceptor.ResourceType.xhr
+    "c": interceptor.ResourceType.stylesheet,
+    "d": interceptor.ResourceType.sub_resource,
+    "e": interceptor.ResourceType.csp_report,
+    "f": interceptor.ResourceType.sub_frame,
+    "g": interceptor.ResourceType.object,
+    "h": interceptor.ResourceType.shared_worker,
+    "i": interceptor.ResourceType.image,
+    "j": interceptor.ResourceType.json,
+    "k": interceptor.ResourceType.worker,
+    "l": interceptor.ResourceType.preload_main_frame,
+    "m": interceptor.ResourceType.media,
+    "n": interceptor.ResourceType.preload_sub_frame,
+    "o": interceptor.ResourceType.websocket,
+    "p": interceptor.ResourceType.ping,
+    "q": interceptor.ResourceType.plugin_resource,
+    "r": interceptor.ResourceType.prefetch,
+    "s": interceptor.ResourceType.script,
+    "t": interceptor.ResourceType.font_resource,
+    "u": interceptor.ResourceType.unknown,
+    "w": interceptor.ResourceType.service_worker,
+    "x": interceptor.ResourceType.xhr
 }
+
 
 qmatrix.whitelist = {
     interceptor.ResourceType.main_frame,
@@ -93,13 +100,13 @@ def qmatrix_add_rule(host, source, flags, resource):
     resource = re.compile(fnmatch.translate(resource)) if resource else None
 
     if flags:
-        if 'a' in flags:
+        if "a" in flags:
             flags = qmatrix.default_flags
 
-        if 'b' in flags:
+        if "b" in flags:
             flags.clear()
 
-        if '*' in flags:
+        if "*" in flags:
             flags = set(resource_flags.keys())
     else:
         flags = qmatrix.default_flags
@@ -108,7 +115,7 @@ def qmatrix_add_rule(host, source, flags, resource):
         if f in qmatrix.resources:
             access.add(qmatrix.resources[f])
         else:
-            qmatrix.logger.debug(f'{qmatrix.config}: {f}: unknown flag')
+            qmatrix.logger.debug(f"{qmatrix.config}: {f}: unknown flag")
 
     qmatrix.rules.add((host, source, frozenset(access), resource))
 
@@ -116,16 +123,16 @@ def qmatrix_add_rule(host, source, flags, resource):
 def qmatrix_read_config(config):
     """Load qmatrix rules from configuration file into the global rules list."""
     qmatrix.rules.clear()
-    qmatrix.logger.debug(f'{qmatrix.config}: loading ruleset')
+    qmatrix.logger.debug(f"{qmatrix.config}: loading ruleset")
 
-    with open(config, 'a+') as f:
+    with open(config, "a+") as f:
         for i, line in enumerate(f.read().splitlines()):
-            if not (line.startswith('#') or line.strip() == ''):
-                fields = line.split(' ')
+            if not (line.startswith("#") or line.strip() == ""):
+                fields = line.split(" ")
                 length = len(fields)
 
                 if length < 1 or length > 4:
-                    qmatrix.logger.debug(f'{qmatrix.config}:{i}: {line}: invalid rule')
+                    qmatrix.logger.debug(f"{qmatrix.config}:{i}: {line}: invalid rule")
                 else:
                     host_domain = fields[0]
                     source_domain = host_domain if length == 1 else fields[1]
@@ -135,14 +142,17 @@ def qmatrix_read_config(config):
                     qmatrix_add_rule(host_domain, source_domain, flags, resource)
 
 
-for cmdname in ['qmatrix-edit', 'qmatrix-toggle', 'qmatrix-load']:
+# nb. Remove any existing registered commands so :source continues to work as
+#     expected.
+for cmdname in ["qmatrix-edit", "qmatrix-toggle", "qmatrix-load"]:
     qutebrowser.misc.objects.commands.pop(cmdname, None)
+
 
 @cmdutils.register()
 def qmatrix_load():
     """Compile existing qmatrix ruleset."""
     qmatrix_read_config(qmatrix.config)
-    message.info(f'qmatrix: {qmatrix.config}: {len(qmatrix.rules)} rules loaded')
+    message.info(f"qmatrix: {qmatrix.config}: {len(qmatrix.rules)} rules loaded")
 
 
 @cmdutils.register()
@@ -163,11 +173,11 @@ def qmatrix_edit():
 def qmatrix_toggle():
     """Enable or disable qmatrix."""
     qmatrix.active = not qmatrix.active
-    message.info('qmatrix enabled' if qmatrix.active else 'qmatrix disabled')
+    message.info("qmatrix enabled" if qmatrix.active else "qmatrix disabled")
 
 
 def qmatrix_intercept(request: interceptor.Request):
-    if qmatrix.active and not request.resource_type in qmatrix.whitelist:
+    if qmatrix.active and request.resource_type not in qmatrix.whitelist:
         hosts = (request.first_party_url.host(), request.request_url.host())
         resource = (request.resource_type, request.request_url.toString())
 
@@ -192,7 +202,9 @@ def qmatrix_intercept(request: interceptor.Request):
 
         if not access:
             request.block()
-            qmatrix.logger.info(f'blocked: [{resource[0].name}] {hosts[0]} {resource[1]}')
+            qmatrix.logger.info(
+                f"blocked: [{resource[0].name}] {hosts[0]} {resource[1]}"
+            )
 
 
 # import timeit
@@ -200,8 +212,9 @@ def qmatrix_intercept(request: interceptor.Request):
 
 qmatrix_read_config(qmatrix.config)
 
+# nb. Again, clear out any existing interceptors so :source can work.
 for fn in qutebrowser.extensions.interceptors._interceptors:
-    if fn.__name__ == 'qmatrix_intercept':
+    if fn.__name__ == "qmatrix_intercept":
         qutebrowser.extensions.interceptors._interceptors.remove(fn)
 
 interceptor.register(qmatrix_intercept)
