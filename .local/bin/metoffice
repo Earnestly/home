@@ -83,7 +83,7 @@ curl -sg https://weather.metoffice.gov.uk/forecast/"$geohash" \
     def maybe_array($o): if $o | type == "array" then $o[] else $o end;
 
     .html.head.title[:-21],
-    (.. | select(.["@class"]? == "day-tabs").li[].a.div
+    (.. | select(.["@class"]? == "day-tabs") | limit(7; .li[]) | .a.div
         | ["h",
            (.h3.time | .["@datetime"], (.span[] | select(.["@class"] | contains("date-long")).["#text"])),
            (.div.div | .[1].span[].span[0].["@data-c"], .[0].img.["@alt"][:-1])] | join(",")),
@@ -97,11 +97,11 @@ curl -sg https://weather.metoffice.gov.uk/forecast/"$geohash" \
         | "T",
           (.thead.tr.td[] | if . | type == "object" then .["#text"] else . end),
           "K",
-          (.tbody.tr[] | select(.["@class"]? | contains("weather-temperature-row")?) | maybe_array(.td).["#text"], "C", maybe_array(.td).img.["@alt"]),
+          (.tbody.tr[] | select(."@class" | contains("weather-temperature-row")?) | maybe_array(.td).["#text"], "C", maybe_array(.td).img.["@alt"]),
           "P",
-          (.tbody.tr[] | select(.["@class"]? | contains("precipitation-chance-row")?) | maybe_array(.td).["#text"]),
+          (.tbody.tr[] | select(."@class" | contains("precipitation-chance-row")?) | maybe_array(.td).["#text"]),
           "D",
-          (.tbody.tr[] | select(.["@class"]? | contains("wind")?) | maybe_array(.td).span.["@data-value"], "I", maybe_array(.td).["#text"]))' \
+          (.tbody.tr[] | select(."@id" == "wind-row") | maybe_array(.td).span["@data-value"], "I", maybe_array(.td)["#text"]))' \
 | geohash=$geohash awk -v verbose="$verbose" '
     function desc_temp(temp,  t) {
         if(temp <= freezing)
@@ -150,10 +150,6 @@ curl -sg https://weather.metoffice.gov.uk/forecast/"$geohash" \
         # NB. Used to preserve ordering.
         date[s] = $2
 
-        # XXX This section of the HTML refers to todays day as "Today" instead
-        #     of the day name. A later section corrects this which is then
-        #     substituted in.
-        summary[$2, "day"] = $3
         summary[$2, "high"] = $4
         summary[$2, "low"] = $5
         summary[$2, "desc"] = $6
@@ -162,9 +158,7 @@ curl -sg https://weather.metoffice.gov.uk/forecast/"$geohash" \
     }
 
     $1=="s"{
-        if(summary[$2, "day"] == "Today")
-            summary[$2, "day"] = $3
-
+        summary[$2, "day"] = $3
         summary[$2, "wind"] = $4
         summary[$2, "desc"] = sprintf("%s, %s", summary[$2, "desc"], tolower($5))
     }
